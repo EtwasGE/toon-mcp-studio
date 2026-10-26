@@ -26,7 +26,7 @@ export type Scene = {
     scene_id: string;
     start_frame: number;
     end_frame_exclusive: number;
-    background: { asset_id: string };
+    background: { asset_id: string; version: string };
     camera: Camera;
     cast: Cast[];
     events: Cue[];
@@ -42,6 +42,7 @@ export type Caption = {
 };
 export type Timeline = {
     rigs?: Record<string, import('./CharacterRig').CharacterRig>;
+    environments?: Record<string, import('./Environment').EnvironmentDefinition>;
     total_frames: number;
     seed: number;
     scenes: Scene[];

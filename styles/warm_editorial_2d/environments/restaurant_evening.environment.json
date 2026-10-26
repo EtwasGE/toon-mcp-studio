@@ -1,0 +1,286 @@
+{
+    "schema_version": "1.0.0",
+    "name": "restaurant_evening",
+    "canvas": {
+        "width": 1080,
+        "height": 1920
+    },
+    "slots": {
+        "left": {
+            "x": 55,
+            "floor_y": 1342,
+            "scale": 1.2,
+            "depth": 100,
+            "focus": [285, 805]
+        },
+        "right": {
+            "x": 570,
+            "floor_y": 1342,
+            "scale": 1.2,
+            "depth": 100,
+            "focus": [790, 805]
+        },
+        "center": {
+            "x": 300,
+            "floor_y": 1342,
+            "scale": 1.2,
+            "depth": 100,
+            "focus": [540, 805]
+        }
+    },
+    "anchors": {
+        "floor": [540, 1342],
+        "table": [540, 1230]
+    },
+    "cameras": {
+        "wide": {
+            "scale": 1,
+            "x": 0,
+            "y": 0
+        },
+        "two_shot": {
+            "scale": 1,
+            "x": 0,
+            "y": 0
+        },
+        "screen": {
+            "scale": 1,
+            "x": 0,
+            "y": 0
+        },
+        "close_up": {
+            "scale": 1.72,
+            "screen_anchor": [540, 740],
+            "clamp": false
+        }
+    },
+    "layers": [
+        {
+            "id": "background",
+            "depth": 0,
+            "space": "screen",
+            "requires_cast": false,
+            "nodes": [
+                {
+                    "type": "defs",
+                    "props": {},
+                    "children": [
+                        {
+                            "type": "pattern",
+                            "props": {
+                                "id": "paper",
+                                "width": 43,
+                                "height": 47,
+                                "patternUnits": "userSpaceOnUse"
+                            },
+                            "children": [
+                                {
+                                    "type": "circle",
+                                    "props": {
+                                        "cx": 5,
+                                        "cy": 8,
+                                        "r": 1,
+                                        "fill": "#ffffff",
+                                        "opacity": 0.12
+                                    }
+                                },
+                                {
+                                    "type": "circle",
+                                    "props": {
+                                        "cx": 24,
+                                        "cy": 35,
+                                        "r": 1,
+                                        "fill": "#000000",
+                                        "opacity": 0.07
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "linearGradient",
+                            "props": {
+                                "id": "wall",
+                                "x2": 0,
+                                "y2": 1
+                            },
+                            "children": [
+                                {
+                                    "type": "stop",
+                                    "props": {
+                                        "stopColor": "#eee0bd"
+                                    }
+                                },
+                                {
+                                    "type": "stop",
+                                    "props": {
+                                        "offset": 1,
+                                        "stopColor": "#cfb68e"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "rect",
+                    "props": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 1080,
+                        "height": 1920,
+                        "fill": "url(#wall)",
+                        "rx": 0
+                    }
+                },
+                {
+                    "type": "group",
+                    "props": {
+                        "stroke": "#37414a",
+                        "strokeWidth": 9
+                    },
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M0 1080H1080V1920H0Z",
+                                "fill": "#4b777a"
+                            }
+                        },
+                        {
+                            "type": "rect",
+                            "props": {
+                                "x": 90,
+                                "y": 360,
+                                "width": 350,
+                                "height": 520,
+                                "fill": "#314d62",
+                                "rx": 130
+                            }
+                        },
+                        {
+                            "type": "rect",
+                            "props": {
+                                "x": 640,
+                                "y": 360,
+                                "width": 350,
+                                "height": 520,
+                                "fill": "#314d62",
+                                "rx": 130
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M265 360V880 M90 620H440 M815 360V880 M640 620H990",
+                                "fill": "none"
+                            }
+                        },
+                        {
+                            "type": "group",
+                            "props": {
+                                "stroke": "#eac37d",
+                                "strokeWidth": 10
+                            },
+                            "children": [
+                                {
+                                    "type": "path",
+                                    "props": {
+                                        "d": "M140 770V700 M204 770V660 M327 770V710 M710 770V660 M850 770V700 M930 770V630"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M540 0V350"
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M445 425Q540 268 635 425Z",
+                                "fill": "#e7ad5d"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 540,
+                                "cy": 426,
+                                "rx": 95,
+                                "ry": 15,
+                                "fill": "#ffe9a9"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "rect",
+                    "props": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 1080,
+                        "height": 1920,
+                        "fill": "url(#paper)",
+                        "rx": 0
+                    }
+                }
+            ]
+        },
+        {
+            "id": "table",
+            "depth": 200,
+            "space": "world",
+            "requires_cast": true,
+            "nodes": [
+                {
+                    "type": "group",
+                    "props": {
+                        "stroke": "#303a45",
+                        "strokeWidth": 8
+                    },
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M20 1230Q540 1180 1060 1230L1010 1360H70Z",
+                                "fill": "#c99563"
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M140 1360L130 1700 M950 1360L960 1700"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 365,
+                                "cy": 1235,
+                                "rx": 61,
+                                "ry": 17,
+                                "fill": "#f0dcb8"
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M335 1190H390V1230Q360 1250 335 1230Z",
+                                "fill": "#e9f0e7"
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M392 1199Q425 1197 415 1220H394",
+                                "fill": "none"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -105,7 +105,8 @@
             }
         },
         "assets": { "type": "object", "additionalProperties": { "type": "string" } },
-        "rigs": { "type": "object", "additionalProperties": { "type": "object" } }
+        "rigs": { "type": "object", "additionalProperties": { "type": "object" } },
+        "environments": { "type": "object", "additionalProperties": { "type": "object" } }
     },
     "$defs": { "frame": { "type": "integer", "minimum": 0, "maximum": 1800 } }
 }

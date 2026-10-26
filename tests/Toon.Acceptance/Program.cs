@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json.Nodes;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
+using Toon.Acceptance;
 using Toon.Core;
 using Toon.Infrastructure;
 
@@ -17,6 +18,12 @@ var config = new Config();
 var studio = new Studio(config);
 var results = new JsonArray();
 var errors = 0;
+if (args.Contains("--environments"))
+{
+    await EnvironmentAcceptance.Run(config);
+    return;
+}
+
 if (args.Contains("--characters"))
 {
     await CharacterAcceptance.Run(config);

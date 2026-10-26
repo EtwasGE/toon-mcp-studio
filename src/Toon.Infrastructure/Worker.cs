@@ -104,7 +104,15 @@ public sealed class Worker(Studio studio)
                 "VERIFY_FAILED",
                 "Job snapshot changed"
             );
-            studio.CheckDraft(p, snapshot["rigs"]);
+            studio.CheckDraft(p, snapshot["rigs"], snapshot["environments"]);
+            if (snapshot["environments"] is JsonObject environments)
+            {
+                foreach (var environment in environments.Select(pair => pair.Value!))
+                {
+                    Environments.Validate(environment, config.Root);
+                }
+            }
+
             if (snapshot["rigs"] is JsonObject rigs)
             {
                 foreach (var rig in rigs.Select(pair => pair.Value!))
@@ -234,7 +242,8 @@ public sealed class Worker(Studio studio)
                 job.Str("quality"),
                 Stage,
                 ct,
-                snapshot["rigs"]
+                snapshot["rigs"],
+                snapshot["environments"]
             );
             stageTimes[currentStage] = timer.Elapsed.TotalSeconds - stageStart;
             report["stage_seconds"] = stageTimes;
@@ -259,6 +268,13 @@ public sealed class Worker(Studio studio)
             {
                 J.Write(Path.Combine(directory, "character-review.json"), review);
                 names.Add("character-review.json");
+                names.AddRange(Directory.GetFiles(directory, "frame-*.png").Select(Path.GetFileName).OfType<string>());
+            }
+
+            if (snapshot["environment_review"] is JsonNode environmentReview)
+            {
+                J.Write(Path.Combine(directory, "environment-review.json"), environmentReview);
+                names.Add("environment-review.json");
                 names.AddRange(Directory.GetFiles(directory, "frame-*.png").Select(Path.GetFileName).OfType<string>());
             }
 

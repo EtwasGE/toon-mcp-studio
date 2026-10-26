@@ -20,10 +20,14 @@ public sealed partial class Studio
         Library = new ContentLibrary(config, Store, Assets);
     }
 
-    public void CheckDraft(JsonNode project, JsonNode? resolvedRigs = null)
+    public void CheckDraft(JsonNode project, JsonNode? resolvedRigs = null, JsonNode? resolvedEnvironments = null)
     {
         Validation.Schema(project, Path.Combine(Config.Root, "contracts/project.schema.json"));
-        Validation.Semantic(project, resolvedRigs ?? Library.ResolveCharacters(project));
+        Validation.Semantic(
+            project,
+            resolvedRigs ?? Library.ResolveCharacters(project),
+            resolvedEnvironments ?? Library.ResolveEnvironments(project)
+        );
     }
 
     public JsonNode Create(JsonNode project)
@@ -61,6 +65,7 @@ public sealed partial class Studio
         var warnings = new JsonArray();
         var resolvedAssets = new JsonObject();
         var resolvedRigs = new JsonObject();
+        var resolvedEnvironments = new JsonObject();
         var voices = new JsonObject();
         var keys = new HashSet<string>();
         var chars = 0;
@@ -85,6 +90,22 @@ public sealed partial class Studio
             {
                 errors.Add(J.Node(new Issue(ex.Code, ex.Message, pointer)));
             }
+        }
+
+        try
+        {
+            resolvedEnvironments = Library.ResolveEnvironments(p);
+            foreach (var environment in resolvedEnvironments.Select(pair => pair.Value!))
+            {
+                foreach (var node in Environments.Nodes(environment).Where(n => n.Str("type") == "cutout"))
+                {
+                    Asset(node["asset"]!, "/scenes/background");
+                }
+            }
+        }
+        catch (ToonException ex)
+        {
+            errors.Add(J.Node(new Issue(ex.Code, ex.Message, "/scenes")));
         }
 
         try
@@ -282,6 +303,7 @@ public sealed partial class Studio
                 cost_explanation = "Current account tariff is unknown; code points are an internal limit, not provider billing units",
                 resolved_assets = resolvedAssets,
                 resolved_rigs = resolvedRigs,
+                resolved_environments = resolvedEnvironments,
                 resolved_voices = voices,
             }
         );
@@ -338,6 +360,7 @@ public sealed partial class Studio
                 project = Store.Project(id, revision)["project"]!.DeepClone(),
                 assets = validation["resolved_assets"]!.DeepClone(),
                 rigs = validation["resolved_rigs"]!.DeepClone(),
+                environments = validation["resolved_environments"]!.DeepClone(),
                 voices = validation["resolved_voices"]!.DeepClone(),
                 renderer_version = "1.0.0",
                 renderer_fingerprint = Config.RendererFingerprint(),
@@ -458,7 +481,7 @@ public sealed partial class Studio
                 }
             ),
             "characters" => Library.CharacterCatalog(),
-            "backgrounds" => J.Node(Validation.Backgrounds.Select(id => new { asset_id = id, version = "1.0.0" })),
+            "backgrounds" => Library.EnvironmentCatalog(),
             "gestures" => J.Node(Validation.Gestures),
             "voices" => J.Node(
                 Config

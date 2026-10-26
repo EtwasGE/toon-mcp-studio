@@ -190,7 +190,9 @@ public sealed partial class ContentLibrary
         }
 
         var rig = kind == "character" ? PrepareCharacter(source, errors, warnings) : null;
-        if (rig == null)
+        var environment = kind == "environment" ? PrepareEnvironment(source, errors, warnings) : null;
+        var renderSupported = (rig != null || environment != null) && errors.Count == 0;
+        if (rig == null && environment == null)
         {
             warnings.Add(
                 J.Node(
@@ -213,10 +215,15 @@ public sealed partial class ContentLibrary
                 errors,
                 warnings,
                 ready_for_publication = errors.Count == 0,
-                render_supported = rig != null && errors.Count == 0,
+                render_supported = renderSupported,
                 rig,
-                recipe_sha256 = source["character_recipe"] is JsonNode recipe ? J.Hash(J.Canonical(recipe)) : null,
-                preparation_method = rig != null ? "annotated_cutout_and_vector_layers" : "source_package",
+                environment,
+                recipe_sha256 = (source["character_recipe"] ?? source["environment_recipe"]) is JsonNode recipe
+                    ? J.Hash(J.Canonical(recipe))
+                    : null,
+                preparation_method = rig != null || environment != null
+                    ? "annotated_cutout_and_vector_layers"
+                    : "source_package",
                 cloud_requests = false,
             }
         );
@@ -246,7 +253,7 @@ public sealed partial class ContentLibrary
                 ready_for_publication = errors.Count == 0,
                 errors = errors.DeepClone(),
                 warnings = warnings.DeepClone(),
-                render_supported = rig != null && errors.Count == 0,
+                render_supported = renderSupported,
             }
         );
         Save(db, tx, item, item.Int("revision"));

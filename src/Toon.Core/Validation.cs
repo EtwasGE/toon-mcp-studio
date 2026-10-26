@@ -40,7 +40,7 @@ public static class Validation
         }
     }
 
-    public static void Semantic(JsonNode p, JsonNode? resolvedRigs = null)
+    public static void Semantic(JsonNode p, JsonNode? resolvedRigs = null, JsonNode? resolvedEnvironments = null)
     {
         J.Require(
             p["style"]!.Str("style_id") == "warm_editorial_2d" && p["style"]!.Str("version") == "1.0.0",
@@ -82,7 +82,9 @@ public static class Validation
             var sp = $"/scenes/{sceneIndex++}";
             Unique(s, "scene_id", sp);
             J.Require(
-                Backgrounds.Contains(s["background"]!.Str("asset_id")) && s["background"]!.Str("version") == "1.0.0",
+                resolvedEnvironments?[s["background"]!.Str("asset_id") + "@" + s["background"]!.Str("version")] != null
+                    || Backgrounds.Contains(s["background"]!.Str("asset_id"))
+                        && s["background"]!.Str("version") == "1.0.0",
                 "ASSET_MISSING",
                 "Unknown background",
                 sp + "/background"

@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol;
 using Toon.Core;
 using Toon.Infrastructure;
+
+namespace Toon.Acceptance;
 
 public static class CharacterAcceptance
 {
@@ -11,13 +12,7 @@ public static class CharacterAcceptance
     {
         var checks = new JsonArray();
         var studio = new Studio(config);
-        void Check(bool value, string name)
-        {
-            if (!value)
-                throw new Exception(name);
-            checks.Add(J.Node(new { name, status = "pass" }));
-            Console.WriteLine("PASS character " + name);
-        }
+
         async Task<McpClient> Connect() =>
             await McpClient.CreateAsync(
                 new StdioClientTransport(
@@ -36,6 +31,7 @@ public static class CharacterAcceptance
                     InitializationTimeout = TimeSpan.FromSeconds(90),
                 }
             );
+
         async Task<JsonNode> Call(McpClient client, string name, object arguments, string? error = null)
         {
             var result = await client.CallToolAsync(
@@ -303,7 +299,7 @@ public static class CharacterAcceptance
             var manifest = J.Read(Path.Combine(exportPath, "manifest.json"));
             Check(
                 manifest.Items("dependencies").Any(d => d.Str("path").EndsWith(".png"))
-                    && finished.Items("artifacts").Any(a => a.Str("name") == "project.zip"),
+                && finished.Items("artifacts").Any(a => a.Str("name") == "project.zip"),
                 "final ZIP contains cutout source media"
             );
             item = studio.Library.SetCharacterRecipe(itemId, item.Int("revision"), template);
@@ -371,6 +367,16 @@ public static class CharacterAcceptance
             }
             await worker.WaitForExitAsync();
             await Task.WhenAll(stderr, stdout);
+        }
+
+        return;
+
+        void Check(bool value, string name)
+        {
+            if (!value)
+                throw new Exception(name);
+            checks.Add(J.Node(new { name, status = "pass" }));
+            Console.WriteLine("PASS character " + name);
         }
     }
 }

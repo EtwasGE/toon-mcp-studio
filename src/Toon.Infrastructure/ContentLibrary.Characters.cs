@@ -215,7 +215,7 @@ public sealed partial class ContentLibrary
         Microsoft.Data.Sqlite.SqliteTransaction tx
     )
     {
-        if (!package.Bool("render_supported"))
+        if (item["submission"]!.Str("kind") != "character" || !package.Bool("render_supported"))
             return;
         foreach (var node in CharacterRigs.Nodes(package["rig"]!).Where(n => n.Str("type") == "cutout"))
         {

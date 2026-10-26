@@ -18,7 +18,8 @@ public sealed class Pipeline(Config config)
         string quality,
         Action<string> stage,
         CancellationToken ct,
-        JsonNode? rigs = null
+        JsonNode? rigs = null,
+        JsonNode? environments = null
     )
     {
         var media = new Media(config);
@@ -73,6 +74,36 @@ public sealed class Pipeline(Config config)
             }
         }
         timeline["rigs"] = rigs.DeepClone();
+        if (environments == null)
+        {
+            environments = new JsonObject();
+            foreach (var scene in project.Items("scenes"))
+            {
+                var reference = scene["background"]!;
+                var id = reference.Str("asset_id");
+                J.Require(
+                    Validation.Backgrounds.Contains(id),
+                    "ASSET_MISSING",
+                    "Custom environment requires resolved layers"
+                );
+                environments[id + "@" + reference.Str("version")] = J.Read(
+                    Path.Combine(config.Root, "styles/warm_editorial_2d/environments", id + ".environment.json")
+                );
+            }
+        }
+        foreach (var environment in environments.AsObject().Select(pair => pair.Value!))
+        {
+            Environments.Validate(environment, config.Root);
+            foreach (var node in Environments.Nodes(environment).Where(n => n.Str("type") == "cutout"))
+            {
+                var reference = node["asset"]!;
+                var source = resolve(reference);
+                var relative = "media/" + J.FileHash(source) + Path.GetExtension(source).ToLowerInvariant();
+                File.Copy(source, Path.Combine(directory, "public", relative), true);
+                assetMap[reference.Str("asset_id") + "@" + reference.Str("version")] = relative;
+            }
+        }
+        timeline["environments"] = environments.DeepClone();
         timeline["assets"] = assetMap;
         J.Write(Path.Combine(directory, "timeline.json"), timeline);
         J.Write(Path.Combine(directory, "project.json"), project);

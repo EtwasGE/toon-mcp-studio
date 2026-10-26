@@ -69,6 +69,7 @@ public sealed partial class Studio
                 project,
                 assets = resolved,
                 rigs,
+                environments = Library.ResolveEnvironments(project),
                 voices = new JsonObject(),
                 renderer_version = "1.0.0",
                 renderer_fingerprint = Config.RendererFingerprint(),

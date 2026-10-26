@@ -537,6 +537,7 @@ public sealed partial class ContentLibrary
             }
             var package = J.Read(packagePath);
             VerifyCharacterTest(item, package, db, tx);
+            VerifyEnvironmentTest(item, package, db, tx);
             item["render_supported"] = package.Bool("render_supported");
             using var versions = Store.Command(
                 db,

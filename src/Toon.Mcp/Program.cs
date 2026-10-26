@@ -59,9 +59,10 @@ foreach (var tool in tools)
         input["properties"]!["submission"] = submission;
     }
 
-    if (tool.ProtocolTool.Name == "set_character_recipe")
+    if (tool.ProtocolTool.Name is "set_character_recipe" or "set_environment_recipe")
     {
-        var recipe = J.Read(Path.Combine(config.Root, "contracts/character-recipe.schema.json"));
+        var schema = tool.ProtocolTool.Name == "set_character_recipe" ? "character-recipe" : "environment-recipe";
+        var recipe = J.Read(Path.Combine(config.Root, "contracts", schema + ".schema.json"));
         input["$defs"] = recipe["$defs"]!.DeepClone();
         recipe.AsObject().Remove("$defs");
         recipe.AsObject().Remove("$id");
@@ -78,6 +79,37 @@ await builder.Build().RunAsync();
 
 public sealed class ToonTools(Studio studio)
 {
+    [McpServerTool(UseStructuredContent = true, Name = "get_environment_recipe_template", ReadOnly = true)]
+    [Description(
+        "Get example layer masks, character slots, depth ordering, anchors and camera presets. Coordinates match the example workshop only; annotate real supplied sketches before preparation."
+    )]
+    public Task<CallToolResult> EnvironmentRecipeTemplate() =>
+        Call(() => J.Read(Path.Combine(studio.Config.Root, "templates/library/environment-recipe.json")));
+
+    [McpServerTool(UseStructuredContent = true, Name = "set_environment_recipe", Destructive = false)]
+    [Description(
+        "Save a versioned environment preparation recipe. Safe vector nodes and cutouts over imported source roles; no external URLs, scripts or paths. Declare missing and generated details. Original images are preserved."
+    )]
+    public Task<CallToolResult> SetEnvironmentRecipe(string item_id, int expected_revision, JsonObject recipe) =>
+        Call(() => studio.Library.SetEnvironmentRecipe(item_id, expected_revision, recipe));
+
+    [McpServerTool(
+        UseStructuredContent = true,
+        Name = "start_environment_test",
+        Destructive = false,
+        Idempotent = true
+    )]
+    [Description(
+        "Queue an offline verified environment MP4 for this exact prepared revision, with two original control characters, wide and both close-ups. Supply a real 4–12 second recording and exact transcript; recording repeats in three scenes. Review foreground masks, overlap and scale before local publication."
+    )]
+    public Task<CallToolResult> StartEnvironmentTest(
+        string item_id,
+        int expected_revision,
+        JsonObject audio_asset,
+        string transcript,
+        string idempotency_key
+    ) => Call(() => studio.StartEnvironmentTest(item_id, expected_revision, audio_asset, transcript, idempotency_key));
+
     [McpServerTool(UseStructuredContent = true, Name = "get_character_recipe_template", ReadOnly = true)]
     [Description(
         "Get a local annotated cutout recipe example. Coordinates refer to the example sheet, not automatic detection. Agent/operator annotates the supplied sketches; missing and generated details must be declared."
@@ -357,7 +389,7 @@ public sealed class ToonTools(Studio studio)
             Idempotent = true
         ),
         Description(
-            "Queue local material checks and character recipe preparation in the independent persistent worker. Same key/request returns same job. Inspect ready_for_publication and render_supported. No automatic reconstruction, voice cloning or paid calls."
+            "Queue local material checks and character/environment recipe preparation in the independent persistent worker. Same key/request returns same job. Inspect ready_for_publication and render_supported. No automatic reconstruction, voice cloning or paid calls."
         )
     ]
     public Task<CallToolResult> PrepareLibrary(string item_id, int expected_revision, string idempotency_key) =>
@@ -366,7 +398,7 @@ public sealed class ToonTools(Studio studio)
     [
         McpServerTool(UseStructuredContent = true, Name = "publish_library_item", Destructive = false),
         Description(
-            "Publish a reviewed package in the LOCAL library. Requires ready_for_publication, review_approved=true, review_note and a new increasing version. A renderable character also requires a verified test MP4 for this exact package. Does not clone voices."
+            "Publish a reviewed package in the LOCAL library. Requires ready_for_publication, review_approved=true, review_note and a new increasing version. A renderable character or environment also requires a verified test MP4 for this exact package. Does not clone voices."
         )
     ]
     public Task<CallToolResult> PublishLibrary(
@@ -389,6 +421,22 @@ public sealed class ToonTools(Studio studio)
 
 public sealed class ToonResources(Studio studio)
 {
+    [McpServerResource(
+        UriTemplate = "toon://environments/schema",
+        Name = "environment_schema",
+        MimeType = "application/json"
+    )]
+    public string EnvironmentSchema() =>
+        File.ReadAllText(Path.Combine(studio.Config.Root, "contracts/environment.schema.json"));
+
+    [McpServerResource(
+        UriTemplate = "toon://environments/recipe-schema",
+        Name = "environment_recipe_schema",
+        MimeType = "application/json"
+    )]
+    public string EnvironmentRecipeSchema() =>
+        File.ReadAllText(Path.Combine(studio.Config.Root, "contracts/environment-recipe.schema.json"));
+
     [McpServerResource(
         UriTemplate = "toon://characters/rig-schema",
         Name = "character_rig_schema",
