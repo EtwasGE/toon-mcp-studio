@@ -55,9 +55,60 @@ if (args.FirstOrDefault() == "cancel")
     return;
 }
 
+if (args.FirstOrDefault() == "projects")
+{
+    Console.WriteLine((await Call("list_projects", new { })).ToJsonString(J.Options));
+    return;
+}
+
+if (args.FirstOrDefault() == "episode-template")
+{
+    Console.WriteLine((await Call("get_episode_template", new { })).ToJsonString(J.Options));
+    return;
+}
+
+if (args.FirstOrDefault() == "episode" && args.Length == 3)
+{
+    Console.WriteLine(
+        (
+            await Call("create_episode", new { brief = J.Read(Path.GetFullPath(args[1])), idempotency_key = args[2] })
+        ).ToJsonString(J.Options)
+    );
+    return;
+}
+
+if (args.FirstOrDefault() == "studio" && args.Length == 2)
+{
+    Console.WriteLine((await Call("open_studio_preview", new { job_id = args[1] })).ToJsonString(J.Options));
+    return;
+}
+
+if (args.FirstOrDefault() == "prepare" && args.Length is 4 or 5)
+{
+    var limit = args.Length == 5 ? int.Parse(args[4]) : 0;
+    Console.WriteLine(
+        (
+            await Call(
+                "start_studio_preview",
+                new
+                {
+                    project_id = args[1],
+                    revision = int.Parse(args[2]),
+                    idempotency_key = args[3],
+                    allow_new_tts = limit > 0,
+                    max_new_tts_characters = limit,
+                }
+            )
+        ).ToJsonString(J.Options)
+    );
+    return;
+}
+
 if (args.FirstOrDefault() != "demo")
 {
-    Console.Error.WriteLine("Usage: Toon.Cli doctor | demo [preview|final] [--wait] | status JOB_ID | cancel JOB_ID");
+    Console.Error.WriteLine(
+        "Usage: Toon.Cli doctor | projects | episode-template | episode BRIEF_JSON KEY | prepare PROJECT_ID REVISION KEY [AUTHORIZED_TTS_CHARACTERS] | studio JOB_ID | demo [preview|final] [--wait] | status JOB_ID | cancel JOB_ID"
+    );
     Environment.ExitCode = 1;
 
     return;

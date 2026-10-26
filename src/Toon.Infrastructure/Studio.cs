@@ -321,7 +321,15 @@ public sealed partial class Studio
         );
     }
 
-    public JsonNode Start(string id, int revision, string quality, string key, bool allow, int limit)
+    public JsonNode Start(
+        string id,
+        int revision,
+        string quality,
+        string key,
+        bool allow,
+        int limit,
+        bool studioPreview = false
+    )
     {
         J.Require(quality is "preview" or "final", "VALIDATION_ERROR", "quality must be preview or final");
         J.Require(key.Length is > 0 and <= 128, "VALIDATION_ERROR", "idempotency_key must contain 1–128 characters");
@@ -341,6 +349,11 @@ public sealed partial class Studio
                 max_new_tts_characters = limit,
             }
         );
+        if (studioPreview)
+        {
+            request["job_kind"] = "studio_preview";
+        }
+
         if (Store.Existing(request) is JsonNode existing)
             return PublicJob(existing);
 
@@ -469,7 +482,11 @@ public sealed partial class Studio
                 elevenlabs_key_present = !string.IsNullOrWhiteSpace(Secrets.ElevenLabsApiKey()),
                 tts_character_limit = Config.TtsLimit,
                 data_root = Config.Data,
+                worker_assembly_sha256 = J.FileHash(typeof(Worker).Assembly.Location),
                 import_roots = Config.ImportRoots,
+                worker_configuration = Store.WorkerAlive() && File.Exists(Path.Combine(Config.Data, "worker-info.json"))
+                    ? J.Read(Path.Combine(Config.Data, "worker-info.json"))
+                    : null,
             }
         );
     }

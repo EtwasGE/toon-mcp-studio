@@ -34,6 +34,15 @@ foreach (var tool in tools)
 {
     var input = JsonNode.Parse(tool.ProtocolTool.InputSchema.GetRawText())!;
     input["additionalProperties"] = false;
+    if (tool.ProtocolTool.Name is "create_episode" or "update_episode")
+    {
+        var brief = J.Read(Path.Combine(config.Root, "contracts/episode.schema.json"));
+        input["$defs"] = brief["$defs"]!.DeepClone();
+        brief.AsObject().Remove("$defs");
+        brief.AsObject().Remove("$id");
+        brief.AsObject().Remove("$schema");
+        input["properties"]!["brief"] = brief;
+    }
     if (tool.ProtocolTool.Name is "create_project" or "update_project")
     {
         var draft = J.Read(Path.Combine(config.Root, "contracts/project.schema.json"));
@@ -79,6 +88,66 @@ await builder.Build().RunAsync();
 
 public sealed class ToonTools(Studio studio)
 {
+    [McpServerTool(UseStructuredContent = true, Name = "get_episode_template", ReadOnly = true)]
+    [Description(
+        "Get the short episode brief schema, example and available characters/backgrounds. Choose published versions; creation does not synthesize speech."
+    )]
+    public Task<CallToolResult> EpisodeTemplate() => Call(() => studio.EpisodeTemplate());
+
+    [McpServerTool(UseStructuredContent = true, Name = "list_projects", ReadOnly = true)]
+    public Task<CallToolResult> Projects(int limit = 30, int offset = 0) =>
+        Call(() => studio.ListProjects(limit, offset));
+
+    [McpServerTool(UseStructuredContent = true, Name = "create_episode", Destructive = false, Idempotent = true)]
+    [Description(
+        "Create an independent project from a short brief (cast, scenes and dialogue). Pin approved character voices. Idempotency key prevents duplicate episodes. No TTS, cloning or rendering occurs."
+    )]
+    public Task<CallToolResult> CreateEpisode(JsonObject brief, string idempotency_key) =>
+        Call(() => studio.SaveEpisode(brief, idempotency_key));
+
+    [McpServerTool(UseStructuredContent = true, Name = "update_episode", Destructive = false)]
+    [Description(
+        "Replace the whole episode from a short brief as a new project revision. Advanced overlays/events are not represented by a brief: use update_project to retain those. No TTS occurs."
+    )]
+    public Task<CallToolResult> UpdateEpisode(string project_id, int expected_revision, JsonObject brief) =>
+        Call(() => studio.SaveEpisode(brief, projectId: project_id, expected: expected_revision));
+
+    [McpServerTool(UseStructuredContent = true, Name = "start_studio_preview", Destructive = false, Idempotent = true)]
+    [Description(
+        "Prepare actual audio, timeline and assets in the persistent worker for Remotion Studio, without exporting MP4. New speech requires explicit authorization and limit. After succeeded call open_studio_preview. Final video still requires start_render."
+    )]
+    public Task<CallToolResult> PrepareStudio(
+        string project_id,
+        int revision,
+        string idempotency_key,
+        bool allow_new_tts = false,
+        int max_new_tts_characters = 0
+    ) =>
+        Call(() =>
+            studio.Start(
+                project_id,
+                revision,
+                "preview",
+                idempotency_key,
+                allow_new_tts,
+                max_new_tts_characters,
+                studioPreview: true
+            )
+        );
+
+    [McpServerTool(UseStructuredContent = true, Name = "open_studio_preview", Destructive = false)]
+    [Description(
+        "Verify a completed studio_preview bundle and start/reuse its local Remotion Studio. Returns exact URL. Does not synthesize or export. Open this URL for the user. Project edits need a new revision and preview job; Studio changes do not write back to SQLite."
+    )]
+    public Task<CallToolResult> OpenStudio(string job_id, CancellationToken ct) =>
+        Call(() => studio.OpenStudioPreview(job_id, ct));
+
+    [McpServerTool(UseStructuredContent = true, Name = "close_studio_preview", Destructive = false)]
+    [Description(
+        "Stop the managed Remotion Studio process for this preview. Verify PID and process start time. Keep all projects, audio and preview files; worker continues independently."
+    )]
+    public Task<CallToolResult> CloseStudio(string job_id) => Call(() => studio.CloseStudioPreview(job_id));
+
     [McpServerTool(UseStructuredContent = true, Name = "get_content_workflow", ReadOnly = true)]
     [Description(
         "Read the complete MCP workflow for character, environment, voice or production: ordered tools, requirements, review gates, revisions, cancellation and explicit retry rules. Does not create jobs or call cloud services."

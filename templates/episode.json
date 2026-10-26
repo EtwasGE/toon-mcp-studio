@@ -1,0 +1,18 @@
+{
+    "title": "Новый выпуск — замените реплики и выберите героев",
+    "target_duration_seconds": 40,
+    "characters": [
+        { "character_id": "buyer", "version": "1.0.0" },
+        { "character_id": "advisor", "version": "1.0.0" }
+    ],
+    "scenes": [
+        {
+            "background": { "asset_id": "home_office", "version": "1.0.0" },
+            "characters": ["buyer", "advisor"],
+            "lines": [
+                { "speaker": "buyer", "text": "У меня появилась новая идея.", "gesture": "raise_hand" },
+                { "speaker": "advisor", "text": "Расскажи, что ты задумал.", "close_up": true }
+            ]
+        }
+    ]
+}

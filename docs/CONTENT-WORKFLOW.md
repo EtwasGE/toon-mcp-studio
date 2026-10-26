@@ -4,6 +4,8 @@
 
 ## Подготовка установки
 
+Для ежедневной работы используйте [единый запуск и короткий сценарий выпуска](DAILY-STUDIO.md): `get_episode_template` → `create_episode` → `start_studio_preview` → `open_studio_preview` → правки новой ревизией → `start_render`. Путь через полный DraftProject ниже также сохраняется.
+
 Из корня репозитория:
 
 ```powershell

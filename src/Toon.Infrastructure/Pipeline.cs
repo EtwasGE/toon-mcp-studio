@@ -19,7 +19,8 @@ public sealed class Pipeline(Config config)
         Action<string> stage,
         CancellationToken ct,
         JsonNode? rigs = null,
-        JsonNode? environments = null
+        JsonNode? environments = null,
+        bool prepareOnly = false
     )
     {
         var media = new Media(config);
@@ -123,6 +124,26 @@ public sealed class Pipeline(Config config)
         }
         await File.WriteAllTextAsync(Path.Combine(directory, "captions.srt"), srt.ToString(), ct);
         await media.Mix(timeline, audio, project, resolve, Path.Combine(directory, "mix.wav"), ct);
+        if (prepareOnly)
+        {
+            File.Copy(Path.Combine(directory, "mix.wav"), Path.Combine(directory, "public", "studio-mix.wav"), true);
+            J.Write(
+                Path.Combine(directory, "studio-props.json"),
+                J.Node(new { timeline, studioAudio = "studio-mix.wav" })
+            );
+            return J.Node(
+                new
+                {
+                    kind = "studio_preview",
+                    project_id = projectId,
+                    revision,
+                    duration_seconds = timeline.Int("total_frames") / 30.0,
+                    video_exported = false,
+                    audio = "Prepared mix; final loudness normalization is applied on MP4 export",
+                    human_review = "pending",
+                }
+            );
+        }
         stage("render");
         await Processes.Run(
             config.Node,

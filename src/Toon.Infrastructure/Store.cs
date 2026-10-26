@@ -23,6 +23,7 @@ public sealed class Store
             CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY, idem TEXT UNIQUE NOT NULL, request_hash TEXT NOT NULL, state TEXT NOT NULL, lease_until TEXT, json TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS worker(id INTEGER PRIMARY KEY CHECK(id=1), heartbeat TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS provider_requests(cache_key TEXT PRIMARY KEY, state TEXT NOT NULL, json TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS project_creations(idem TEXT PRIMARY KEY, request_hash TEXT NOT NULL, project_id TEXT NOT NULL);
             """;
         cmd.ExecuteNonQuery();
     }
@@ -61,11 +62,36 @@ public sealed class Store
         return c;
     }
 
-    public JsonNode SaveProject(JsonNode project, string? id = null, int expected = 0)
+    public JsonNode SaveProject(
+        JsonNode project,
+        string? id = null,
+        int expected = 0,
+        string? creationKey = null,
+        string? creationHash = null
+    )
     {
         id ??= "project_" + Guid.NewGuid().ToString("N");
         using var db = Open();
         using var tx = db.BeginTransaction();
+        if (creationKey != null)
+        {
+            using var prior = Command(
+                db,
+                tx,
+                "SELECT request_hash,project_id FROM project_creations WHERE idem=$key",
+                ("$key", creationKey)
+            );
+            using var reader = prior.ExecuteReader();
+            if (reader.Read())
+            {
+                J.Require(
+                    reader.GetString(0) == creationHash,
+                    "IDEMPOTENCY_CONFLICT",
+                    "Episode key belongs to another brief"
+                );
+                return J.Node(new { project_id = reader.GetString(1), revision = 1 });
+            }
+        }
         using var head = Command(db, tx, "SELECT revision FROM heads WHERE id=$id", ("$id", id));
         var current = head.ExecuteScalar();
         if (expected > 0)
@@ -88,6 +114,18 @@ public sealed class Store
             ("$json", project.ToJsonString())
         );
         insert.ExecuteNonQuery();
+        if (creationKey != null)
+        {
+            using var creation = Command(
+                db,
+                tx,
+                "INSERT INTO project_creations VALUES($key,$hash,$id)",
+                ("$key", creationKey),
+                ("$hash", creationHash),
+                ("$id", id)
+            );
+            creation.ExecuteNonQuery();
+        }
         tx.Commit();
         J.Write(Path.Combine(config.Data, "projects", id, $"revision-{revision}.json"), project);
 

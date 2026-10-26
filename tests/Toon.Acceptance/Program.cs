@@ -39,6 +39,11 @@ var config = new Config();
 var studio = new Studio(config);
 var results = new JsonArray();
 var errors = 0;
+if (args.Contains("--studio"))
+{
+    await StudioAcceptance.Run(config);
+    return;
+}
 if (args.Contains("--workflow"))
 {
     await WorkflowAcceptance.Run(config);

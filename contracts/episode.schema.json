@@ -1,0 +1,282 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+        },
+        "target_duration_seconds": {
+            "type": "integer",
+            "minimum": 20,
+            "maximum": 45
+        },
+        "seed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483647
+        },
+        "characters": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "character_id",
+                    "version"
+                ],
+                "properties": {
+                    "character_id": {
+                        "$ref": "#/$defs/id"
+                    },
+                    "version": {
+                        "$ref": "#/$defs/version"
+                    },
+                    "voice_profile": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "profile_id",
+                            "revision"
+                        ],
+                        "properties": {
+                            "profile_id": {
+                                "type": "string",
+                                "pattern": "^voice_[a-f0-9]{32}$"
+                            },
+                            "revision": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "scenes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 12,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "background": {
+                        "$ref": "#/$defs/assetRef"
+                    },
+                    "characters": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 2,
+                        "uniqueItems": true,
+                        "items": {
+                            "$ref": "#/$defs/id"
+                        }
+                    },
+                    "camera": {
+                        "$ref": "#/$defs/camera"
+                    },
+                    "lead_in_ms": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 3000
+                    },
+                    "tail_ms": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 3000
+                    },
+                    "lines": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 24,
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "speaker": {
+                                    "$ref": "#/$defs/id"
+                                },
+                                "text": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 1000
+                                },
+                                "audio": {
+                                    "$ref": "#/$defs/audioSource"
+                                },
+                                "pause_after_ms": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 3000
+                                },
+                                "gesture": {
+                                    "enum": [
+                                        "idle",
+                                        "blink",
+                                        "nod",
+                                        "shake_head",
+                                        "raise_hand",
+                                        "shrug",
+                                        "show_phone"
+                                    ]
+                                },
+                                "emotion": {
+                                    "enum": [
+                                        "neutral",
+                                        "concerned",
+                                        "annoyed",
+                                        "surprised",
+                                        "confident",
+                                        "pleased"
+                                    ]
+                                },
+                                "close_up": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": [
+                                "speaker",
+                                "text"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "background",
+                    "characters",
+                    "lines"
+                ]
+            }
+        }
+    },
+    "required": [
+        "title",
+        "characters",
+        "scenes"
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:toon-mcp:schema:episode:1.0.0",
+    "$defs": {
+        "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "version": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 32,
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "assetRef": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "asset_id",
+                "version"
+            ],
+            "properties": {
+                "asset_id": {
+                    "$ref": "#/$defs/id"
+                },
+                "version": {
+                    "$ref": "#/$defs/version"
+                }
+            }
+        },
+        "camera": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "shot"
+            ],
+            "properties": {
+                "shot": {
+                    "enum": [
+                        "wide",
+                        "two_shot",
+                        "close_up",
+                        "screen"
+                    ]
+                },
+                "subject_character_id": {
+                    "$ref": "#/$defs/id"
+                }
+            },
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "shot": {
+                                "const": "close_up"
+                            }
+                        },
+                        "required": [
+                            "shot"
+                        ]
+                    },
+                    "then": {
+                        "required": [
+                            "subject_character_id"
+                        ]
+                    },
+                    "else": {
+                        "properties": {
+                            "subject_character_id": false
+                        }
+                    }
+                }
+            ]
+        },
+        "audioSource": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "mode",
+                        "voice_alias",
+                        "delivery"
+                    ],
+                    "properties": {
+                        "mode": {
+                            "const": "tts"
+                        },
+                        "voice_alias": {
+                            "$ref": "#/$defs/id"
+                        },
+                        "delivery": {
+                            "enum": [
+                                "neutral",
+                                "concerned",
+                                "pleased",
+                                "surprised"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "mode",
+                        "asset"
+                    ],
+                    "properties": {
+                        "mode": {
+                            "const": "recording"
+                        },
+                        "asset": {
+                            "$ref": "#/$defs/assetRef"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

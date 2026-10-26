@@ -15,6 +15,21 @@ public sealed class Worker(Studio studio)
             FileAccess.ReadWrite,
             FileShare.None
         );
+        J.Write(
+            Path.Combine(config.Data, "worker-info.json"),
+            J.Node(
+                new
+                {
+                    pid = Environment.ProcessId,
+                    started_at = Process.GetCurrentProcess().StartTime.ToUniversalTime().ToString("O"),
+                    data_root = config.Data,
+                    import_roots = config.ImportRoots,
+                    tts_character_limit = config.TtsLimit,
+                    renderer_fingerprint = config.RendererFingerprint(),
+                    worker_assembly_sha256 = J.FileHash(typeof(Worker).Assembly.Location),
+                }
+            )
+        );
         var nextHeartbeat = DateTimeOffset.MinValue;
         while (!ct.IsCancellationRequested)
         {
@@ -251,7 +266,8 @@ public sealed class Worker(Studio studio)
                 Stage,
                 ct,
                 snapshot["rigs"],
-                snapshot["environments"]
+                snapshot["environments"],
+                job.Str("job_kind") == "studio_preview"
             );
             stageTimes[currentStage] = timer.Elapsed.TotalSeconds - stageStart;
             report["stage_seconds"] = stageTimes;
@@ -262,6 +278,11 @@ public sealed class Worker(Studio studio)
             report["new_tts_characters_estimate"] = newCount;
             report["audio_cache_hits"] = audio.Count - newKeys.Count;
             J.Write(Path.Combine(directory, "validation-report.json"), report);
+            if (job.Str("job_kind") == "studio_preview")
+            {
+                studio.PublishStudioPreview(job, directory, ct);
+                return;
+            }
             var names = new List<string>
             {
                 "video.mp4",
