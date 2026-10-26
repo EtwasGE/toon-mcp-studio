@@ -55,6 +55,7 @@ try {
                 Math.max(0, e.frame - 1),
                 e.frame,
                 Math.min(s.end_frame_exclusive - 1, e.frame + 12),
+                ...(e.action.gesture_id === 'tap_phone' ? [Math.min(s.end_frame_exclusive - 1, e.frame + 18)] : []),
                 Math.min(s.end_frame_exclusive - 1, e.frame + 54)
             ])
         )

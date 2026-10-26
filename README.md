@@ -129,3 +129,7 @@ codex mcp get toon
 NuGet закреплён `packages.lock.json`, npm — `renderer/package-lock.json`. Номера проверены по установленным пакетам/официальным реестрам, а не взяты из ТЗ. Приёмка не означает подтверждённую совместимость произвольного обновления runtime или браузера.
 
 Официальные источники, проверенные при разработке: [C# MCP SDK](https://github.com/modelcontextprotocol/csharp-sdk), [Remotion renderMedia](https://www.remotion.dev/docs/renderer/render-media), [ElevenLabs timestamps](https://elevenlabs.io/docs/api-reference/text-to-speech/convert-with-timestamps/), [Codex MCP](https://learn.chatgpt.com/docs/extend/mcp), [лицензия Remotion](https://www.remotion.dev/docs/license/pricing). Remotion имеет собственные условия; применимость бесплатной лицензии зависит от пользователя/организации, весь стек не объявляется безусловно бесплатным.
+
+## Skill Toon и звуки действий
+
+Короткий запрос, уточнение постановки, библиотека ElevenLabs SFX и синхронизация нажатия телефона: [инструкция](docs/SOUND-EFFECTS.md). Skill: [toon](skills/toon/SKILL.md).

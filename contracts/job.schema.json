@@ -24,7 +24,7 @@
         "revision": { "type": "integer", "minimum": 1 },
         "quality": { "enum": ["preview", "final"] },
         "state": { "enum": ["queued", "running", "cancelling", "succeeded", "failed", "cancelled"] },
-        "stage": { "enum": [null, "preflight", "speech", "timing", "render", "encode", "verify", "voice_clone", "voice_preview"] },
+        "stage": { "enum": [null, "preflight", "speech", "timing", "render", "encode", "verify", "voice_clone", "voice_preview", "sound_effect"] },
         "progress": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
         "attempt": { "type": "integer", "minimum": 0 },
         "snapshot_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
@@ -40,7 +40,7 @@
                     {
                         "not": {
                             "required": ["job_kind"],
-                            "properties": { "job_kind": { "enum": ["voice_clone", "voice_preview"] } }
+                            "properties": { "job_kind": { "enum": ["voice_clone", "voice_preview", "sound_effect"] } }
                         }
                     }
                 ]

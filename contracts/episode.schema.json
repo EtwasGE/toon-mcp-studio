@@ -7,6 +7,25 @@
             "minLength": 1,
             "maxLength": 160
         },
+        "captions": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "enabled"
+            ],
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "mode": {
+                    "enum": [
+                        "auto",
+                        "utterance",
+                        "word"
+                    ]
+                }
+            }
+        },
         "target_duration_seconds": {
             "type": "integer",
             "minimum": 20,
@@ -121,7 +140,7 @@
                                         "shake_head",
                                         "raise_hand",
                                         "shrug",
-                                        "show_phone"
+                                        "show_phone", "tap_phone"
                                     ]
                                 },
                                 "emotion": {
@@ -133,6 +152,30 @@
                                         "confident",
                                         "pleased"
                                     ]
+                                },
+                                "sound": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "asset"
+                                    ],
+                                    "properties": {
+                                        "asset": {
+                                            "$ref": "#/$defs/assetRef"
+                                        },
+                                        "gain_db": {
+                                            "type": "number",
+                                            "minimum": -60,
+                                            "maximum": 0,
+                                            "default": -12
+                                        },
+                                        "offset_ms": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "maximum": 3000,
+                                            "default": 0
+                                        }
+                                    }
                                 },
                                 "close_up": {
                                     "type": "boolean"

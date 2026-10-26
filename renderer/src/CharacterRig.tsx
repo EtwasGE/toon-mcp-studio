@@ -63,29 +63,42 @@ export function Rig({
 }) {
     const prefix = useId().replace(/:/g, '');
     if (!rig) throw Error('ASSET_MISSING: character rig');
-    const duration = rig.gestures[gesture] ?? 30;
+    const tapping = gesture === 'tap_phone';
+    const duration = tapping ? 60 : (rig.gestures[gesture] ?? 30);
     const active = age >= 0 && age < duration;
-    const hold = active ? Math.min(1, age / 12, (duration - age) / 12) : 0;
+    const ramp = active ? Math.min(1, age / 12, (duration - age) / 12) : 0;
+    const hold = ramp * ramp * (3 - 2 * ramp);
     const motion = rig.motion;
     const blink =
         (frame + motion.blink_phase + (seed % 83)) % motion.blink_period < 5 || (gesture === 'blink' && active);
     const nod = gesture === 'nod' && active ? Math.sin((age / duration) * Math.PI * 2) * 7 : 0;
     const shake = gesture === 'shake_head' && active ? Math.sin((age / duration) * Math.PI * 4) * 8 : 0;
     const headAngle = (motion.head_angles[emotion] ?? 0) + Math.sin((frame + motion.head_phase) / 42) * 1.4 + nod;
-    const phone = gesture === 'show_phone' && hold > 0;
+    const phone = (gesture === 'show_phone' || tapping) && hold > 0;
+    const tap = tapping && age >= 12 && age <= 24 ? Math.sin(((age - 12) / 12) * Math.PI) : 0;
     function draw(node: RigNode, key: string): React.ReactNode {
         const w = node.when;
         if (
             w &&
             ((w.emotion && !w.emotion.includes(emotion)) ||
                 (w.mouth && !w.mouth.includes(mouth)) ||
-                (w.blink !== undefined && w.blink !== blink) ||
-                (w.phone !== undefined && w.phone !== phone))
+                (w.blink !== undefined && w.blink !== blink))
         )
             return null;
         const props = { ...node.props };
+        if (w?.phone !== undefined) {
+            const phoneOpacity = phone ? hold : 0;
+            const visibility = w.phone ? phoneOpacity : 1 - phoneOpacity;
+            if (visibility === 0) return null;
+
+            props.opacity = Number(props.opacity ?? 1) * visibility;
+        }
+
         if (node.motion) {
-            const angle = node.motion === 'head' ? headAngle : (motion[node.motion][gesture] ?? 0) * hold;
+            const angle =
+                node.motion === 'head'
+                    ? headAngle
+                    : (motion[node.motion][tapping ? 'show_phone' : gesture] ?? 0) * hold;
             props.transform = `rotate(${angle} ${node.pivot![0]} ${node.pivot![1]})`;
         }
 
@@ -98,6 +111,7 @@ export function Rig({
             return (
                 <svg
                     key={key}
+                    {...props}
                     x={target[0]}
                     y={target[1]}
                     width={target[2]}
@@ -125,6 +139,20 @@ export function Rig({
                 return (
                     <g key={key} {...props}>
                         {children}
+                        {node.when?.phone && tapping && tap > 0 && (
+                            <g transform={'translate(0 ' + (1 - tap) * 22 + ')'}>
+                                <path
+                                    d="M29 47 L29 78 Q29 88 39 88 L47 88"
+                                    fill="none"
+                                    stroke="#e4a77a"
+                                    strokeWidth="10"
+                                    strokeLinecap="round"
+                                />
+                                {age >= 18 && age <= 21 && (
+                                    <circle cx="29" cy="43" r="9" fill="none" stroke="#ffffff" strokeWidth="3" />
+                                )}
+                            </g>
+                        )}
                     </g>
                 );
             case 'path':

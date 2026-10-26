@@ -30,6 +30,10 @@ public sealed class Config
     public int MaxAlignmentBytes => Limit("TOON_MAX_ALIGNMENT_BYTES", 1024 * 1024, 8 * 1024 * 1024);
     public int MaxImagePixels => Limit("TOON_MAX_IMAGE_PIXELS", 12000000, 64000000);
     public int MaxAudioSeconds => Limit("TOON_MAX_AUDIO_SECONDS", 120, 300);
+    public int SoundEffectLimit =>
+        int.TryParse(Environment.GetEnvironmentVariable("TOON_MAX_SFX_SECONDS"), out var sfx)
+            ? Math.Clamp(sfx, 0, 30)
+            : 10;
     public int TtsLimit =>
         int.TryParse(Environment.GetEnvironmentVariable("TOON_MAX_TTS_CHARACTERS"), out var v)
             ? Math.Clamp(v, 0, 100000)

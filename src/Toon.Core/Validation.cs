@@ -17,6 +17,7 @@ public static class Validation
         "raise_hand",
         "shrug",
         "show_phone",
+        "tap_phone",
     ];
 
     public static void Schema(JsonNode project, string schemaPath)

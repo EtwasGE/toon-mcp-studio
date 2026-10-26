@@ -1,0 +1,596 @@
+{
+    "schema_version": "1.0.0",
+    "rig": {
+        "schema_version": "1.0.0",
+        "name": "Алкаш — цельные слои и перекрытия",
+        "canvas": {
+            "width": 380,
+            "height": 560
+        },
+        "poses": [
+            "seated"
+        ],
+        "emotions": [
+            "neutral",
+            "concerned",
+            "annoyed",
+            "surprised",
+            "confident",
+            "pleased"
+        ],
+        "gestures": {
+            "idle": 30,
+            "blink": 8,
+            "nod": 32,
+            "shake_head": 36,
+            "raise_hand": 54,
+            "shrug": 54,
+            "show_phone": 180
+        },
+        "motion": {
+            "blink_phase": 38,
+            "blink_period": 181,
+            "head_phase": 4,
+            "body_phase": 11,
+            "head_angles": {
+                "neutral": 0,
+                "concerned": -3,
+                "annoyed": -2,
+                "surprised": 1,
+                "confident": 3,
+                "pleased": 2
+            },
+            "left_arm": {
+                "raise_hand": 10,
+                "shrug": 5,
+                "show_phone": 0
+            },
+            "right_arm": {
+                "raise_hand": -10,
+                "shrug": -5,
+                "show_phone": 0
+            }
+        },
+        "layers": [
+            {
+                "type": "group",
+                "children": [
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [
+                                115,
+                                505
+                            ],
+                            [
+                                480,
+                                505
+                            ],
+                            [
+                                480,
+                                1000
+                            ],
+                            [
+                                115,
+                                1000
+                            ]
+                        ],
+                        "target": [
+                            40,
+                            235,
+                            180,
+                            325
+                        ],
+                        "when": {
+                            "phone": false
+                        }
+                    },
+                    {
+                        "type": "group",
+                        "children": [
+                            {
+                                "type": "cutout",
+                                "source_role": "front",
+                                "polygon": [
+                                    [
+                                        1075,
+                                        70
+                                    ],
+                                    [
+                                        1475,
+                                        70
+                                    ],
+                                    [
+                                        1475,
+                                        470
+                                    ],
+                                    [
+                                        1075,
+                                        470
+                                    ]
+                                ],
+                                "target": [
+                                    15,
+                                    145,
+                                    120,
+                                    280
+                                ]
+                            }
+                        ],
+                        "when": {
+                            "phone": true
+                        },
+                        "props": {
+                            "transform": "translate(150 0) scale(-1 1)"
+                        }
+                    }
+                ],
+                "motion": "left_arm",
+                "pivot": [
+                    110,
+                    280
+                ]
+            },
+            {
+                "type": "group",
+                "children": [
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [
+                                650,
+                                515
+                            ],
+                            [
+                                865,
+                                515
+                            ],
+                            [
+                                865,
+                                1000
+                            ],
+                            [
+                                650,
+                                1000
+                            ]
+                        ],
+                        "target": [
+                            222,
+                            235,
+                            92,
+                            339
+                        ]
+                    }
+                ],
+                "motion": "right_arm",
+                "pivot": [
+                    243,
+                    260
+                ]
+            },
+            {
+                "type": "cutout",
+                "source_role": "front",
+                "polygon": [
+                    [
+                        550,
+                        480
+                    ],
+                    [
+                        577,
+                        315
+                    ],
+                    [
+                        611,
+                        255
+                    ],
+                    [
+                        647,
+                        133
+                    ],
+                    [
+                        680,
+                        128
+                    ],
+                    [
+                        713,
+                        116
+                    ],
+                    [
+                        724,
+                        45
+                    ],
+                    [
+                        819,
+                        45
+                    ],
+                    [
+                        834,
+                        117
+                    ],
+                    [
+                        864,
+                        130
+                    ],
+                    [
+                        895,
+                        135
+                    ],
+                    [
+                        932,
+                        260
+                    ],
+                    [
+                        972,
+                        319
+                    ],
+                    [
+                        1005,
+                        480
+                    ]
+                ],
+                "target": [
+                    65.4,
+                    159.3,
+                    246.5,
+                    415.7
+                ]
+            },
+            {
+                "type": "group",
+                "children": [
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [
+                                40,
+                                30
+                            ],
+                            [
+                                515,
+                                30
+                            ],
+                            [
+                                515,
+                                485
+                            ],
+                            [
+                                40,
+                                485
+                            ]
+                        ],
+                        "target": [
+                            78,
+                            20,
+                            224,
+                            215
+                        ],
+                        "when": {
+                            "emotion": [
+                                "neutral"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [
+                                40,
+                                30
+                            ],
+                            [
+                                515,
+                                30
+                            ],
+                            [
+                                515,
+                                485
+                            ],
+                            [
+                                40,
+                                485
+                            ]
+                        ],
+                        "target": [
+                            78,
+                            20,
+                            224,
+                            215
+                        ],
+                        "when": {
+                            "emotion": [
+                                "concerned"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [
+                                40,
+                                30
+                            ],
+                            [
+                                515,
+                                30
+                            ],
+                            [
+                                515,
+                                485
+                            ],
+                            [
+                                40,
+                                485
+                            ]
+                        ],
+                        "target": [
+                            78,
+                            20,
+                            224,
+                            215
+                        ],
+                        "when": {
+                            "emotion": [
+                                "annoyed"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [
+                                40,
+                                30
+                            ],
+                            [
+                                515,
+                                30
+                            ],
+                            [
+                                515,
+                                485
+                            ],
+                            [
+                                40,
+                                485
+                            ]
+                        ],
+                        "target": [
+                            78,
+                            20,
+                            224,
+                            215
+                        ],
+                        "when": {
+                            "emotion": [
+                                "surprised"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [
+                                40,
+                                30
+                            ],
+                            [
+                                515,
+                                30
+                            ],
+                            [
+                                515,
+                                485
+                            ],
+                            [
+                                40,
+                                485
+                            ]
+                        ],
+                        "target": [
+                            78,
+                            20,
+                            224,
+                            215
+                        ],
+                        "when": {
+                            "emotion": [
+                                "confident"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [
+                                40,
+                                30
+                            ],
+                            [
+                                515,
+                                30
+                            ],
+                            [
+                                515,
+                                485
+                            ],
+                            [
+                                40,
+                                485
+                            ]
+                        ],
+                        "target": [
+                            78,
+                            20,
+                            224,
+                            215
+                        ],
+                        "when": {
+                            "emotion": [
+                                "pleased"
+                            ]
+                        }
+                    },
+                    {
+                        "type": "group",
+                        "children": [
+                            {
+                                "type": "ellipse",
+                                "props": {
+                                    "cx": 209,
+                                    "cy": 199,
+                                    "rx": 21,
+                                    "ry": 6,
+                                    "fill": "#48171b",
+                                    "stroke": "#261f22",
+                                    "strokeWidth": 2
+                                }
+                            },
+                            {
+                                "type": "rect",
+                                "props": {
+                                    "x": 208,
+                                    "y": 195,
+                                    "width": 7,
+                                    "height": 5,
+                                    "fill": "#d9ae2c"
+                                }
+                            }
+                        ],
+                        "when": {
+                            "mouth": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "type": "group",
+                        "children": [
+                            {
+                                "type": "ellipse",
+                                "props": {
+                                    "cx": 209,
+                                    "cy": 199,
+                                    "rx": 21,
+                                    "ry": 13,
+                                    "fill": "#48171b",
+                                    "stroke": "#261f22",
+                                    "strokeWidth": 2
+                                }
+                            },
+                            {
+                                "type": "rect",
+                                "props": {
+                                    "x": 208,
+                                    "y": 195,
+                                    "width": 7,
+                                    "height": 5,
+                                    "fill": "#d9ae2c"
+                                }
+                            }
+                        ],
+                        "when": {
+                            "mouth": [
+                                2
+                            ]
+                        }
+                    },
+                    {
+                        "type": "group",
+                        "children": [
+                            {
+                                "type": "ellipse",
+                                "props": {
+                                    "cx": 209,
+                                    "cy": 199,
+                                    "rx": 21,
+                                    "ry": 9,
+                                    "fill": "#48171b",
+                                    "stroke": "#261f22",
+                                    "strokeWidth": 2
+                                }
+                            },
+                            {
+                                "type": "rect",
+                                "props": {
+                                    "x": 208,
+                                    "y": 195,
+                                    "width": 7,
+                                    "height": 5,
+                                    "fill": "#d9ae2c"
+                                }
+                            }
+                        ],
+                        "when": {
+                            "mouth": [
+                                3
+                            ]
+                        }
+                    },
+                    {
+                        "type": "group",
+                        "children": [],
+                        "when": {
+                            "mouth": [
+                                0
+                            ]
+                        }
+                    },
+                    {
+                        "type": "group",
+                        "children": [],
+                        "when": {
+                            "blink": false
+                        }
+                    },
+                    {
+                        "type": "group",
+                        "children": [
+                            {
+                                "type": "path",
+                                "props": {
+                                    "d": "M142 91 L190 87 L190 121 Q166 132 143 121 Z",
+                                    "fill": "#e6b38b",
+                                    "stroke": "#282125",
+                                    "strokeWidth": 3
+                                }
+                            },
+                            {
+                                "type": "path",
+                                "props": {
+                                    "d": "M210 87 L255 84 L256 118 Q233 129 211 118 Z",
+                                    "fill": "#e6b38b",
+                                    "stroke": "#282125",
+                                    "strokeWidth": 3
+                                }
+                            }
+                        ],
+                        "when": {
+                            "blink": true
+                        }
+                    }
+                ],
+                "motion": "head",
+                "pivot": [
+                    190,
+                    220
+                ]
+            }
+        ]
+    },
+    "missing_details": [],
+    "generated_details": [
+        "Clean transparent animation parts derived with imagegen from the approved character sheet.",
+        "Continuous torso, rounded arm attachments behind torso, overlapping neck under head. Mouth and blink shapes are declarative animation additions.",
+        "Single frontal 2D pose with limited joint rotations."
+    ],
+    "notes": "Seam cleanup, preserving the approved likeness and existing voice."
+}

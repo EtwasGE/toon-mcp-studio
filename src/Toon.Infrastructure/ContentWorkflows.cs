@@ -69,6 +69,7 @@ public static class ContentWorkflows
                 "get_catalog",
                 "get_character_voice",
                 "get_episode_template",
+                "start_sound_effect",
                 "create_episode",
                 "list_projects",
                 "create_project",
@@ -151,7 +152,12 @@ public static class ContentWorkflows
                         "configure_voice_profile changes local delivery settings and requires a new preview and approval; no clone request",
                         "publish_library_item is optional for voice source storage and does not clone or bind a voice",
                     }
-                    : Array.Empty<string>(),
+                : kind == "production"
+                    ? new[]
+                    {
+                        "start_sound_effect only when requested effects are missing from sound_effects catalog; new SFX requires separate permission and seconds budget",
+                    }
+                : Array.Empty<string>(),
                 get_workflow_makes_cloud_requests = false,
             }
         );

@@ -104,6 +104,27 @@
                 }
             }
         },
+        "sounds": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["event_id", "start_sample", "scene_end_sample", "asset", "gain_db"],
+                "properties": {
+                    "event_id": { "type": "string" },
+                    "start_sample": { "type": "integer", "minimum": 0 },
+                    "scene_end_sample": { "type": "integer", "minimum": 1 },
+                    "asset": {
+                        "type": "object",
+                        "required": ["asset_id", "version"],
+                        "properties": { "asset_id": { "type": "string" }, "version": { "type": "string" } }
+                    },
+                    "gain_db": { "type": "number", "minimum": -60, "maximum": 0 },
+                    "audio_file": { "type": "string" },
+                    "audio_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                    "samples": { "type": "integer", "minimum": 1 }
+                }
+            }
+        },
         "assets": { "type": "object", "additionalProperties": { "type": "string" } },
         "rigs": { "type": "object", "additionalProperties": { "type": "object" } },
         "environments": { "type": "object", "additionalProperties": { "type": "object" } }

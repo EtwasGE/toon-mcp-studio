@@ -160,6 +160,25 @@ public sealed class Media(Config config)
             filters.Add("[music][side]sidechaincompress=threshold=0.015:ratio=8:attack=20:release=300[ducked]");
             filters.Add("[dry][ducked]amix=inputs=2:normalize=0[mixed]");
             last = "mixed";
+            index++;
+        }
+
+        var effects = new List<string> { $"[{last}]" };
+        foreach (var sound in timeline.Items("sounds"))
+        {
+            var prepared = await Prepare(resolve(sound["asset"]!), null, ct);
+            args.AddRange(["-i", prepared.Path]);
+            filters.Add(
+                $"[{index}:a]volume={sound.Num("gain_db").ToString(CultureInfo.InvariantCulture)}dB,adelay={sound["start_sample"]}S:all=1[sfx{index}]"
+            );
+            effects.Add($"[sfx{index}]");
+            index++;
+        }
+
+        if (effects.Count > 1)
+        {
+            filters.Add(string.Concat(effects) + $"amix=inputs={effects.Count}:normalize=0:duration=first[effects]");
+            last = "effects";
         }
 
         filters.Add($"[{last}]atrim=duration={total.ToString(CultureInfo.InvariantCulture)}[out]");

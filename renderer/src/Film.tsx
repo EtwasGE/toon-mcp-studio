@@ -203,18 +203,6 @@ export function Film({ timeline }: { timeline: Timeline }) {
                         {caption.text}
                     </div>
                 )}
-                <div
-                    style={{
-                        position: 'absolute',
-                        left: 80,
-                        top: 1780,
-                        fontSize: 22,
-                        letterSpacing: 5,
-                        color: '#f7eed788'
-                    }}
-                >
-                    TOON · ОРИГИНАЛЬНАЯ СТУДИЯ
-                </div>
             </div>
         </AbsoluteFill>
     );

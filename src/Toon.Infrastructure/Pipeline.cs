@@ -48,6 +48,23 @@ public sealed class Pipeline(Config config)
             assetMap[reference.Str("asset_id") + "@" + reference.Str("version")] = relative;
         }
 
+        foreach (var sound in timeline.Items("sounds"))
+        {
+            var source = resolve(sound["asset"]!);
+            var prepared = await media.Prepare(source, null, ct);
+            J.Require(
+                sound["start_sample"]!.GetValue<long>() + prepared.Samples
+                    <= sound["scene_end_sample"]!.GetValue<long>(),
+                "VALIDATION_ERROR",
+                "Sound extends past scene; increase tail_ms or move its event"
+            );
+            var relative = "media/" + prepared.Hash + ".wav";
+            File.Copy(prepared.Path, Path.Combine(directory, "public", relative), true);
+            sound["audio_file"] = relative;
+            sound["audio_hash"] = prepared.Hash;
+            sound["samples"] = prepared.Samples;
+        }
+
         if (rigs == null)
         {
             rigs = new JsonObject();

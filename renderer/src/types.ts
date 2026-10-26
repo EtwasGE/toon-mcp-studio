@@ -53,6 +53,16 @@ export type Timeline = {
         end_sample_exclusive: number;
         envelope: number[];
     }[];
+    sounds?: {
+        event_id: string;
+        start_sample: number;
+        scene_end_sample: number;
+        asset: { asset_id: string; version: string };
+        gain_db: number;
+        audio_file?: string;
+        audio_hash?: string;
+        samples?: number;
+    }[];
     captions: Caption[];
     assets: Record<string, string>;
 };

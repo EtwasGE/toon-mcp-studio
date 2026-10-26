@@ -255,7 +255,31 @@
             "properties": {
                 "event_id": { "$ref": "#/$defs/id" },
                 "at": { "$ref": "#/$defs/anchor" },
-                "action": { "$ref": "#/$defs/eventAction" }
+                "action": { "$ref": "#/$defs/eventAction" },
+                "sound": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "asset"
+                    ],
+                    "properties": {
+                        "asset": {
+                            "$ref": "#/$defs/assetRef"
+                        },
+                        "gain_db": {
+                            "type": "number",
+                            "minimum": -60,
+                            "maximum": 0,
+                            "default": -12
+                        },
+                        "offset_ms": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 3000,
+                            "default": 0
+                        }
+                    }
+                }
             }
         },
         "overlayContent": {

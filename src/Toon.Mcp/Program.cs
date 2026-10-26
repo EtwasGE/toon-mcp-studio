@@ -390,12 +390,30 @@ public sealed class ToonTools(Studio studio)
     [
         McpServerTool(UseStructuredContent = true, Name = "get_catalog", ReadOnly = true),
         Description(
-            "Read render-compatible styles, characters, backgrounds, gestures or voices. kind=library lists source-package heads; use list_library_items for filters."
+            "Read render-compatible styles, characters, backgrounds, gestures, voices or sound_effects. kind=library lists source-package heads; use list_library_items for filters."
         )
     ]
     public Task<CallToolResult> Catalog(
-        [Description("styles, characters, backgrounds, gestures, voices or library")] string kind
+        [Description("styles, characters, backgrounds, gestures, voices, sound_effects or library")] string kind
     ) => Call(() => studio.Catalog(kind));
+
+    [
+        McpServerTool(UseStructuredContent = true, Name = "start_sound_effect", Destructive = false),
+        Description(
+            "Generate one reusable ElevenLabs sound effect in the persistent worker. Requires allow_new_sfx and max_new_sfx_seconds within server cap; cached audio needs no paid permission. Poll get_job for sound_asset and get_artifacts for WAV. Never automatically retry uncertain paid outcomes."
+        )
+    ]
+    public Task<CallToolResult> SoundEffect(
+        string name,
+        string prompt,
+        double duration_seconds,
+        string idempotency_key,
+        bool allow_new_sfx = false,
+        double max_new_sfx_seconds = 0
+    ) =>
+        Call(() =>
+            studio.Sounds.Start(name, prompt, duration_seconds, allow_new_sfx, max_new_sfx_seconds, idempotency_key)
+        );
 
     [
         McpServerTool(UseStructuredContent = true, Name = "register_asset", Destructive = false),

@@ -14,6 +14,7 @@ public static class Compiler
         var scenes = new JsonArray();
         var lines = new JsonArray();
         var captions = new JsonArray();
+        var sounds = new JsonArray();
         long sample = 0;
         foreach (var scene in project.Items("scenes"))
         {
@@ -190,6 +191,25 @@ public static class Compiler
                     "AMBIGUOUS_CUE",
                     "Two events occupy the same channel and frame"
                 );
+                if (e["sound"] is JsonNode sound)
+                {
+                    // tap_phone makes contact at frame 18; audio shares that exact frame.
+                    var contact = a["gesture_id"]?.ToString() == "tap_phone" ? 18 : 0;
+                    var soundFrame = f + contact + J.Frame(sound.Int("offset_ms"));
+                    J.Require(soundFrame < J.Frame(sample / 48.0), "VALIDATION_ERROR", "Sound starts outside scene");
+                    sounds.Add(
+                        J.Node(
+                            new
+                            {
+                                event_id = e.Str("event_id"),
+                                start_sample = soundFrame * 1600L,
+                                scene_end_sample = sample,
+                                asset = sound["asset"]!.DeepClone(),
+                                gain_db = sound.Num("gain_db", -12),
+                            }
+                        )
+                    );
+                }
                 events.Add(
                     J.Node(
                         new
@@ -199,6 +219,22 @@ public static class Compiler
                             action = a.DeepClone(),
                         }
                     )
+                );
+            }
+
+            foreach (var tap in events.Where(e => e!["action"]?["gesture_id"]?.ToString() == "tap_phone"))
+            {
+                var contact = tap!.Int("frame") + 18;
+                J.Require(contact < J.Frame(sample / 48.0), "VALIDATION_ERROR", "Phone tap contact lies outside scene");
+                J.Require(
+                    !events.Any(e =>
+                        e!["action"]!.Str("kind") == "gesture"
+                        && e["action"]!["character_id"]?.ToString() == tap!["action"]!["character_id"]?.ToString()
+                        && e.Int("frame") > tap.Int("frame")
+                        && e.Int("frame") <= contact
+                    ),
+                    "AMBIGUOUS_CUE",
+                    "Another gesture interrupts phone tap before contact"
                 );
             }
 
@@ -297,6 +333,7 @@ public static class Compiler
                 scenes,
                 utterances = lines,
                 captions,
+                sounds,
                 warnings = totalFrames < 600 || totalFrames > 1350
                     ? new[] { "TARGET_DURATION_MISSED" }
                     : Array.Empty<string>(),

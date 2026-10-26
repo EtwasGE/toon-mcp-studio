@@ -25,6 +25,7 @@ public sealed class Worker(Studio studio)
                     data_root = config.Data,
                     import_roots = config.ImportRoots,
                     tts_character_limit = config.TtsLimit,
+                    sfx_seconds_limit = config.SoundEffectLimit,
                     renderer_fingerprint = config.RendererFingerprint(),
                     worker_assembly_sha256 = J.FileHash(typeof(Worker).Assembly.Location),
                 }
@@ -103,6 +104,13 @@ public sealed class Worker(Studio studio)
         });
         try
         {
+            if (job["job_kind"]?.ToString() == "sound_effect")
+            {
+                Stage("sound_effect");
+                await studio.Sounds.Execute(job, cancelled.Token);
+                return;
+            }
+
             if (job["job_kind"]?.ToString() is "voice_clone" or "voice_preview")
             {
                 Stage(job.Str("job_kind"));

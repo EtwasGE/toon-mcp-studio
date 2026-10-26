@@ -9,7 +9,7 @@ using Toon.Infrastructure;
 var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
 Environment.SetEnvironmentVariable("TOON_APP_ROOT", root);
 var testRoot = Path.Combine(root, ".data", "acceptance-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
-if (args.FirstOrDefault() == "--live-tts")
+if (args.FirstOrDefault() is "--live-tts" or "--live-sfx")
 {
     testRoot = Environment.GetEnvironmentVariable("TOON_DATA_ROOT") ?? testRoot;
 }
@@ -26,6 +26,19 @@ if (args.FirstOrDefault() == "--live-tts")
     await LiveSpeechAcceptance.Run(new Config(), liveLimit);
     return;
 }
+if (args.FirstOrDefault() == "--live-sfx")
+{
+    if (args.Length is < 2 or > 4 || !int.TryParse(args[1], out var soundCount) || soundCount is < 1 or > 3)
+        throw new ArgumentException("Explicit paid mode: --live-sfx COUNT (1–3 effects of 2 seconds)");
+
+    await LiveSoundAcceptance.Run(
+        new Config(),
+        soundCount,
+        args.Length >= 3 ? args[2] : "live-sfx-library-v1",
+        args.Length == 4 ? args[3] : null
+    );
+    return;
+}
 Environment.SetEnvironmentVariable("TOON_USE_USER_SECRETS", "0");
 
 if (args.Contains("--secrets"))
@@ -39,6 +52,12 @@ var config = new Config();
 var studio = new Studio(config);
 var results = new JsonArray();
 var errors = 0;
+if (args.Contains("--sounds"))
+{
+    await SoundAcceptance.Run(config);
+    return;
+}
+
 if (args.Contains("--studio"))
 {
     await StudioAcceptance.Run(config);

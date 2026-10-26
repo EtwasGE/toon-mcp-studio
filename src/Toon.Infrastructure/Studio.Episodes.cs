@@ -72,6 +72,18 @@ public sealed partial class Studio
                     );
                 }
 
+                if (line["sound"] is JsonNode sound)
+                {
+                    if (line["gesture"] != null)
+                    {
+                        events[^1]!["sound"] = sound.DeepClone();
+                    }
+                    else
+                    {
+                        throw new ToonException("VALIDATION_ERROR", "A line sound requires an explicit gesture");
+                    }
+                }
+
                 if (line["emotion"] != null)
                 {
                     events.Add(
@@ -159,8 +171,8 @@ public sealed partial class Studio
                 characters = brief["characters"]!.DeepClone(),
                 captions = new
                 {
-                    enabled = true,
-                    mode = "auto",
+                    enabled = brief["captions"]?.Bool("enabled") ?? true,
+                    mode = brief["captions"]?["mode"]?.ToString() ?? "auto",
                     preset_id = "high_contrast_ru",
                 },
                 scenes,

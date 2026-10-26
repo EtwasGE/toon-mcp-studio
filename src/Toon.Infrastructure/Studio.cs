@@ -11,6 +11,7 @@ public sealed partial class Studio
     public Speech Speech { get; }
     public ContentLibrary Library { get; }
     public VoiceService Voices { get; }
+    public SoundEffects Sounds { get; }
 
     public Studio(Config config, HttpClient? voiceClient = null)
     {
@@ -20,6 +21,7 @@ public sealed partial class Studio
         Speech = new Speech(config, Store, voiceClient);
         Library = new ContentLibrary(config, Store, Assets);
         Voices = new VoiceService(this, voiceClient);
+        Sounds = new SoundEffects(this, voiceClient);
     }
 
     public void CheckDraft(JsonNode project, JsonNode? resolvedRigs = null, JsonNode? resolvedEnvironments = null)
@@ -204,6 +206,19 @@ public sealed partial class Studio
                 }
             }
 
+            foreach (var e in s.Items("events").Where(e => e["sound"] != null))
+            {
+                var r = e["sound"]!["asset"]!;
+                Asset(r, $"/scenes/{si}/events/sound/asset");
+                if (
+                    resolvedAssets[r.Str("asset_id") + "@" + r.Str("version")] is JsonNode effect
+                    && effect.Str("kind") != "audio"
+                )
+                {
+                    errors.Add(J.Node(new Issue("VALIDATION_ERROR", "Sound asset must be audio", "/events/sound")));
+                }
+            }
+
             var oi = 0;
             foreach (var o in s.Items("overlays"))
             {
@@ -280,6 +295,17 @@ public sealed partial class Studio
                 }
 
                 var compiled = Compiler.Compile(p, id, revision, measured);
+                foreach (var sound in compiled.Items("sounds"))
+                {
+                    var r = sound["asset"]!;
+                    var asset = resolvedAssets[r.Str("asset_id") + "@" + r.Str("version")]!;
+                    J.Require(
+                        sound["start_sample"]!.GetValue<long>() + asset["metadata"]!["samples"]!.GetValue<long>()
+                            <= sound["scene_end_sample"]!.GetValue<long>(),
+                        "VALIDATION_ERROR",
+                        "Sound extends past scene; increase tail_ms or move its event"
+                    );
+                }
                 measuredDuration = compiled.Int("total_frames") / 30.0;
             }
             catch (ToonException ex)
@@ -481,6 +507,7 @@ public sealed partial class Studio
                 configured_voice_aliases = Config.Voices.AsObject().Select(x => x.Key).ToArray(),
                 elevenlabs_key_present = !string.IsNullOrWhiteSpace(Secrets.ElevenLabsApiKey()),
                 tts_character_limit = Config.TtsLimit,
+                sfx_seconds_limit = Config.SoundEffectLimit,
                 data_root = Config.Data,
                 worker_assembly_sha256 = J.FileHash(typeof(Worker).Assembly.Location),
                 import_roots = Config.ImportRoots,
@@ -510,6 +537,7 @@ public sealed partial class Studio
             "characters" => Library.CharacterCatalog(),
             "backgrounds" => Library.EnvironmentCatalog(),
             "gestures" => J.Node(Validation.Gestures),
+            "sound_effects" => Sounds.Catalog(),
             "voices" => J.Node(
                 Config
                     .Voices.AsObject()
