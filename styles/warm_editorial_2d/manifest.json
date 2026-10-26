@@ -1,0 +1,440 @@
+{
+  "style_id": "warm_editorial_2d",
+  "version": "1.0.0",
+  "renderer_version": "1.0.0",
+  "original": true,
+  "characters": [
+    {
+      "character_id": "buyer",
+      "version": "1.0.0",
+      "layers": [
+        {
+          "id": "torso",
+          "position": [
+            72,
+            190
+          ],
+          "size": [
+            236,
+            250
+          ],
+          "pivot": [
+            190,
+            300
+          ],
+          "z": 1,
+          "angles": [
+            -2,
+            2
+          ]
+        },
+        {
+          "id": "left_arm",
+          "position": [
+            43,
+            220
+          ],
+          "size": [
+            75,
+            180
+          ],
+          "pivot": [
+            87,
+            232
+          ],
+          "z": 2,
+          "angles": [
+            -85,
+            10
+          ]
+        },
+        {
+          "id": "right_arm",
+          "position": [
+            267,
+            220
+          ],
+          "size": [
+            75,
+            180
+          ],
+          "pivot": [
+            289,
+            232
+          ],
+          "z": 2,
+          "angles": [
+            -10,
+            50
+          ]
+        },
+        {
+          "id": "head",
+          "position": [
+            110,
+            20
+          ],
+          "size": [
+            168,
+            195
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 3,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "hair",
+          "position": [
+            105,
+            0
+          ],
+          "size": [
+            172,
+            100
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 4,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "eyes",
+          "position": [
+            135,
+            103
+          ],
+          "size": [
+            111,
+            34
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 5,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "eyelids",
+          "position": [
+            135,
+            103
+          ],
+          "size": [
+            111,
+            34
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 6,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "brows",
+          "position": [
+            140,
+            90
+          ],
+          "size": [
+            100,
+            22
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 7,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "mouth",
+          "position": [
+            168,
+            152
+          ],
+          "size": [
+            50,
+            40
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 8,
+          "angles": [
+            -15,
+            15
+          ]
+        }
+      ],
+      "poses": [
+        "seated"
+      ],
+      "phone_attachment": [
+        317,
+        359
+      ],
+      "mouth_states": [
+        "closed",
+        "slightly_open",
+        "wide",
+        "rounded"
+      ]
+    },
+    {
+      "character_id": "advisor",
+      "version": "1.0.0",
+      "layers": [
+        {
+          "id": "torso",
+          "position": [
+            72,
+            190
+          ],
+          "size": [
+            236,
+            250
+          ],
+          "pivot": [
+            190,
+            300
+          ],
+          "z": 1,
+          "angles": [
+            -2,
+            2
+          ]
+        },
+        {
+          "id": "left_arm",
+          "position": [
+            43,
+            220
+          ],
+          "size": [
+            75,
+            180
+          ],
+          "pivot": [
+            87,
+            232
+          ],
+          "z": 2,
+          "angles": [
+            -85,
+            10
+          ]
+        },
+        {
+          "id": "right_arm",
+          "position": [
+            267,
+            220
+          ],
+          "size": [
+            75,
+            180
+          ],
+          "pivot": [
+            289,
+            232
+          ],
+          "z": 2,
+          "angles": [
+            -10,
+            50
+          ]
+        },
+        {
+          "id": "head",
+          "position": [
+            110,
+            20
+          ],
+          "size": [
+            168,
+            195
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 3,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "hair",
+          "position": [
+            105,
+            0
+          ],
+          "size": [
+            172,
+            100
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 4,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "eyes",
+          "position": [
+            135,
+            103
+          ],
+          "size": [
+            111,
+            34
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 5,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "eyelids",
+          "position": [
+            135,
+            103
+          ],
+          "size": [
+            111,
+            34
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 6,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "brows",
+          "position": [
+            140,
+            90
+          ],
+          "size": [
+            100,
+            22
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 7,
+          "angles": [
+            -15,
+            15
+          ]
+        },
+        {
+          "id": "mouth",
+          "position": [
+            168,
+            152
+          ],
+          "size": [
+            50,
+            40
+          ],
+          "pivot": [
+            191,
+            170
+          ],
+          "z": 8,
+          "angles": [
+            -15,
+            15
+          ]
+        }
+      ],
+      "poses": [
+        "seated"
+      ],
+      "phone_attachment": [
+        317,
+        359
+      ],
+      "mouth_states": [
+        "closed",
+        "slightly_open",
+        "wide",
+        "rounded"
+      ]
+    }
+  ],
+  "backgrounds": [
+    "restaurant_evening",
+    "home_office",
+    "neutral_dark"
+  ],
+  "gestures": {
+    "idle": 30,
+    "blink": 8,
+    "nod": 32,
+    "shake_head": 36,
+    "raise_hand": 54,
+    "shrug": 54,
+    "show_phone": 120
+  },
+  "emotions": [
+    "neutral",
+    "concerned",
+    "annoyed",
+    "surprised",
+    "confident",
+    "pleased"
+  ],
+  "presets": [
+    "high_contrast_ru",
+    "hook",
+    "cta"
+  ],
+  "safe_area": {
+    "x": 80,
+    "y": 180,
+    "width": 820,
+    "height": 1400
+  },
+  "provenance": "Original SVG artwork authored for this repository; no reference video assets included"
+}

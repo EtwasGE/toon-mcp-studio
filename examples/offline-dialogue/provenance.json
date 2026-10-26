@@ -1,0 +1,7 @@
+{
+  "source": "Local Windows SAPI Microsoft Irina",
+  "kind": "synthetic Russian speech fixture",
+  "human_recording": false,
+  "word_alignment": false,
+  "notes": "Original test text. Same installed voice, two explicit pitch/rate presets. Not two ElevenLabs voices. Local QA only; do not claim redistribution rights for installed voice software."
+}

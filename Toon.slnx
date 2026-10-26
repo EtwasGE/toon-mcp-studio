@@ -1,0 +1,1 @@
+<Solution><Project Path="src/Toon.Core/Toon.Core.csproj"/><Project Path="src/Toon.Infrastructure/Toon.Infrastructure.csproj"/><Project Path="src/Toon.Worker/Toon.Worker.csproj"/><Project Path="src/Toon.Mcp/Toon.Mcp.csproj"/><Project Path="src/Toon.Cli/Toon.Cli.csproj"/><Project Path="tests/Toon.Acceptance/Toon.Acceptance.csproj"/></Solution>

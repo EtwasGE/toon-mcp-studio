@@ -1,0 +1,27 @@
+**/bin/
+**/obj/
+**/node_modules/
+.cache/
+.data/
+.tools/
+.env
+*.partial*
+artifacts/
+renderer/dist/
+.remotion/
+
+# Локальные настройки и секреты
+.env.*
+!.env.example
+**/.vs/
+**/.idea/
+*.user
+*.suo
+
+# Локальные результаты проверок
+**/TestResults/
+**/__pycache__/
+*.pyc
+
+# Local speech fixtures; redistribution rights have not been confirmed
+/examples/offline-dialogue/*.wav

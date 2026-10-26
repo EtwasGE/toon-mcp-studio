@@ -1,0 +1,5 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"urn:toon-mcp:schema:artifact:1.0.0","type":"object","additionalProperties":false,
+  "required":["artifact_id","job_id","project_id","revision","name","mime","bytes","sha256","duration_seconds","resource_uri","local_path"],
+  "properties":{"artifact_id":{"type":"string","pattern":"^artifact_[a-f0-9]{32}$"},"job_id":{"type":"string"},"project_id":{"type":"string"},"revision":{"type":"integer","minimum":1},"name":{"type":"string"},"mime":{"type":"string"},"bytes":{"type":"integer","minimum":1},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"duration_seconds":{"type":["number","null"],"minimum":0},"resource_uri":{"type":"string","format":"uri"},"local_path":{"type":"string"}}
+}

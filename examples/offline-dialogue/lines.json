@@ -1,0 +1,32 @@
+[
+  {
+    "speaker": "buyer",
+    "text": "Опять весь вечер проверял сайты.",
+    "id": "problem"
+  },
+  {
+    "speaker": "advisor",
+    "text": "Давай оставим время для жизни.",
+    "id": "idea"
+  },
+  {
+    "speaker": "advisor",
+    "text": "Смотри: это учебный экран.",
+    "id": "phone"
+  },
+  {
+    "speaker": "buyer",
+    "text": "Теперь всё видно на одном экране.",
+    "id": "reaction"
+  },
+  {
+    "speaker": "buyer",
+    "text": "А дома можно спокойно выпить чай.",
+    "id": "home"
+  },
+  {
+    "speaker": "advisor",
+    "text": "И вернуться к своим планам.",
+    "id": "answer"
+  }
+]
