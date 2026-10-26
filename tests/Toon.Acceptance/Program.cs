@@ -39,6 +39,12 @@ var config = new Config();
 var studio = new Studio(config);
 var results = new JsonArray();
 var errors = 0;
+if (args.Contains("--workflow"))
+{
+    await WorkflowAcceptance.Run(config);
+    return;
+}
+
 if (args.Contains("--voices"))
 {
     await VoiceAcceptance.Run(config);
@@ -567,6 +573,20 @@ await Test(
         var a = Speech.ConvertAlignment(input, "Да. Да!", 400)!;
         Assert(a["normalized_words"]!.AsArray().Count == 2, "Character-to-word alignment failed");
         Expect("ALIGNMENT_UNAVAILABLE", () => Speech.ConvertAlignment(input, "2 квартиры", 400));
+        input["character_end_times_seconds"]![6] = .6;
+        var punctuation = Speech.ConvertAlignment(input, "Да. Да!", 400)!;
+        Assert(
+            punctuation["normalized_words"]![1]!.Num("end_ms") == 300,
+            "Trailing punctuation must not extend a spoken word beyond its actual provider letter timing"
+        );
+        Assert(punctuation["normalized_words"]![1]!.Str("text") == "Да!", "Punctuation disappeared from display");
+        input["character_end_times_seconds"]![5] = .6;
+        Expect("VALIDATION_ERROR", () => Speech.ConvertAlignment(input, "Да. Да!", 400));
+        var fallback = Speech.ReadAlignment(input, "Да. Да!", 400);
+        Assert(
+            fallback.Alignment == null && fallback.Warning == "VALIDATION_ERROR",
+            "Invalid provider timing must be explicitly unavailable, never fabricated"
+        );
 
         return Task.CompletedTask;
     }

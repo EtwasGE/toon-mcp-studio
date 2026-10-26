@@ -46,7 +46,7 @@ public static class LiveSpeechAcceptance
                 {
                     provider = "elevenlabs",
                     voice_id = selected[index].Str("voice_id"),
-                    model_id = "eleven_multilingual_v2",
+                    model_id = Speech.DefaultModel,
                     voice_settings = new
                     {
                         stability = .5,

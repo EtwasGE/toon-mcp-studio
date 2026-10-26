@@ -4,7 +4,8 @@ from pathlib import Path
 from PIL import Image, ImageChops, ImageDraw
 
 run = Path(sys.argv[1]).resolve()
-report = json.loads((run/'acceptance.json').read_text(encoding='utf-8'))
+report_name = sys.argv[2] if len(sys.argv) > 2 else 'acceptance.json'
+report = json.loads((run/report_name).read_text(encoding='utf-8'))
 job = run/'jobs'/report['final_job']
 timeline = json.loads((job/'timeline.json').read_text(encoding='utf-8'))
 frame = timeline['scenes'][1]['start_frame']

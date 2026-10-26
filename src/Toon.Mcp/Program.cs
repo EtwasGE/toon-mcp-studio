@@ -79,6 +79,12 @@ await builder.Build().RunAsync();
 
 public sealed class ToonTools(Studio studio)
 {
+    [McpServerTool(UseStructuredContent = true, Name = "get_content_workflow", ReadOnly = true)]
+    [Description(
+        "Read the complete MCP workflow for character, environment, voice or production: ordered tools, requirements, review gates, revisions, cancellation and explicit retry rules. Does not create jobs or call cloud services."
+    )]
+    public Task<CallToolResult> ContentWorkflow(string kind) => Call(() => ContentWorkflows.Get(kind));
+
     [McpServerTool(UseStructuredContent = true, Name = "start_voice_clone", Destructive = false, Idempotent = true)]
     [Description(
         "Queue one ElevenLabs Instant Voice Clone in the persistent worker. Uploads the original sample only with submission rights/consents, completed technical preparation, explicit sample listening review, allow_cloud_upload=true and max_clone_requests=1. Server also requires TOON_ALLOW_VOICE_CLONING=1, TOON_MAX_VOICE_CLONES and ELEVENLABS_API_KEY. Never automatically retry uncertain outcomes. No TTS is generated here."
@@ -114,6 +120,17 @@ public sealed class ToonTools(Studio studio)
     [McpServerTool(UseStructuredContent = true, Name = "list_voice_profiles", ReadOnly = true)]
     public Task<CallToolResult> VoiceProfiles() => Call(() => studio.Voices.Profiles());
 
+    [McpServerTool(UseStructuredContent = true, Name = "configure_voice_profile", Destructive = false)]
+    [Description(
+        "Save local voice settings as a new immutable profile revision. Does not call ElevenLabs or clone again. Resets approval to pending_review; generate and listen to a new preview before approval. Existing revisions and project references remain unchanged."
+    )]
+    public Task<CallToolResult> ConfigureVoice(
+        string profile_id,
+        int expected_revision,
+        VoiceSettings voice_settings,
+        string note
+    ) => Call(() => studio.Voices.Configure(profile_id, expected_revision, voice_settings, note));
+
     [McpServerTool(UseStructuredContent = true, Name = "refresh_voice_verification", Destructive = false)]
     [Description(
         "Read ElevenLabs verification status for this voice. Uses a metadata GET, never bypasses verification or creates another clone. Missing verification fields keep the profile blocked."
@@ -123,7 +140,7 @@ public sealed class ToonTools(Studio studio)
 
     [McpServerTool(UseStructuredContent = true, Name = "reconcile_voice_clone", Destructive = false)]
     [Description(
-        "Recover a provider voice ID after a failed/cancelled clone job. Performs metadata GET and requires an exact Toon operation label match; never repeats the clone POST. Supply the ID found in the operator's ElevenLabs account."
+        "Recover a provider voice ID after a failed/cancelled clone job. Performs metadata GET and requires an exact Toon description marker or legacy operation label; never repeats the clone POST. Supply the ID found in the operator's ElevenLabs account."
     )]
     public Task<CallToolResult> ReconcileVoice(
         string job_id,
@@ -524,6 +541,28 @@ public sealed class ToonTools(Studio studio)
 
 public sealed class ToonResources(Studio studio)
 {
+    [McpServerResource(
+        UriTemplate = "toon://workflows/{kind}",
+        Name = "content_workflow",
+        MimeType = "application/json"
+    )]
+    public string ContentWorkflow(string kind) => ContentWorkflows.Get(kind).ToJsonString();
+
+    [McpServerResource(
+        UriTemplate = "toon://guides/content-workflow",
+        Name = "content_workflow_guide",
+        MimeType = "text/markdown"
+    )]
+    public string ContentWorkflowGuide() =>
+        File.ReadAllText(Path.Combine(studio.Config.Root, "docs/CONTENT-WORKFLOW.md"));
+
+    [McpServerResource(
+        UriTemplate = "toon://voices/{id}/revisions/{revision}",
+        Name = "voice_profile_revision",
+        MimeType = "application/json"
+    )]
+    public string VoiceProfileRevision(string id, int revision) => studio.Voices.Profile(id, revision).ToJsonString();
+
     [McpServerResource(
         UriTemplate = "toon://environments/schema",
         Name = "environment_schema",

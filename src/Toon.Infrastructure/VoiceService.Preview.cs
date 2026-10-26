@@ -110,6 +110,7 @@ public sealed partial class VoiceService
                     duration_ms = audio.DurationMs,
                     sha256 = J.FileHash(wav),
                     alignment = audio.Alignment,
+                    timing_status = audio.Alignment is null ? "unavailable_utterance_only" : "provider_alignment",
                     listening_review = "pending_operator",
                     new_tts_characters_estimate = cost,
                 }

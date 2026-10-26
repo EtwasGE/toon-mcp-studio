@@ -131,19 +131,14 @@ public sealed partial class VoiceService
             {
                 provider = "elevenlabs",
                 voice_id = profile.Str("voice_id"),
-                model_id = "eleven_multilingual_v2",
-                voice_settings = new
-                {
-                    stability = .5,
-                    similarity_boost = .75,
-                    style = 0,
-                    use_speaker_boost = true,
-                },
+                model_id = Speech.DefaultModel,
+                language_code = Speech.DefaultLanguage,
+                voice_settings = Speech.V4Settings(profile["voice_settings"]),
                 pronunciation_dictionary_locators = new JsonArray(),
                 dictionary_version = "none",
                 delivery_applied = "neutral",
                 output_format = "mp3_44100_128",
-                adapter_version = "1.0.0",
+                adapter_version = "v4-dialogue-1",
                 normalizer_version = "1.0.0",
                 source_profile_id = profile.Str("profile_id"),
                 source_sample_sha256 = profile.Str("source_sample_sha256"),
@@ -158,6 +153,11 @@ public sealed partial class VoiceService
             profile.Str("state") == "approved" && Profile(profile.Str("profile_id")).Str("state") == "approved",
             "VOICE_NOT_READY",
             "Voice must have an approved listening review and remain enabled"
+        );
+        J.Require(
+            profile["approved_model_id"]?.ToString() == Speech.DefaultModel,
+            "VOICE_PREVIEW_REQUIRED",
+            "Generate and approve a preview with Eleven V4 before using this voice"
         );
         Consent(profile);
         return Descriptor(profile);
@@ -255,6 +255,32 @@ public sealed partial class VoiceService
         return project;
     }
 
+    public JsonNode Configure(string id, int expected, VoiceSettings settings, string note)
+    {
+        J.Require(
+            expected > 0 && note.Trim().Length is > 0 and <= 1000,
+            "VALIDATION_ERROR",
+            "Provide a positive profile revision and configuration note (1–1000 characters)"
+        );
+        J.Require(
+            settings != null
+                && settings.Stability is >= 0 and <= 1
+                && settings.SimilarityBoost is >= 0 and <= 1
+                && settings.Style is >= 0 and <= 1
+                && settings.Speed is >= .7 and <= 1.2,
+            "VALIDATION_ERROR",
+            "Voice settings require finite stability, similarity_boost and style in [0,1], and speed in [0.7,1.2]"
+        );
+        var profile = Profile(id);
+        J.Require(profile.Int("revision") == expected, "REVISION_CONFLICT", "Read latest profile revision");
+        Consent(profile);
+        profile["voice_settings"] = J.Node(settings);
+        profile["state"] = profile.Bool("requires_verification") ? "verification_required" : "pending_review";
+        profile["review_note"] = null;
+        profile["configuration_note"] = note.Trim();
+        return SaveProfile(profile, expected);
+    }
+
     public JsonNode Review(string id, int expected, bool approved, string note)
     {
         J.Require(
@@ -284,10 +310,13 @@ public sealed partial class VoiceService
             var valid = false;
             while (reader.Read())
             {
-                var preview = JsonNode
-                    .Parse(reader.GetString(0))!
-                    .Items("artifacts")
-                    .FirstOrDefault(a => a.Str("name") == "voice-preview.wav");
+                var previewJob = JsonNode.Parse(reader.GetString(0))!;
+                if (J.Canonical(previewJob["snapshot"]!["voice"]!) != J.Canonical(Descriptor(profile)))
+                {
+                    continue;
+                }
+
+                var preview = previewJob.Items("artifacts").FirstOrDefault(a => a.Str("name") == "voice-preview.wav");
                 if (
                     preview != null
                     && File.Exists(preview.Str("local_path"))
@@ -304,6 +333,7 @@ public sealed partial class VoiceService
                 "Generate and listen to a verified preview for this profile revision before approval"
             );
         }
+        profile["approved_model_id"] = approved ? Speech.DefaultModel : null;
         profile["state"] = approved ? "approved" : "rejected";
         profile["review_note"] = note.Trim();
         return SaveProfile(profile, expected);

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using ModelContextProtocol.Client;
 using Toon.Core;
 using Toon.Infrastructure;
@@ -78,10 +79,14 @@ public static class VoiceAcceptance
             );
             return job;
         }
-        async Task<JsonNode> NewSource(string name, bool consent = true)
+        async Task<JsonNode> NewSource(string name, bool consent = true, string? description = null)
         {
             var submission = SubmissionTemplates.Get(config, "voice")["submission"]!.DeepClone();
             submission["display_name"] = name;
+            if (description != null)
+            {
+                submission["description"] = description;
+            }
             submission["rights_confirmed"] = true;
             submission["details"]!["cloning_consent"] = consent;
             submission["details"]!["cloud_upload_consent"] = consent;
@@ -199,6 +204,33 @@ public static class VoiceAcceptance
                 throw new Exception(body.ToJsonString());
             return body["data"]!;
         }
+        var configureTool = (await client.ListToolsAsync()).Single(tool => tool.Name == "configure_voice_profile");
+        var configurationSchema = Json.Schema.JsonSchema.FromText(configureTool.ProtocolTool.InputSchema.GetRawText());
+        var configurationArguments = J.Node(
+            new
+            {
+                profile_id = "schema_fixture",
+                expected_revision = 1,
+                voice_settings = new VoiceSettings
+                {
+                    Stability = .3,
+                    SimilarityBoost = .85,
+                    Style = .6,
+                    UseSpeakerBoost = true,
+                    Speed = .7,
+                },
+                note = "Offline schema fixture",
+            }
+        );
+        Check(
+            configurationSchema.Evaluate(configurationArguments).IsValid,
+            "MCP configuration schema accepts settings"
+        );
+        configurationArguments["voice_settings"]!.AsObject().Remove("speed");
+        Check(
+            !configurationSchema.Evaluate(configurationArguments).IsValid,
+            "MCP configuration schema requires all delivery fields"
+        );
         var cloneArgs = new
         {
             item_id = item.Str("item_id"),
@@ -220,6 +252,12 @@ public static class VoiceAcceptance
         Environment.SetEnvironmentVariable("ELEVENLABS_API_KEY", "offline-fixture-not-a-secret");
         transport.RequireVerification = true;
         clone = await Execute(Clone(item, "verified-fixture"));
+        var cloneOperation = studio.Store.Job(clone.Str("job_id"))["snapshot"]!.Str("operation_key");
+        Check(
+            transport.LastDescription
+                == item["submission"]!.Str("description") + "\n\n[toon_request:" + cloneOperation + "]",
+            "cloud description preserves source text and complete deterministic operation marker"
+        );
         var profile = clone["result"]!["profile"]!;
         Check(profile.Str("state") == "verification_required", "provider verification is enforced");
         Reject(
@@ -425,18 +463,58 @@ public static class VoiceAcceptance
         await Execute(Clone(uncertain, "uncertain-again"), "failed", "PROVIDER_OUTCOME_UNKNOWN");
         Check(transport.Clones == calls, "uncertain clone is never automatically repeated");
         transport.FailAfterDispatch = false;
+        transport.DescriptionOverride = transport.LastDescription + " trailing text";
+        try
+        {
+            await studio.Voices.Reconcile(
+                failed.Str("job_id"),
+                transport.LastVoiceId,
+                "A partial or nonterminal marker must not match",
+                CancellationToken.None
+            );
+            throw new Exception("Expected description marker mismatch");
+        }
+        catch (ToonException ex)
+        {
+            Check(ex.Code == "VOICE_RECONCILIATION_MISMATCH", "reconciliation requires exact terminal marker");
+        }
+        transport.DescriptionOverride = null;
         var reconciled = await studio.Voices.Reconcile(
             failed.Str("job_id"),
             transport.LastVoiceId,
-            "Fixture matching operation label",
+            "Fixture matching operation description marker",
             CancellationToken.None
         );
-        Check(reconciled.Str("state") == "pending_review", "unknown clone reconciled by provider metadata label");
+        Check(reconciled.Str("state") == "pending_review", "unknown clone reconciled by description marker");
         var reused = await Execute(Clone(uncertain, "reuse-reconciled"));
         Check(
             reused["result"]!.Bool("reused") && transport.Clones == calls,
             "reconciled result reuses clone across new job key"
         );
+        var longDescription = new string('x', 4000);
+        var legacySource = await NewSource("Legacy metadata fixture", description: longDescription);
+        transport.FailAfterDispatch = true;
+        var legacyFailed = await Execute(Clone(legacySource, "legacy-unknown"), "failed", "PROVIDER_OUTCOME_UNKNOWN");
+        transport.FailAfterDispatch = false;
+        var legacyOperation = studio.Store.Job(legacyFailed.Str("job_id"))["snapshot"]!.Str("operation_key");
+        Check(
+            transport.LastDescription == longDescription + "\n\n[toon_request:" + legacyOperation + "]",
+            "maximum local description length does not truncate original text or operation marker"
+        );
+        transport.LegacyLabelsOnly = true;
+        var legacyReconciled = await studio.Voices.Reconcile(
+            legacyFailed.Str("job_id"),
+            transport.LastVoiceId,
+            "Historical provider metadata contains only the legacy label",
+            CancellationToken.None
+        );
+        Check(
+            legacyReconciled.Str("state") == "pending_review"
+                && legacyReconciled.Str("operation_key") == legacyOperation,
+            "unknown clone remains recoverable from legacy full operation label without a description marker"
+        );
+        transport.LegacyLabelsOnly = false;
+        calls = transport.Clones;
         Environment.SetEnvironmentVariable("TOON_MAX_VOICE_CLONES", "2");
         var limited = await NewSource("Budget fixture");
         await Execute(Clone(limited, "budget"), "failed", "VOICE_CLONE_LIMIT");
@@ -469,11 +547,79 @@ public static class VoiceAcceptance
 
         var rejected = await NewSource("Rate limit fixture");
         transport.RateLimited = true;
-        await Execute(Clone(rejected, "rate-limit"), "failed", "PROVIDER_ERROR");
+        var rejectedJob = await Execute(Clone(rejected, "rate-limit"), "failed", "PROVIDER_ERROR");
+        var rejectedJournal = studio.Store.Request(
+            studio.Store.Job(rejectedJob.Str("job_id"))["snapshot"]!.Str("operation_key")
+        )!;
+        Check(
+            rejectedJob["error"]!.Str("message").Contains("HTTP 429, rate_limit_exceeded", StringComparison.Ordinal)
+                && rejectedJournal.Str("provider_status") == "rate_limit_exceeded"
+                && rejectedJournal.Int("http_status") == 429,
+            "safe provider status is exposed without the provider message"
+        );
+        Check(
+            !rejectedJob.ToJsonString().Contains(VoiceTransport.PrivateProviderMessage, StringComparison.Ordinal)
+                && !rejectedJournal
+                    .ToJsonString()
+                    .Contains(VoiceTransport.PrivateProviderMessage, StringComparison.Ordinal),
+            "raw provider message is absent from job and journal"
+        );
         var afterRateLimit = transport.Clones;
         transport.RateLimited = false;
         await Execute(Clone(rejected, "rate-limit-retry"), "failed", "PROVIDER_ERROR");
         Check(transport.Clones == afterRateLimit, "Retry-After prevents another HTTP request");
+
+        const string errorSecret = "offline_fixture_secret_do_not_log";
+        Environment.SetEnvironmentVariable("ELEVENLABS_API_KEY", errorSecret);
+        foreach (
+            var failure in new[]
+            {
+                (HttpStatusCode.BadRequest, "not-json " + VoiceTransport.PrivateProviderMessage),
+                (
+                    HttpStatusCode.BadRequest,
+                    J.Node(new { detail = new { status = "unsafe code\n" + VoiceTransport.PrivateProviderMessage } })
+                        .ToJsonString()
+                ),
+                (
+                    HttpStatusCode.BadRequest,
+                    J.Node(
+                            new
+                            {
+                                detail = new { status = errorSecret, message = VoiceTransport.PrivateProviderMessage },
+                            }
+                        )
+                        .ToJsonString()
+                ),
+                (HttpStatusCode.InternalServerError, "<html>" + VoiceTransport.PrivateProviderMessage + "</html>"),
+            }
+        )
+        {
+            var source = await NewSource("Invalid provider error fixture");
+            transport.CloneErrorStatus = failure.Item1;
+            transport.CloneErrorBody = failure.Item2;
+            var code = failure.Item1 == HttpStatusCode.BadRequest ? "PROVIDER_ERROR" : "PROVIDER_OUTCOME_UNKNOWN";
+            var errorJob = await Execute(
+                Clone(source, "invalid-provider-body-" + source.Str("item_id")),
+                "failed",
+                code
+            );
+            var journal = studio.Store.Request(
+                studio.Store.Job(errorJob.Str("job_id"))["snapshot"]!.Str("operation_key")
+            )!;
+            Check(
+                journal.Str("state") == (failure.Item1 == HttpStatusCode.BadRequest ? "rejected" : "unknown")
+                    && journal["provider_status"] == null
+                    && !journal.ToJsonString().Contains(VoiceTransport.PrivateProviderMessage, StringComparison.Ordinal)
+                    && !errorJob
+                        .ToJsonString()
+                        .Contains(VoiceTransport.PrivateProviderMessage, StringComparison.Ordinal)
+                    && !journal.ToJsonString().Contains(errorSecret, StringComparison.Ordinal)
+                    && !errorJob.ToJsonString().Contains(errorSecret, StringComparison.Ordinal),
+                "malformed, unsafe or secret-valued provider status retains HTTP classification and hides body"
+            );
+        }
+        transport.CloneErrorBody = null;
+        Environment.SetEnvironmentVariable("ELEVENLABS_API_KEY", "offline-fixture-not-a-secret");
 
         try
         {
@@ -540,7 +686,215 @@ public static class VoiceAcceptance
             );
         }
         Check(true, "clone and preview jobs satisfy contract");
-        Check(transport.MultipartValid, "multipart endpoint, original bytes, filename and request label verified");
+        var verificationSource = await NewSource("Verification settings fixture");
+        transport.RequireVerification = true;
+        var verificationClone = await Execute(Clone(verificationSource, "verification-settings"));
+        var verificationProfile = verificationClone["result"]!["profile"]!;
+        var verificationSettings = new VoiceSettings
+        {
+            Stability = .5,
+            SimilarityBoost = .75,
+            Style = 0,
+            UseSpeakerBoost = true,
+            Speed = 1,
+        };
+        var verificationRequests = transport.Requests;
+        verificationProfile = studio.Voices.Configure(
+            verificationProfile.Str("profile_id"),
+            verificationProfile.Int("revision"),
+            verificationSettings,
+            "Configure without bypassing provider verification"
+        );
+        Check(
+            verificationProfile.Bool("requires_verification")
+                && verificationProfile.Str("state") == "verification_required"
+                && transport.Requests == verificationRequests,
+            "configuration preserves provider verification gate without HTTP"
+        );
+        transport.RequireVerification = false;
+        var beforeSettings = studio.Voices.Profile(restoredProfile.Str("profile_id"));
+        var immutableProfile = J.Canonical(beforeSettings);
+        var previousDescriptor = studio.Voices.Resolve(
+            J.Node(new { profile_id = beforeSettings.Str("profile_id"), revision = beforeSettings.Int("revision") })
+        );
+        var originalDescriptor = studio.Store.Job(final.Str("job_id"))["snapshot"]!["voices"]!
+            .AsObject()
+            .First()
+            .Value!;
+        Check(
+            previousDescriptor["voice_settings"]!["speed"] == null
+                && Speech.CacheKey(text, previousDescriptor) == Speech.CacheKey(text, originalDescriptor),
+            "V4 profiles retain the same cache key for unchanged effective settings"
+        );
+        var settings = new VoiceSettings
+        {
+            Stability = .3,
+            SimilarityBoost = .85,
+            Style = .6,
+            UseSpeakerBoost = true,
+            Speed = .7,
+        };
+        var configurationRequests = transport.Requests;
+        foreach (
+            var invalid in new[]
+            {
+                settings with
+                {
+                    Stability = -.01,
+                },
+                settings with
+                {
+                    Stability = 1.01,
+                },
+                settings with
+                {
+                    SimilarityBoost = -.01,
+                },
+                settings with
+                {
+                    SimilarityBoost = 1.01,
+                },
+                settings with
+                {
+                    Style = -.01,
+                },
+                settings with
+                {
+                    Style = 1.01,
+                },
+                settings with
+                {
+                    Speed = .69,
+                },
+                settings with
+                {
+                    Speed = 1.21,
+                },
+                settings with
+                {
+                    Stability = double.NaN,
+                },
+                settings with
+                {
+                    Speed = double.PositiveInfinity,
+                },
+            }
+        )
+        {
+            Reject(
+                () =>
+                    studio.Voices.Configure(
+                        beforeSettings.Str("profile_id"),
+                        beforeSettings.Int("revision"),
+                        invalid,
+                        "Invalid settings fixture"
+                    ),
+                "VALIDATION_ERROR"
+            );
+        }
+        Reject(
+            () => studio.Voices.Configure(beforeSettings.Str("profile_id"), 0, settings, "Invalid revision"),
+            "VALIDATION_ERROR"
+        );
+        Reject(
+            () =>
+                studio.Voices.Configure(
+                    beforeSettings.Str("profile_id"),
+                    beforeSettings.Int("revision"),
+                    settings,
+                    " "
+                ),
+            "VALIDATION_ERROR"
+        );
+        var configured = studio.Voices.Configure(
+            beforeSettings.Str("profile_id"),
+            beforeSettings.Int("revision"),
+            settings,
+            "Slower delivery fixture; no similarity claim"
+        );
+        Check(
+            configured.Int("revision") == beforeSettings.Int("revision") + 1
+                && configured.Str("state") == "pending_review"
+                && configured["review_note"] == null
+                && J.Canonical(configured["voice_settings"]!) == J.Canonical(J.Node(settings))
+                && J.Canonical(studio.Voices.Profile(beforeSettings.Str("profile_id"), beforeSettings.Int("revision")))
+                    == immutableProfile,
+            "configuration resets approval and preserves immutable previous profile"
+        );
+        Reject(
+            () =>
+                studio.Voices.Configure(
+                    beforeSettings.Str("profile_id"),
+                    beforeSettings.Int("revision"),
+                    settings,
+                    "Stale revision"
+                ),
+            "REVISION_CONFLICT"
+        );
+        Reject(
+            () => studio.Voices.Review(configured.Str("profile_id"), configured.Int("revision"), true, "Old preview"),
+            "VOICE_PREVIEW_REQUIRED"
+        );
+        Reject(
+            () =>
+                studio.Voices.StartPreview(
+                    configured.Str("profile_id"),
+                    configured.Int("revision"),
+                    text,
+                    false,
+                    0,
+                    "settings-require-new-audio"
+                ),
+            "TTS_LIMIT_EXCEEDED"
+        );
+        var settingsPreview = studio.Voices.StartPreview(
+            configured.Str("profile_id"),
+            configured.Int("revision"),
+            text,
+            true,
+            120,
+            "settings-descriptor-fixture"
+        );
+        var configuredDescriptor = studio.Store.Job(settingsPreview.Str("job_id"))["snapshot"]!["voice"]!;
+        Check(
+            J.Canonical(configuredDescriptor["voice_settings"]!) == J.Canonical(Speech.V4Settings(J.Node(settings)))
+                && Speech.CacheKey(text, configuredDescriptor) != Speech.CacheKey(text, previousDescriptor),
+            "configured delivery is pinned into synthesis descriptor and changes audio cache key"
+        );
+        studio.Cancel(settingsPreview.Str("job_id"));
+        foreach (
+            var edge in new[]
+            {
+                settings with
+                {
+                    Stability = 0,
+                    SimilarityBoost = 0,
+                    Style = 0,
+                    UseSpeakerBoost = false,
+                    Speed = .7,
+                },
+                settings with
+                {
+                    Stability = 1,
+                    SimilarityBoost = 1,
+                    Style = 1,
+                    Speed = 1.2,
+                },
+            }
+        )
+        {
+            configured = studio.Voices.Configure(
+                configured.Str("profile_id"),
+                configured.Int("revision"),
+                edge,
+                "Inclusive range boundary fixture"
+            );
+        }
+        Check(transport.Requests == configurationRequests, "configuration and validation perform no HTTP requests");
+        Check(
+            transport.MultipartValid,
+            "multipart endpoint, original bytes, filename and description marker verified; custom labels omitted"
+        );
         J.Write(
             Path.Combine(config.Data, "voice-acceptance.json"),
             J.Node(
@@ -558,21 +912,34 @@ public static class VoiceAcceptance
         Console.WriteLine("REPORT " + Path.Combine(config.Data, "voice-acceptance.json"));
     }
 
-    private sealed class VoiceTransport(byte[] speech, byte[] originalSample) : HttpMessageHandler
+    internal sealed class VoiceTransport(
+        byte[] speech,
+        byte[] originalSample,
+        IReadOnlyDictionary<string, byte[]>? speechByText = null
+    ) : HttpMessageHandler
     {
+        public const string PrivateProviderMessage = "offline-private-provider-message-do-not-log";
+        public int Requests { get; private set; }
         public int Clones { get; private set; }
         public int Syntheses { get; private set; }
         public bool RequireVerification { get; set; }
         public bool FailAfterDispatch { get; set; }
         public bool BlockAfterDispatch { get; set; }
         public bool RateLimited { get; set; }
+        public string? CloneErrorBody { get; set; }
+        public HttpStatusCode CloneErrorStatus { get; set; }
         public TaskCompletionSource Dispatched { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public bool MultipartValid { get; private set; }
         public string LastVoiceId { get; private set; } = "";
-        private readonly Dictionary<string, string> labels = [];
+        public string LastDescription { get; private set; } = "";
+        public string? DescriptionOverride { get; set; }
+        public bool LegacyLabelsOnly { get; set; }
+        private readonly Dictionary<string, string> descriptions = [];
+        private readonly Dictionary<string, string> operations = [];
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
+            Requests++;
             if (request.RequestUri!.Host != "api.elevenlabs.io")
                 throw new Exception("Offline fixture rejected unknown host");
             var path = request.RequestUri.AbsolutePath;
@@ -583,14 +950,29 @@ public static class VoiceAcceptance
                     p.Headers.ContentDisposition!.Name!.Trim('"')
                 );
                 var bytes = await parts["files"].ReadAsByteArrayAsync(ct);
-                var operation = JsonNode.Parse(await parts["labels"].ReadAsStringAsync(ct))!.Str("toon_request");
+                LastDescription = await parts["description"].ReadAsStringAsync(ct);
+                var marker = Regex.Match(
+                    LastDescription,
+                    "\\n\\n\\[toon_request:(clone-[0-9a-f]{64})\\]\\z",
+                    RegexOptions.CultureInvariant
+                );
                 MultipartValid =
                     bytes.AsSpan().SequenceEqual(originalSample)
                     && Encoding.ASCII.GetString(bytes, 0, 4) == "RIFF"
                     && parts["files"].Headers.ContentDisposition!.FileName!.Trim('"') == "sample.wav"
-                    && await parts["remove_background_noise"].ReadAsStringAsync(ct) == "false";
+                    && await parts["remove_background_noise"].ReadAsStringAsync(ct) == "false"
+                    && !parts.ContainsKey("labels")
+                    && marker.Success
+                    && !LastDescription.Contains(
+                        request.Headers.GetValues("xi-api-key").Single(),
+                        StringComparison.Ordinal
+                    )
+                    && !LastDescription.Contains(PrivateProviderMessage, StringComparison.Ordinal);
+                if (!MultipartValid)
+                    throw new Exception("Offline clone fixture rejected invalid multipart metadata");
                 LastVoiceId = "fixture_voice_" + Clones;
-                labels[LastVoiceId] = operation;
+                descriptions[LastVoiceId] = LastDescription;
+                operations[LastVoiceId] = marker.Groups[1].Value;
                 if (BlockAfterDispatch)
                 {
                     Dispatched.TrySetResult();
@@ -599,12 +981,32 @@ public static class VoiceAcceptance
 
                 if (RateLimited)
                 {
-                    var limited = new HttpResponseMessage(HttpStatusCode.TooManyRequests);
+                    var limited = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+                    {
+                        Content = new StringContent(
+                            J.Node(
+                                    new
+                                    {
+                                        detail = new
+                                        {
+                                            status = "rate_limit_exceeded",
+                                            message = PrivateProviderMessage,
+                                        },
+                                    }
+                                )
+                                .ToJsonString(),
+                            Encoding.UTF8,
+                            "application/json"
+                        ),
+                    };
                     limited.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(
                         TimeSpan.FromMinutes(5)
                     );
                     return limited;
                 }
+
+                if (CloneErrorBody != null)
+                    return new HttpResponseMessage(CloneErrorStatus) { Content = new StringContent(CloneErrorBody) };
 
                 if (FailAfterDispatch)
                     throw new HttpRequestException("Offline fixture disconnect");
@@ -618,7 +1020,12 @@ public static class VoiceAcceptance
                     new
                     {
                         voice_id = id,
-                        labels = new { toon_request = labels.GetValueOrDefault(id, "wrong-label") },
+                        description = LegacyLabelsOnly
+                            ? null
+                            : DescriptionOverride ?? descriptions.GetValueOrDefault(id, "Unrelated voice"),
+                        labels = LegacyLabelsOnly
+                            ? new { toon_request = operations.GetValueOrDefault(id, "wrong-label") }
+                            : null,
                         voice_verification = new
                         {
                             requires_verification = RequireVerification,
@@ -630,8 +1037,29 @@ public static class VoiceAcceptance
 
             if (request.Method == HttpMethod.Post && path.EndsWith("/with-timestamps", StringComparison.Ordinal))
             {
+                var payload = JsonNode.Parse(await request.Content!.ReadAsStringAsync(ct))!;
+                if (
+                    path != "/v1/text-to-dialogue/with-timestamps"
+                    || payload.Str("model_id") != "eleven_v4"
+                    || payload.Str("language_code") != "ru"
+                    || payload["text"] != null
+                    || payload["voice_settings"] != null
+                    || payload["inputs"]!.AsArray().Count != 1
+                    || payload["settings"]?["stability"] == null
+                    || payload["settings"]?["similarity"] == null
+                    || payload["settings"]!.AsObject().Count != 2
+                )
+                {
+                    throw new Exception("Expected V4 dialogue payload with only supported settings");
+                }
                 Syntheses++;
-                return Json(new { audio_base64 = Convert.ToBase64String(speech) });
+                var bytes = speech;
+                if (speechByText != null)
+                {
+                    var text = payload["inputs"]![0]!.Str("text");
+                    bytes = speechByText[text];
+                }
+                return Json(new { audio_base64 = Convert.ToBase64String(bytes) });
             }
             throw new Exception("Offline fixture rejected unknown endpoint");
         }

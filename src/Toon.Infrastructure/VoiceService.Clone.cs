@@ -1,5 +1,7 @@
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Toon.Core;
 
 namespace Toon.Infrastructure;
@@ -97,7 +99,7 @@ public sealed partial class VoiceService
                 analysis = package["voice_analysis"]!.DeepClone(),
                 operation_key = operation,
                 consent_revision = expected,
-                adapter_version = "ivc-v1",
+                adapter_version = "ivc-v2-description-marker",
             }
         );
         return studio.Job(store.Enqueue(request, snapshot).Str("job_id"));
@@ -206,9 +208,11 @@ public sealed partial class VoiceService
         request.Headers.Add("xi-api-key", secret);
         using var form = new MultipartFormDataContent();
         form.Add(new StringContent(source["submission"]!.Str("display_name")), "name");
-        form.Add(new StringContent(source["submission"]!.Str("description")), "description");
+        form.Add(
+            new StringContent(source["submission"]!.Str("description") + "\n\n" + CloneMarker(operation)),
+            "description"
+        );
         form.Add(new StringContent("false"), "remove_background_noise");
-        form.Add(new StringContent(J.Node(new { toon_request = operation }).ToJsonString()), "labels");
         var file = new StreamContent(File.OpenRead(samplePath));
         file.Headers.ContentType = new MediaTypeHeaderValue(
             Path.GetExtension(samplePath) == ".wav" ? "audio/wav" : "audio/mpeg"
@@ -229,6 +233,12 @@ public sealed partial class VoiceService
                 var rejected = (int)response.StatusCode is >= 400 and < 500;
                 journal["state"] = rejected ? "rejected" : "unknown";
                 journal["http_status"] = (int)response.StatusCode;
+                var providerStatus = CloneProviderStatus(await response.Content.ReadAsStringAsync(ct), secret);
+                if (providerStatus != null)
+                {
+                    journal["provider_status"] = providerStatus;
+                }
+
                 if (response.Headers.RetryAfter != null)
                 {
                     journal["retry_at"] = (
@@ -237,11 +247,16 @@ public sealed partial class VoiceService
                     ).ToString("O");
                 }
                 store.Journal(operation, journal.Str("state"), journal);
+                var status = $"HTTP {(int)response.StatusCode}";
+                if (providerStatus != null)
+                {
+                    status += ", " + providerStatus;
+                }
                 throw new ToonException(
                     rejected ? "PROVIDER_ERROR" : "PROVIDER_OUTCOME_UNKNOWN",
                     rejected
-                        ? "Provider rejected voice cloning; response body is not logged"
-                        : "Clone outcome unknown; reconcile provider history before another request"
+                        ? $"Provider rejected voice cloning ({status}); response body is not logged"
+                        : $"Clone outcome unknown ({status}); reconcile provider history before another request"
                 );
             }
             var body = JsonNode.Parse(await response.Content.ReadAsStringAsync(ct))!;
@@ -270,6 +285,39 @@ public sealed partial class VoiceService
                 "Clone request interrupted or response invalid; do not automatically repeat it. Reconcile the provider voice ID"
             );
         }
+    }
+
+    private static string? CloneProviderStatus(string body, string secret)
+    {
+        try
+        {
+            if (
+                JsonNode.Parse(body) is JsonObject root
+                && root["detail"] is JsonObject detail
+                && detail["status"] is JsonValue value
+                && value.TryGetValue<string>(out var status)
+                && Regex.IsMatch(status, "\\A[A-Za-z0-9_]{1,80}\\z", RegexOptions.CultureInvariant)
+                && !status.Contains(secret, StringComparison.Ordinal)
+            )
+                return status;
+        }
+        catch (JsonException)
+        {
+            // An invalid error body must not change the HTTP outcome classification.
+        }
+        return null;
+    }
+
+    private static string CloneMarker(string operation) => "[toon_request:" + operation + "]";
+
+    private static bool MatchesCloneOperation(JsonNode body, string operation)
+    {
+        if (body["labels"]?["toon_request"]?.ToString() == operation)
+            return true;
+
+        return body["description"] is JsonValue value
+            && value.TryGetValue<string>(out var description)
+            && description.EndsWith("\n\n" + CloneMarker(operation), StringComparison.Ordinal);
     }
 
     private JsonNode RecordClone(JsonNode job, string voiceId, bool requiresVerification)
@@ -334,9 +382,9 @@ public sealed partial class VoiceService
         J.Require(journal != null, "VOICE_NOT_READY", "No clone request was dispatched");
         var body = await GetProviderVoice(providerVoiceId, ct);
         J.Require(
-            body["labels"]?["toon_request"]?.ToString() == job["snapshot"]!.Str("operation_key"),
+            MatchesCloneOperation(body, job["snapshot"]!.Str("operation_key")),
             "VOICE_RECONCILIATION_MISMATCH",
-            "Provider voice has no matching Toon request label"
+            "Provider voice has no matching Toon operation marker or legacy request label"
         );
         var profile = RecordClone(job, providerVoiceId, RequiresVerification(body));
         journal["state"] = "created";

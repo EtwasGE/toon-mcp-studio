@@ -59,15 +59,9 @@ public static class SubmissionTemplates
                     max_audio_seconds = config.MaxAudioSeconds,
                 },
                 instructions,
-                workflow = new[]
-                {
-                    "create_library_item",
-                    "import_library_material",
-                    "prepare_library_item",
-                    "get_job",
-                    "get_library_item",
-                    "publish_library_item",
-                },
+                workflow = ContentWorkflows.Tools(kind),
+                workflow_resource = "toon://workflows/" + kind,
+                guide_resource = "toon://guides/content-workflow",
                 schema_resource = "toon://library/submission-schema",
                 template_resource = $"toon://library/templates/{kind}/1.0.0",
                 render_supported = false,

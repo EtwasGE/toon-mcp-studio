@@ -47,7 +47,7 @@
 - [Риг](../contracts/character-rig.schema.json), [recipe](../contracts/character-recipe.schema.json), [пример recipe](../templates/library/character-recipe.json).
 - Только группы, path/ellipse/circle/rect и cutout; произвольные SVG/HTML/JS, URL, обработчики событий и CSS не принимаются. У импортированных файлов сохраняются allowlist, проверка декодирования и hash.
 - До 512 узлов, 256 KiB рига, 128 точек в полигоне; canvas 380×560, готовый фильм 1080×1920/30 fps.
-- Декорации реализованы в [задачах 7–8](ENVIRONMENTS.md); клонирование и назначение голосов остаются следующими этапами.
+- Декорации реализованы в [задачах 7–8](ENVIRONMENTS.md); клонирование и назначение голосов описаны в [VOICES.md](VOICES.md), общий MCP-процесс — в [CONTENT-WORKFLOW.md](CONTENT-WORKFLOW.md).
 
 ## Проверки
 
