@@ -219,6 +219,34 @@
                 {
                     "type": "object",
                     "additionalProperties": false,
+                    "required": [
+                        "kind",
+                        "instance_id",
+                        "prop_action"
+                    ],
+                    "properties": {
+                        "kind": {
+                            "const": "prop"
+                        },
+                        "instance_id": {
+                            "$ref": "#/$defs/id"
+                        },
+                        "prop_action": {
+                            "enum": [
+                                "tap",
+                                "notification",
+                                "error",
+                                "puff",
+                                "sip",
+                                "open",
+                                "place"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
                     "required": ["kind", "character_id", "gesture_id"],
                     "properties": {
                         "kind": { "const": "gesture" },
@@ -320,6 +348,43 @@
                 "content": { "$ref": "#/$defs/overlayContent" }
             }
         },
+        "propInstance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "instance_id",
+                "prop_id",
+                "version",
+                "character_id",
+                "hand"
+            ],
+            "properties": {
+                "instance_id": {
+                    "$ref": "#/$defs/id"
+                },
+                "prop_id": {
+                    "enum": [
+                        "phone",
+                        "cigarette",
+                        "beer_mug",
+                        "beer_can",
+                        "bottle"
+                    ]
+                },
+                "version": {
+                    "const": "1.0.0"
+                },
+                "character_id": {
+                    "$ref": "#/$defs/id"
+                },
+                "hand": {
+                    "enum": [
+                        "left",
+                        "right"
+                    ]
+                }
+            }
+        },
         "scene": {
             "type": "object",
             "additionalProperties": false,
@@ -329,6 +394,7 @@
                 "kind": { "enum": ["dialogue", "hold"] },
                 "background": { "$ref": "#/$defs/assetRef" },
                 "camera": { "$ref": "#/$defs/camera" },
+                "props": {"type":"array","maxItems":4,"items":{"$ref":"#/$defs/propInstance"}},
                 "cast": { "type": "array", "minItems": 0, "maxItems": 2, "items": { "$ref": "#/$defs/castMember" } },
                 "utterances": {
                     "type": "array",

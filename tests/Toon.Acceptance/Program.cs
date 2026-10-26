@@ -52,6 +52,12 @@ var config = new Config();
 var studio = new Studio(config);
 var results = new JsonArray();
 var errors = 0;
+if (args.Contains("--props"))
+{
+    await PropAcceptance.Run(config);
+    return;
+}
+
 if (args.Contains("--sounds"))
 {
     await SoundAcceptance.Run(config);

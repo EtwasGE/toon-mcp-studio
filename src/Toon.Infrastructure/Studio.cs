@@ -12,6 +12,7 @@ public sealed partial class Studio
     public ContentLibrary Library { get; }
     public VoiceService Voices { get; }
     public SoundEffects Sounds { get; }
+    public PropLibrary Props { get; }
 
     public Studio(Config config, HttpClient? voiceClient = null)
     {
@@ -22,6 +23,7 @@ public sealed partial class Studio
         Library = new ContentLibrary(config, Store, Assets);
         Voices = new VoiceService(this, voiceClient);
         Sounds = new SoundEffects(this, voiceClient);
+        Props = new PropLibrary(this);
     }
 
     public void CheckDraft(JsonNode project, JsonNode? resolvedRigs = null, JsonNode? resolvedEnvironments = null)
@@ -36,7 +38,7 @@ public sealed partial class Studio
 
     public JsonNode Create(JsonNode project)
     {
-        project = Voices.Pin(project);
+        project = Props.Pin(Voices.Pin(project));
         CheckDraft(project);
         var result = Store.SaveProject(project);
         result["readiness"] = Validate(result.Str("project_id"), result.Int("revision"));
@@ -46,7 +48,7 @@ public sealed partial class Studio
 
     public JsonNode Update(string id, int expected, JsonNode project)
     {
-        project = Voices.Pin(project);
+        project = Props.Pin(Voices.Pin(project));
         J.Require(expected > 0, "VALIDATION_ERROR", "expected_revision must be positive");
         CheckDraft(project);
         var result = Store.SaveProject(project, id, expected);
@@ -538,6 +540,7 @@ public sealed partial class Studio
             "backgrounds" => Library.EnvironmentCatalog(),
             "gestures" => J.Node(Validation.Gestures),
             "sound_effects" => Sounds.Catalog(),
+            "props" => Props.Catalog(),
             "voices" => J.Node(
                 Config
                     .Voices.AsObject()

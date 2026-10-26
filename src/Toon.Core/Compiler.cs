@@ -184,7 +184,7 @@ public static class Compiler
             {
                 var f = J.Frame(Anchor(e["at"]!));
                 var a = e["action"]!;
-                var channel = a.Str("kind") + ":" + a["character_id"]?.ToString();
+                var channel = a.Str("kind") + ":" + (a["instance_id"] ?? a["character_id"])?.ToString();
                 J.Require(f < J.Frame(sample / 48.0), "VALIDATION_ERROR", "Event must start before scene ends");
                 J.Require(
                     collisions.Add(channel + ":" + f),
@@ -194,7 +194,10 @@ public static class Compiler
                 if (e["sound"] is JsonNode sound)
                 {
                     // tap_phone makes contact at frame 18; audio shares that exact frame.
-                    var contact = a["gesture_id"]?.ToString() == "tap_phone" ? 18 : 0;
+                    var contact =
+                        a.Str("kind") == "prop" ? Props.ContactFrame
+                        : a["gesture_id"]?.ToString() == "tap_phone" ? 18
+                        : 0;
                     var soundFrame = f + contact + J.Frame(sound.Int("offset_ms"));
                     J.Require(soundFrame < J.Frame(sample / 48.0), "VALIDATION_ERROR", "Sound starts outside scene");
                     sounds.Add(
@@ -210,13 +213,34 @@ public static class Compiler
                         )
                     );
                 }
+                var compiledAction = a.DeepClone();
+                if (a.Str("kind") == "prop")
+                {
+                    J.Require(
+                        f + Props.DurationFrames <= J.Frame(sample / 48.0),
+                        "VALIDATION_ERROR",
+                        "Prop action extends beyond scene"
+                    );
+                    J.Require(
+                        !events.Any(previous =>
+                            previous!["action"]!.Str("kind") == "prop"
+                            && previous["action"]!.Str("instance_id") == a.Str("instance_id")
+                            && Math.Abs(previous.Int("frame") - f) < Props.DurationFrames
+                        ),
+                        "AMBIGUOUS_CUE",
+                        "Prop actions overlap"
+                    );
+                    compiledAction["contact_frame"] = f + Props.ContactFrame;
+                    compiledAction["end_frame_exclusive"] = f + Props.DurationFrames;
+                }
+
                 events.Add(
                     J.Node(
                         new
                         {
                             event_id = e.Str("event_id"),
                             frame = f,
-                            action = a.DeepClone(),
+                            action = compiledAction,
                         }
                     )
                 );
@@ -281,6 +305,7 @@ public static class Compiler
                         background = scene["background"]!.DeepClone(),
                         camera = scene["camera"]!.DeepClone(),
                         cast = scene["cast"]!.DeepClone(),
+                        props = scene["props"]?.DeepClone() ?? new JsonArray(),
                         events = new JsonArray(
                             events.Select(x => x!).OrderBy(x => x.Int("frame")).Select(x => x.DeepClone()).ToArray()
                         ),

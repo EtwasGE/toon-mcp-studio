@@ -14,6 +14,7 @@ public sealed partial class Studio
                 example = J.Read(Path.Combine(Config.Root, "templates/episode.json")),
                 characters = Catalog("characters"),
                 backgrounds = Catalog("backgrounds"),
+                props = Catalog("props"),
             }
         );
 
@@ -72,15 +73,42 @@ public sealed partial class Studio
                     );
                 }
 
+                if (line["prop_action"] is JsonNode propAction)
+                {
+                    var instance = scene
+                        .Items("props")
+                        .FirstOrDefault(p => p.Str("instance_id") == propAction.Str("instance_id"));
+                    J.Require(
+                        instance != null && instance.Str("character_id") == speaker,
+                        "VALIDATION_ERROR",
+                        "Line prop action must belong to the speaker"
+                    );
+                    events.Add(
+                        J.Node(
+                            new
+                            {
+                                event_id = id + "_prop",
+                                at = new { kind = "utterance_start", utterance_id = id },
+                                action = new
+                                {
+                                    kind = "prop",
+                                    instance_id = propAction.Str("instance_id"),
+                                    prop_action = propAction.Str("action"),
+                                },
+                            }
+                        )
+                    );
+                }
+
                 if (line["sound"] is JsonNode sound)
                 {
-                    if (line["gesture"] != null)
+                    if (line["gesture"] != null || line["prop_action"] != null)
                     {
                         events[^1]!["sound"] = sound.DeepClone();
                     }
                     else
                     {
-                        throw new ToonException("VALIDATION_ERROR", "A line sound requires an explicit gesture");
+                        throw new ToonException("VALIDATION_ERROR", "A line sound requires a gesture or prop action");
                     }
                 }
 
@@ -129,6 +157,7 @@ public sealed partial class Studio
                         scene_id = "scene_" + number,
                         kind = "dialogue",
                         background = scene["background"]!.DeepClone(),
+                        props = scene["props"]?.DeepClone() ?? new JsonArray(),
                         camera = scene["camera"]?.DeepClone() ?? J.Node(new { shot = "wide" }),
                         cast = cast.Select(
                             (id, index) =>
@@ -186,7 +215,7 @@ public sealed partial class Studio
             "VALIDATION_ERROR",
             "Episode creation requires an idempotency key of 1–128 characters"
         );
-        project = Voices.Pin(project);
+        project = Props.Pin(Voices.Pin(project));
         CheckDraft(project);
         var saved = Store.SaveProject(project, creationKey: key, creationHash: J.Hash(J.Canonical(brief)));
         saved["readiness"] = Validate(saved.Str("project_id"), saved.Int("revision"));

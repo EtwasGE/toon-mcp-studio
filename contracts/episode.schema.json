@@ -140,7 +140,8 @@
                                         "shake_head",
                                         "raise_hand",
                                         "shrug",
-                                        "show_phone", "tap_phone"
+                                        "show_phone",
+                                        "tap_phone"
                                     ]
                                 },
                                 "emotion": {
@@ -179,12 +180,43 @@
                                 },
                                 "close_up": {
                                     "type": "boolean"
+                                },
+                                "prop_action": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "instance_id",
+                                        "action"
+                                    ],
+                                    "properties": {
+                                        "instance_id": {
+                                            "$ref": "#/$defs/id"
+                                        },
+                                        "action": {
+                                            "enum": [
+                                                "tap",
+                                                "notification",
+                                                "error",
+                                                "puff",
+                                                "sip",
+                                                "open",
+                                                "place"
+                                            ]
+                                        }
+                                    }
                                 }
                             },
                             "required": [
                                 "speaker",
                                 "text"
                             ]
+                        }
+                    },
+                    "props": {
+                        "type": "array",
+                        "maxItems": 4,
+                        "items": {
+                            "$ref": "#/$defs/propInstance"
                         }
                     }
                 },
@@ -320,6 +352,43 @@
                     }
                 }
             ]
+        },
+        "propInstance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "instance_id",
+                "prop_id",
+                "version",
+                "character_id",
+                "hand"
+            ],
+            "properties": {
+                "instance_id": {
+                    "$ref": "#/$defs/id"
+                },
+                "prop_id": {
+                    "enum": [
+                        "phone",
+                        "cigarette",
+                        "beer_mug",
+                        "beer_can",
+                        "bottle"
+                    ]
+                },
+                "version": {
+                    "const": "1.0.0"
+                },
+                "character_id": {
+                    "$ref": "#/$defs/id"
+                },
+                "hand": {
+                    "enum": [
+                        "left",
+                        "right"
+                    ]
+                }
+            }
         }
     }
 }

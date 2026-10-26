@@ -88,6 +88,18 @@ await builder.Build().RunAsync();
 
 public sealed class ToonTools(Studio studio)
 {
+    [McpServerTool(UseStructuredContent = true, Name = "bind_prop_sound", Destructive = false)]
+    [Description(
+        "Bind existing audio to a prop action. expected_binding_revision=0 creates the default. New projects pin it; existing revisions do not change. No paid generation."
+    )]
+    public Task<CallToolResult> BindPropSound(
+        string prop_id,
+        string action,
+        JsonObject asset,
+        int expected_binding_revision,
+        double gain_db = -12
+    ) => Call(() => studio.Props.Bind(prop_id, action, asset, expected_binding_revision, gain_db));
+
     [McpServerTool(UseStructuredContent = true, Name = "get_episode_template", ReadOnly = true)]
     [Description(
         "Get the short episode brief schema, example and available characters/backgrounds. Choose published versions; creation does not synthesize speech."
@@ -390,11 +402,11 @@ public sealed class ToonTools(Studio studio)
     [
         McpServerTool(UseStructuredContent = true, Name = "get_catalog", ReadOnly = true),
         Description(
-            "Read render-compatible styles, characters, backgrounds, gestures, voices or sound_effects. kind=library lists source-package heads; use list_library_items for filters."
+            "Read render-compatible styles, characters, backgrounds, props, gestures, voices or sound_effects. kind=library lists source-package heads; use list_library_items for filters."
         )
     ]
     public Task<CallToolResult> Catalog(
-        [Description("styles, characters, backgrounds, gestures, voices, sound_effects or library")] string kind
+        [Description("styles, characters, backgrounds, props, gestures, voices, sound_effects or library")] string kind
     ) => Call(() => studio.Catalog(kind));
 
     [

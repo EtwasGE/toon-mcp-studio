@@ -1,6 +1,6 @@
-param([switch]$Quick,[switch]$Library,[switch]$Characters,[switch]$Environments,[switch]$Voices,[switch]$Workflow,[switch]$Studio,[switch]$Sounds)
+param([switch]$Quick,[switch]$Library,[switch]$Characters,[switch]$Environments,[switch]$Voices,[switch]$Workflow,[switch]$Studio,[switch]$Sounds,[switch]$Props)
 $ErrorActionPreference = 'Stop'
-if (([int]$Quick.IsPresent + [int]$Library.IsPresent + [int]$Characters.IsPresent + [int]$Environments.IsPresent + [int]$Voices.IsPresent + [int]$Workflow.IsPresent + [int]$Studio.IsPresent + [int]$Sounds.IsPresent) -gt 1) { throw 'Choose one of -Quick, -Library, -Characters, -Environments, -Voices, -Workflow, -Studio, -Sounds' }
+if (([int]$Quick.IsPresent + [int]$Library.IsPresent + [int]$Characters.IsPresent + [int]$Environments.IsPresent + [int]$Voices.IsPresent + [int]$Workflow.IsPresent + [int]$Studio.IsPresent + [int]$Sounds.IsPresent + [int]$Props.IsPresent) -gt 1) { throw 'Choose one of -Quick, -Library, -Characters, -Environments, -Voices, -Workflow, -Studio, -Sounds, -Props' }
 Set-Location (Split-Path $PSScriptRoot -Parent)
 dotnet build Toon.slnx --no-restore
 if ($LASTEXITCODE) { throw 'Build failed' }
@@ -13,7 +13,8 @@ try {
         New-Item -ItemType Junction -Path $link -Target (Join-Path $PWD 'contracts') | Out-Null
         $madeLink = $true
     }
-    if ($Sounds) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --sounds }
+    if ($Props) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --props }
+    elseif ($Sounds) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --sounds }
     elseif ($Studio) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --studio }
     elseif ($Workflow) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --workflow }
     elseif ($Voices) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --voices }

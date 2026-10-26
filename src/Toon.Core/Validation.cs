@@ -81,6 +81,7 @@ public static class Validation
         foreach (var s in p.Items("scenes"))
         {
             var sp = $"/scenes/{sceneIndex++}";
+            Props.ValidateScene(s);
             Unique(s, "scene_id", sp);
             J.Require(
                 resolvedEnvironments?[s["background"]!.Str("asset_id") + "@" + s["background"]!.Str("version")] != null
@@ -165,6 +166,10 @@ public static class Validation
                 if (a.Str("kind") == "camera")
                 {
                     Camera(a["camera"]!, ep + "/action/camera");
+                }
+                else if (a.Str("kind") == "prop")
+                {
+                    Props.ValidateEvent(s, e);
                 }
                 else
                 {

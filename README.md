@@ -133,3 +133,5 @@ NuGet закреплён `packages.lock.json`, npm — `renderer/package-lock.js
 ## Skill Toon и звуки действий
 
 Короткий запрос, уточнение постановки, библиотека ElevenLabs SFX и синхронизация нажатия телефона: [инструкция](docs/SOUND-EFFECTS.md). Skill: [toon](skills/toon/SKILL.md).
+
+Отдельные предметы в руках персонажей, действия и привязки звуков: [реквизит](docs/PROPS.md).

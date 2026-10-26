@@ -243,8 +243,12 @@ public sealed class Media(Config config)
         var loudness = await Loudness(path, ct);
         var integrated = double.Parse(loudness.Str("input_i"), CultureInfo.InvariantCulture);
         var peak = double.Parse(loudness.Str("input_tp"), CultureInfo.InvariantCulture);
+        // Sparse effects have a wider crest factor than speech. Keep the peak ceiling,
+        // but do not force quiet gaps and short transients to speech loudness.
+        var effectsOnly = !timeline.Items("utterances").Any() && timeline.Items("sounds").Any();
+        var loudnessValid = effectsOnly ? integrated is >= -30 and <= -15 : Math.Abs(integrated + 16) <= 1;
         J.Require(
-            double.IsFinite(integrated) && Math.Abs(integrated + 16) <= 1 && peak <= -1,
+            double.IsFinite(integrated) && loudnessValid && peak <= -1,
             "VERIFY_FAILED",
             $"Loudness outside limits: {integrated} LUFS, {peak} dBTP"
         );
@@ -256,6 +260,7 @@ public sealed class Media(Config config)
                 full_decode = true,
                 duration_seconds = duration,
                 loudness_lufs = integrated,
+                loudness_profile = effectsOnly ? "effects-only" : "speech",
                 true_peak_dbtp = peak,
                 streams = probe["streams"]!.DeepClone(),
                 mouth_mode = "approximate/amplitude",

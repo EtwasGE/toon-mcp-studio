@@ -101,6 +101,26 @@ export function Film({ timeline }: { timeline: Timeline }) {
                                     mouth={mouth}
                                     gesture={gesture?.action.gesture_id ?? 'idle'}
                                     age={gesture ? frame - gesture.frame : 999}
+                                    heldProps={(scene.props ?? [])
+                                        .filter((p) => p.character_id === c.character_id)
+                                        .map((p) => ({
+                                            ...p,
+                                            opened: scene.events.some(
+                                                (e) =>
+                                                    e.action.kind === 'prop' &&
+                                                    e.action.instance_id === p.instance_id &&
+                                                    e.action.prop_action === 'open' &&
+                                                    (e.action.contact_frame ?? Infinity) <= frame
+                                            ),
+                                            cue: scene.events
+                                                .filter(
+                                                    (e) =>
+                                                        e.action.kind === 'prop' &&
+                                                        e.action.instance_id === p.instance_id &&
+                                                        e.frame <= frame
+                                                )
+                                                .at(-1)
+                                        }))}
                                 />
                             </g>
                         );

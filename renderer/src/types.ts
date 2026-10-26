@@ -9,6 +9,10 @@ export type Cue = {
         emotion_id?: string;
         camera?: Camera;
         transition_ms?: number;
+        instance_id?: string;
+        prop_action?: string;
+        contact_frame?: number;
+        end_frame_exclusive?: number;
     };
 };
 export type Overlay = {
@@ -23,6 +27,7 @@ export type Overlay = {
     };
 };
 export type Scene = {
+    props?: PropInstance[];
     scene_id: string;
     start_frame: number;
     end_frame_exclusive: number;
@@ -31,6 +36,13 @@ export type Scene = {
     cast: Cast[];
     events: Cue[];
     overlays: Overlay[];
+};
+export type PropInstance = {
+    instance_id: string;
+    prop_id: 'phone' | 'cigarette' | 'beer_mug' | 'beer_can' | 'bottle';
+    version: '1.0.0';
+    character_id: string;
+    hand: 'left' | 'right';
 };
 export type Caption = {
     text: string;

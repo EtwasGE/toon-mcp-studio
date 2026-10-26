@@ -2,6 +2,7 @@ import React, { useId } from 'react';
 import { Img, staticFile } from 'remotion';
 import buyer from '../../styles/warm_editorial_2d/characters/buyer.rig.json';
 import advisor from '../../styles/warm_editorial_2d/characters/advisor.rig.json';
+import { HeldPropLayer, type HeldProp } from './Props';
 
 export type RigNode = {
     type: 'group' | 'path' | 'ellipse' | 'circle' | 'rect' | 'cutout';
@@ -49,7 +50,8 @@ export function Rig({
     emotion,
     mouth,
     gesture,
-    age
+    age,
+    heldProps = []
 }: {
     id: string;
     rig?: CharacterRig;
@@ -60,6 +62,7 @@ export function Rig({
     mouth: number;
     gesture: string;
     age: number;
+    heldProps?: HeldProp[];
 }) {
     const prefix = useId().replace(/:/g, '');
     if (!rig) throw Error('ASSET_MISSING: character rig');
@@ -74,9 +77,21 @@ export function Rig({
     const nod = gesture === 'nod' && active ? Math.sin((age / duration) * Math.PI * 2) * 7 : 0;
     const shake = gesture === 'shake_head' && active ? Math.sin((age / duration) * Math.PI * 4) * 8 : 0;
     const headAngle = (motion.head_angles[emotion] ?? 0) + Math.sin((frame + motion.head_phase) / 42) * 1.4 + nod;
-    const phone = (gesture === 'show_phone' || tapping) && hold > 0;
+    const phone = heldProps.length === 0 && (gesture === 'show_phone' || tapping) && hold > 0;
     const tap = tapping && age >= 12 && age <= 24 ? Math.sin(((age - 12) / 12) * Math.PI) : 0;
     function draw(node: RigNode, key: string): React.ReactNode {
+        const held = heldProps.find((p) => node.motion === `${p.hand}_arm`);
+        if (held)
+            return (
+                <HeldPropLayer
+                    key={key}
+                    item={held}
+                    frame={frame}
+                    shoulder={node.pivot ?? (held.hand === 'left' ? [110, 250] : [270, 250])}
+                    part="arm"
+                />
+            );
+
         const w = node.when;
         if (
             w &&
@@ -170,6 +185,18 @@ export function Rig({
     return (
         <g transform={`translate(${shake},${Math.sin((frame + motion.body_phase) / 39) * 2})`}>
             {rig.layers.map((node, index) => draw(node, String(index)))}
+            {heldProps.map((item) => (
+                <HeldPropLayer
+                    key={item.instance_id}
+                    part="prop"
+                    item={item}
+                    frame={frame}
+                    shoulder={
+                        rig.layers.find((n) => n.motion === `${item.hand}_arm`)?.pivot ??
+                        (item.hand === 'left' ? [110, 250] : [270, 250])
+                    }
+                />
+            ))}
         </g>
     );
 }
