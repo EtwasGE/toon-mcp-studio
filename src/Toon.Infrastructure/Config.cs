@@ -42,6 +42,7 @@ public sealed class Config
                 "\n",
                 Directory
                     .GetFiles(Path.Combine(Root, "renderer/src"), "*", SearchOption.AllDirectories)
+                    .Concat(Directory.GetFiles(Path.Combine(Root, "styles/warm_editorial_2d/characters"), "*.rig.json"))
                     .Concat(
                         new[]
                         {

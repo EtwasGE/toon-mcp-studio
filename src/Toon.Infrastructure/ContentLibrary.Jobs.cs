@@ -189,15 +189,19 @@ public sealed partial class ContentLibrary
             }
         }
 
-        warnings.Add(
-            J.Node(
-                new Issue(
-                    "CONTENT_PREPARATION_PENDING",
-                    "This package contains source materials, not an animation rig, layered scene or cloned voice",
-                    "/materials"
+        var rig = kind == "character" ? PrepareCharacter(source, errors, warnings) : null;
+        if (rig == null)
+        {
+            warnings.Add(
+                J.Node(
+                    new Issue(
+                        "CONTENT_PREPARATION_PENDING",
+                        "This package contains source materials, not an animation rig, layered scene or cloned voice",
+                        "/materials"
+                    )
                 )
-            )
-        );
+            );
+        }
         var package = J.Node(
             new
             {
@@ -209,7 +213,10 @@ public sealed partial class ContentLibrary
                 errors,
                 warnings,
                 ready_for_publication = errors.Count == 0,
-                render_supported = false,
+                render_supported = rig != null && errors.Count == 0,
+                rig,
+                recipe_sha256 = source["character_recipe"] is JsonNode recipe ? J.Hash(J.Canonical(recipe)) : null,
+                preparation_method = rig != null ? "annotated_cutout_and_vector_layers" : "source_package",
                 cloud_requests = false,
             }
         );
@@ -239,6 +246,7 @@ public sealed partial class ContentLibrary
                 ready_for_publication = errors.Count == 0,
                 errors = errors.DeepClone(),
                 warnings = warnings.DeepClone(),
+                render_supported = rig != null && errors.Count == 0,
             }
         );
         Save(db, tx, item, item.Int("revision"));

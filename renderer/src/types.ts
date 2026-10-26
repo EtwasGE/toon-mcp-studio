@@ -41,6 +41,7 @@ export type Caption = {
     rect: { x: number; y: number; width: number; height: number };
 };
 export type Timeline = {
+    rigs?: Record<string, import('./CharacterRig').CharacterRig>;
     total_frames: number;
     seed: number;
     scenes: Scene[];

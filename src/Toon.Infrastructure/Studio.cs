@@ -3,7 +3,7 @@ using Toon.Core;
 
 namespace Toon.Infrastructure;
 
-public sealed class Studio
+public sealed partial class Studio
 {
     public Config Config { get; }
     public Store Store { get; }
@@ -20,10 +20,10 @@ public sealed class Studio
         Library = new ContentLibrary(config, Store, Assets);
     }
 
-    public void CheckDraft(JsonNode project)
+    public void CheckDraft(JsonNode project, JsonNode? resolvedRigs = null)
     {
         Validation.Schema(project, Path.Combine(Config.Root, "contracts/project.schema.json"));
-        Validation.Semantic(project);
+        Validation.Semantic(project, resolvedRigs ?? Library.ResolveCharacters(project));
     }
 
     public JsonNode Create(JsonNode project)
@@ -60,6 +60,7 @@ public sealed class Studio
         var errors = new JsonArray();
         var warnings = new JsonArray();
         var resolvedAssets = new JsonObject();
+        var resolvedRigs = new JsonObject();
         var voices = new JsonObject();
         var keys = new HashSet<string>();
         var chars = 0;
@@ -84,6 +85,22 @@ public sealed class Studio
             {
                 errors.Add(J.Node(new Issue(ex.Code, ex.Message, pointer)));
             }
+        }
+
+        try
+        {
+            resolvedRigs = Library.ResolveCharacters(p);
+            foreach (var rig in resolvedRigs.Select(pair => pair.Value!))
+            {
+                foreach (var node in CharacterRigs.Nodes(rig).Where(n => n.Str("type") == "cutout"))
+                {
+                    Asset(node["asset"]!, "/characters");
+                }
+            }
+        }
+        catch (ToonException ex)
+        {
+            errors.Add(J.Node(new Issue(ex.Code, ex.Message, "/characters")));
         }
 
         var si = 0;
@@ -264,6 +281,7 @@ public sealed class Studio
                 currency = (string?)null,
                 cost_explanation = "Current account tariff is unknown; code points are an internal limit, not provider billing units",
                 resolved_assets = resolvedAssets,
+                resolved_rigs = resolvedRigs,
                 resolved_voices = voices,
             }
         );
@@ -319,6 +337,7 @@ public sealed class Studio
             {
                 project = Store.Project(id, revision)["project"]!.DeepClone(),
                 assets = validation["resolved_assets"]!.DeepClone(),
+                rigs = validation["resolved_rigs"]!.DeepClone(),
                 voices = validation["resolved_voices"]!.DeepClone(),
                 renderer_version = "1.0.0",
                 renderer_fingerprint = Config.RendererFingerprint(),
@@ -438,16 +457,7 @@ public sealed class Studio
                     },
                 }
             ),
-            "characters" => J.Node(
-                Validation.Characters.Select(id => new
-                {
-                    character_id = id,
-                    version = "1.0.0",
-                    pose_id = "seated",
-                    emotions = Validation.Emotions,
-                    gestures = Validation.Gestures,
-                })
-            ),
+            "characters" => Library.CharacterCatalog(),
             "backgrounds" => J.Node(Validation.Backgrounds.Select(id => new { asset_id = id, version = "1.0.0" })),
             "gestures" => J.Node(Validation.Gestures),
             "voices" => J.Node(

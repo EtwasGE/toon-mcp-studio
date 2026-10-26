@@ -17,6 +17,12 @@ var config = new Config();
 var studio = new Studio(config);
 var results = new JsonArray();
 var errors = 0;
+if (args.Contains("--characters"))
+{
+    await CharacterAcceptance.Run(config);
+    return;
+}
+
 if (args.Contains("--library"))
 {
     await LibraryAcceptance.Run(config);
@@ -111,7 +117,13 @@ async Task<McpClient> Connect() =>
                 Arguments = [Path.Combine(root, "src/Toon.Mcp/bin/Debug/net10.0/Toon.Mcp.dll")],
                 WorkingDirectory = root,
             }
-        )
+        ),
+        new McpClientOptions
+        {
+            ProtocolVersion = "2026-07-28",
+            DiscoverProbeTimeout = TimeSpan.FromSeconds(60),
+            InitializationTimeout = TimeSpan.FromSeconds(90),
+        }
     );
 async Task<JsonNode> Call(McpClient client, string name, object args, bool failure = false)
 {

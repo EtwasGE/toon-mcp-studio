@@ -17,7 +17,8 @@ public sealed class Pipeline(Config config)
         string directory,
         string quality,
         Action<string> stage,
-        CancellationToken ct
+        CancellationToken ct,
+        JsonNode? rigs = null
     )
     {
         var media = new Media(config);
@@ -45,6 +46,33 @@ public sealed class Pipeline(Config config)
             assetMap[reference.Str("asset_id") + "@" + reference.Str("version")] = relative;
         }
 
+        if (rigs == null)
+        {
+            rigs = new JsonObject();
+            foreach (var character in project.Items("characters"))
+            {
+                var id = character.Str("character_id");
+                J.Require(
+                    Validation.Characters.Contains(id),
+                    "ASSET_MISSING",
+                    "Custom character requires a resolved rig"
+                );
+                rigs[id] = J.Read(Path.Combine(config.Root, "styles/warm_editorial_2d/characters", id + ".rig.json"));
+            }
+        }
+        foreach (var rig in rigs.AsObject().Select(pair => pair.Value!))
+        {
+            CharacterRigs.Validate(rig, config.Root);
+            foreach (var node in CharacterRigs.Nodes(rig).Where(n => n.Str("type") == "cutout"))
+            {
+                var reference = node["asset"]!;
+                var source = resolve(reference);
+                var relative = "media/" + J.FileHash(source) + Path.GetExtension(source).ToLowerInvariant();
+                File.Copy(source, Path.Combine(directory, "public", relative), true);
+                assetMap[reference.Str("asset_id") + "@" + reference.Str("version")] = relative;
+            }
+        }
+        timeline["rigs"] = rigs.DeepClone();
         timeline["assets"] = assetMap;
         J.Write(Path.Combine(directory, "timeline.json"), timeline);
         J.Write(Path.Combine(directory, "project.json"), project);

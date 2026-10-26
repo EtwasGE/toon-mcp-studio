@@ -59,6 +59,15 @@ foreach (var tool in tools)
         input["properties"]!["submission"] = submission;
     }
 
+    if (tool.ProtocolTool.Name == "set_character_recipe")
+    {
+        var recipe = J.Read(Path.Combine(config.Root, "contracts/character-recipe.schema.json"));
+        input["$defs"] = recipe["$defs"]!.DeepClone();
+        recipe.AsObject().Remove("$defs");
+        recipe.AsObject().Remove("$id");
+        recipe.AsObject().Remove("$schema");
+        input["properties"]!["recipe"] = recipe;
+    }
     tool.ProtocolTool.InputSchema = JsonSerializer.SerializeToElement(input);
 }
 var builder = Host.CreateApplicationBuilder(args);
@@ -69,6 +78,32 @@ await builder.Build().RunAsync();
 
 public sealed class ToonTools(Studio studio)
 {
+    [McpServerTool(UseStructuredContent = true, Name = "get_character_recipe_template", ReadOnly = true)]
+    [Description(
+        "Get a local annotated cutout recipe example. Coordinates refer to the example sheet, not automatic detection. Agent/operator annotates the supplied sketches; missing and generated details must be declared."
+    )]
+    public Task<CallToolResult> CharacterRecipeTemplate() =>
+        Call(() => J.Read(Path.Combine(studio.Config.Root, "templates/library/character-recipe.json")));
+
+    [McpServerTool(UseStructuredContent = true, Name = "set_character_recipe", Destructive = false)]
+    [Description(
+        "Save a character preparation recipe in a new draft revision. Safe vector geometry and polygons over imported source roles only; no scripts, SVG files, URLs or external paths. Does not modify original sketches."
+    )]
+    public Task<CallToolResult> SetCharacterRecipe(string item_id, int expected_revision, JsonObject recipe) =>
+        Call(() => studio.Library.SetCharacterRecipe(item_id, expected_revision, recipe));
+
+    [McpServerTool(UseStructuredContent = true, Name = "start_character_test", Destructive = false, Idempotent = true)]
+    [Description(
+        "Queue a verified character test MP4 for the exact prepared revision, with wide/close shots, six emotions, gestures, phone and a real 4–12 second recording repeated in three scenes. Provide its transcript. Offline, no TTS requests. Inspect the resulting video before publication."
+    )]
+    public Task<CallToolResult> StartCharacterTest(
+        string item_id,
+        int expected_revision,
+        JsonObject audio_asset,
+        string transcript,
+        string idempotency_key
+    ) => Call(() => studio.StartCharacterTest(item_id, expected_revision, audio_asset, transcript, idempotency_key));
+
     private static async Task<CallToolResult> Call(Func<Task<JsonNode>> operation)
     {
         JsonNode result;
@@ -304,7 +339,7 @@ public sealed class ToonTools(Studio studio)
     [
         McpServerTool(UseStructuredContent = true, Name = "list_library_items", ReadOnly = true),
         Description(
-            "List library heads by optional kind (character/environment/voice) and state (draft/preparing/review/published/archived). Published source packages are not yet renderable rigs or cloned voices."
+            "List library heads by optional kind (character/environment/voice) and state (draft/preparing/review/published/archived). Inspect render_supported; a source package alone is not renderable."
         )
     ]
     public Task<CallToolResult> ListLibrary(
@@ -322,7 +357,7 @@ public sealed class ToonTools(Studio studio)
             Idempotent = true
         ),
         Description(
-            "Queue local material checks and a review package in the independent persistent worker. Same key/request returns same job. A succeeded preparation can contain blocking review errors; inspect ready_for_publication. No drawing, voice cloning or paid calls."
+            "Queue local material checks and character recipe preparation in the independent persistent worker. Same key/request returns same job. Inspect ready_for_publication and render_supported. No automatic reconstruction, voice cloning or paid calls."
         )
     ]
     public Task<CallToolResult> PrepareLibrary(string item_id, int expected_revision, string idempotency_key) =>
@@ -331,7 +366,7 @@ public sealed class ToonTools(Studio studio)
     [
         McpServerTool(UseStructuredContent = true, Name = "publish_library_item", Destructive = false),
         Description(
-            "Publish a reviewed source package in the LOCAL library (not GitHub/cloud). Requires ready_for_publication, explicit review_approved=true, review_note and a new increasing major.minor.patch version. Does not make a rig or clone a voice."
+            "Publish a reviewed package in the LOCAL library. Requires ready_for_publication, review_approved=true, review_note and a new increasing version. A renderable character also requires a verified test MP4 for this exact package. Does not clone voices."
         )
     ]
     public Task<CallToolResult> PublishLibrary(
@@ -354,6 +389,22 @@ public sealed class ToonTools(Studio studio)
 
 public sealed class ToonResources(Studio studio)
 {
+    [McpServerResource(
+        UriTemplate = "toon://characters/rig-schema",
+        Name = "character_rig_schema",
+        MimeType = "application/json"
+    )]
+    public string CharacterRigSchema() =>
+        File.ReadAllText(Path.Combine(studio.Config.Root, "contracts/character-rig.schema.json"));
+
+    [McpServerResource(
+        UriTemplate = "toon://characters/recipe-schema",
+        Name = "character_recipe_schema",
+        MimeType = "application/json"
+    )]
+    public string CharacterRecipeSchema() =>
+        File.ReadAllText(Path.Combine(studio.Config.Root, "contracts/character-recipe.schema.json"));
+
     [
         McpServerResource(
             UriTemplate = "toon://library/templates/{kind}/{version}",

@@ -99,7 +99,19 @@ public sealed class Worker(Studio studio)
             var ct = cancelled.Token;
             var snapshot = job["snapshot"]!;
             var p = snapshot["project"]!;
-            studio.CheckDraft(p);
+            J.Require(
+                J.Hash(J.Canonical(snapshot)) == job.Str("snapshot_hash"),
+                "VERIFY_FAILED",
+                "Job snapshot changed"
+            );
+            studio.CheckDraft(p, snapshot["rigs"]);
+            if (snapshot["rigs"] is JsonObject rigs)
+            {
+                foreach (var rig in rigs.Select(pair => pair.Value!))
+                {
+                    CharacterRigs.Validate(rig, config.Root);
+                }
+            }
             J.Require(
                 config.RendererFingerprint() == snapshot.Str("renderer_fingerprint"),
                 "ASSET_VERSION_MISMATCH",
@@ -221,7 +233,8 @@ public sealed class Worker(Studio studio)
                 directory,
                 job.Str("quality"),
                 Stage,
-                ct
+                ct,
+                snapshot["rigs"]
             );
             stageTimes[currentStage] = timer.Elapsed.TotalSeconds - stageStart;
             report["stage_seconds"] = stageTimes;
@@ -242,6 +255,13 @@ public sealed class Worker(Studio studio)
                 "captions.srt",
                 "validation-report.json",
             };
+            if (snapshot["character_review"] is JsonNode review)
+            {
+                J.Write(Path.Combine(directory, "character-review.json"), review);
+                names.Add("character-review.json");
+                names.AddRange(Directory.GetFiles(directory, "frame-*.png").Select(Path.GetFileName).OfType<string>());
+            }
+
             if (job.Str("quality") == "final")
             {
                 names.Add("project.zip");

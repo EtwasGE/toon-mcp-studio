@@ -1,0 +1,303 @@
+{
+    "schema_version": "1.0.0",
+    "rig": {
+        "schema_version": "1.0.0",
+        "name": "Example cutout sheet — coordinates must be annotated for each new sketch",
+        "canvas": {
+            "width": 380,
+            "height": 560
+        },
+        "poses": ["seated"],
+        "emotions": ["neutral", "concerned", "annoyed", "surprised", "confident", "pleased"],
+        "gestures": {
+            "idle": 30,
+            "blink": 8,
+            "nod": 32,
+            "shake_head": 36,
+            "raise_hand": 54,
+            "shrug": 54,
+            "show_phone": 120
+        },
+        "motion": {
+            "blink_phase": 23,
+            "blink_period": 137,
+            "head_phase": 0,
+            "body_phase": 0,
+            "head_angles": {
+                "concerned": -5,
+                "confident": 3
+            },
+            "left_arm": {
+                "shrug": -22,
+                "raise_hand": -80
+            },
+            "right_arm": {
+                "shrug": 22,
+                "show_phone": 48
+            }
+        },
+        "layers": [
+            {
+                "type": "cutout",
+                "source_role": "front",
+                "polygon": [
+                    [256, 384],
+                    [384, 384],
+                    [384, 512],
+                    [256, 512]
+                ],
+                "target": [105, 370, 175, 160]
+            },
+            {
+                "type": "cutout",
+                "source_role": "front",
+                "polygon": [
+                    [0, 0],
+                    [128, 0],
+                    [128, 128],
+                    [0, 128]
+                ],
+                "target": [83, 200, 215, 220]
+            },
+            {
+                "type": "group",
+                "children": [
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [256, 0],
+                            [384, 0],
+                            [384, 128],
+                            [256, 128]
+                        ],
+                        "target": [44, 220, 72, 165]
+                    }
+                ],
+                "motion": "left_arm",
+                "pivot": [87, 232]
+            },
+            {
+                "type": "group",
+                "children": [
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [384, 0],
+                            [512, 0],
+                            [512, 128],
+                            [384, 128]
+                        ],
+                        "target": [267, 220, 72, 165]
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [128, 384],
+                            [256, 384],
+                            [256, 512],
+                            [128, 512]
+                        ],
+                        "target": [282, 290, 60, 105],
+                        "when": {
+                            "phone": true
+                        }
+                    }
+                ],
+                "motion": "right_arm",
+                "pivot": [289, 232]
+            },
+            {
+                "type": "group",
+                "children": [
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [128, 0],
+                            [256, 0],
+                            [256, 128],
+                            [128, 128]
+                        ],
+                        "target": [115, 35, 150, 165]
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [512, 0],
+                            [640, 0],
+                            [640, 128],
+                            [512, 128]
+                        ],
+                        "target": [132, 108, 118, 28],
+                        "when": {
+                            "blink": false
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [0, 128],
+                            [128, 128],
+                            [128, 256],
+                            [0, 256]
+                        ],
+                        "target": [132, 108, 118, 28],
+                        "when": {
+                            "blink": true
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [128, 128],
+                            [256, 128],
+                            [256, 256],
+                            [128, 256]
+                        ],
+                        "target": [168, 153, 48, 30],
+                        "when": {
+                            "mouth": [0]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [256, 128],
+                            [384, 128],
+                            [384, 256],
+                            [256, 256]
+                        ],
+                        "target": [168, 153, 48, 30],
+                        "when": {
+                            "mouth": [1]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [384, 128],
+                            [512, 128],
+                            [512, 256],
+                            [384, 256]
+                        ],
+                        "target": [168, 153, 48, 30],
+                        "when": {
+                            "mouth": [2]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [512, 128],
+                            [640, 128],
+                            [640, 256],
+                            [512, 256]
+                        ],
+                        "target": [168, 153, 48, 30],
+                        "when": {
+                            "mouth": [3]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [0, 256],
+                            [128, 256],
+                            [128, 384],
+                            [0, 384]
+                        ],
+                        "target": [132, 84, 118, 28],
+                        "when": {
+                            "emotion": ["neutral"]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [128, 256],
+                            [256, 256],
+                            [256, 384],
+                            [128, 384]
+                        ],
+                        "target": [132, 84, 118, 28],
+                        "when": {
+                            "emotion": ["concerned"]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [256, 256],
+                            [384, 256],
+                            [384, 384],
+                            [256, 384]
+                        ],
+                        "target": [132, 84, 118, 28],
+                        "when": {
+                            "emotion": ["annoyed"]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [384, 256],
+                            [512, 256],
+                            [512, 384],
+                            [384, 384]
+                        ],
+                        "target": [132, 84, 118, 28],
+                        "when": {
+                            "emotion": ["surprised"]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [512, 256],
+                            [640, 256],
+                            [640, 384],
+                            [512, 384]
+                        ],
+                        "target": [132, 84, 118, 28],
+                        "when": {
+                            "emotion": ["confident"]
+                        }
+                    },
+                    {
+                        "type": "cutout",
+                        "source_role": "front",
+                        "polygon": [
+                            [0, 384],
+                            [128, 384],
+                            [128, 512],
+                            [0, 512]
+                        ],
+                        "target": [132, 84, 118, 28],
+                        "when": {
+                            "emotion": ["pleased"]
+                        }
+                    }
+                ],
+                "motion": "head",
+                "pivot": [191, 170]
+            }
+        ]
+    },
+    "missing_details": [],
+    "generated_details": ["Example only: original synthetic cutout sheet; not a reconstruction of a submitted person."],
+    "notes": "Example coordinates for scripts/create-character-fixture.py. For real sketches annotate visible parts and facial variants; list missing anatomy/views rather than claiming reconstruction."
+}

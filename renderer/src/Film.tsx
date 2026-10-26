@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AbsoluteFill, Img, delayRender, continueRender, cancelRender, staticFile, useCurrentFrame } from 'remotion';
-import { Rig } from './Rig';
+import { Rig } from './CharacterRig';
 import type { Timeline, Camera, Scene } from './types';
 import fontUrl from '@fontsource/noto-sans/files/noto-sans-cyrillic-700-normal.woff2';
 import latinUrl from '@fontsource/noto-sans/files/noto-sans-latin-700-normal.woff2';
@@ -137,6 +137,8 @@ export function Film({ timeline }: { timeline: Timeline }) {
                                 >
                                     <Rig
                                         id={c.character_id}
+                                        rig={timeline.rigs?.[c.character_id]}
+                                        assets={timeline.assets}
                                         frame={frame}
                                         seed={timeline.seed}
                                         emotion={emotion}

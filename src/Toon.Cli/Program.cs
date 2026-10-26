@@ -14,7 +14,13 @@ await using var client = await McpClient.CreateAsync(
             Arguments = [Path.Combine(config.Root, "src/Toon.Mcp/bin/Debug/net10.0/Toon.Mcp.dll")],
             WorkingDirectory = config.Root,
         }
-    )
+    ),
+    new McpClientOptions
+    {
+        ProtocolVersion = "2026-07-28",
+        DiscoverProbeTimeout = TimeSpan.FromSeconds(60),
+        InitializationTimeout = TimeSpan.FromSeconds(90),
+    }
 );
 async Task<JsonNode> Call(string name, object args)
 {

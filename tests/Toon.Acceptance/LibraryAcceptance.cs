@@ -57,7 +57,13 @@ public static class LibraryAcceptance
                         Arguments = [Path.Combine(root, "src/Toon.Mcp/bin/Debug/net10.0/Toon.Mcp.dll")],
                         WorkingDirectory = root,
                     }
-                )
+                ),
+                new McpClientOptions
+                {
+                    ProtocolVersion = "2026-07-28",
+                    DiscoverProbeTimeout = TimeSpan.FromSeconds(60),
+                    InitializationTimeout = TimeSpan.FromSeconds(90),
+                }
             );
 
         async Task<JsonNode> Call(McpClient client, string name, object arguments, string? error = null)

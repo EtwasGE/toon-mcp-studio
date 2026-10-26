@@ -1,0 +1,634 @@
+{
+    "schema_version": "1.0.0",
+    "name": "advisor",
+    "canvas": {
+        "width": 380,
+        "height": 560
+    },
+    "poses": ["seated"],
+    "emotions": ["neutral", "concerned", "annoyed", "surprised", "confident", "pleased"],
+    "gestures": {
+        "idle": 30,
+        "blink": 8,
+        "nod": 32,
+        "shake_head": 36,
+        "raise_hand": 54,
+        "shrug": 54,
+        "show_phone": 120
+    },
+    "motion": {
+        "blink_phase": 71,
+        "blink_period": 169,
+        "head_phase": 60,
+        "body_phase": 55,
+        "head_angles": {
+            "concerned": -5,
+            "confident": 3
+        },
+        "left_arm": {
+            "shrug": -22,
+            "raise_hand": -80
+        },
+        "right_arm": {
+            "shrug": 22,
+            "show_phone": 48
+        }
+    },
+    "layers": [
+        {
+            "type": "group",
+            "children": [
+                {
+                    "type": "ellipse",
+                    "props": {
+                        "cx": 190,
+                        "cy": 535,
+                        "rx": 140,
+                        "ry": 25,
+                        "fill": "#192832",
+                        "opacity": 0.15,
+                        "stroke": "none"
+                    }
+                },
+                {
+                    "type": "path",
+                    "props": {
+                        "d": "M100 375 Q100 480 120 530 L180 530 L190 455 L205 530 L268 530 Q295 470 275 375",
+                        "fill": "#3c495c"
+                    }
+                },
+                {
+                    "type": "path",
+                    "props": {
+                        "d": "M82 220 Q190 170 296 220 L308 414 Q190 442 72 414Z",
+                        "fill": "#429a9b"
+                    }
+                },
+                {
+                    "type": "path",
+                    "props": {
+                        "d": "M169 205 L170 166 L215 166 L220 205 Q196 229 169 205",
+                        "fill": "#d49a77"
+                    }
+                },
+                {
+                    "type": "path",
+                    "props": {
+                        "d": "M163 209 L188 264 L222 211",
+                        "fill": "#f9edd8"
+                    }
+                },
+                {
+                    "type": "path",
+                    "props": {
+                        "d": "M148 211 L169 390 M237 214 L220 390",
+                        "fill": "none",
+                        "stroke": "#256d79"
+                    }
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M90 222 Q56 223 53 267 L43 346 Q47 373 82 367 L111 274",
+                                "fill": "#429a9b"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 62,
+                                "cy": 365,
+                                "rx": 24,
+                                "ry": 31,
+                                "fill": "#d49a77"
+                            }
+                        }
+                    ],
+                    "motion": "left_arm",
+                    "pivot": [87, 232]
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M287 221 Q322 227 326 266 L337 344 Q330 372 298 364 L267 268",
+                                "fill": "#429a9b"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 317,
+                                "cy": 359,
+                                "rx": 24,
+                                "ry": 31,
+                                "fill": "#d49a77"
+                            }
+                        },
+                        {
+                            "type": "group",
+                            "children": [
+                                {
+                                    "type": "rect",
+                                    "props": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "width": 58,
+                                        "height": 108,
+                                        "rx": 12,
+                                        "fill": "#283446"
+                                    }
+                                },
+                                {
+                                    "type": "rect",
+                                    "props": {
+                                        "x": 7,
+                                        "y": 12,
+                                        "width": 44,
+                                        "height": 78,
+                                        "rx": 4,
+                                        "fill": "#c9e5e2"
+                                    }
+                                },
+                                {
+                                    "type": "path",
+                                    "props": {
+                                        "d": "M17 32H41 M17 46H36 M17 60H41",
+                                        "fill": "none",
+                                        "stroke": "#609e9e",
+                                        "strokeWidth": 4
+                                    }
+                                },
+                                {
+                                    "type": "circle",
+                                    "props": {
+                                        "cx": 29,
+                                        "cy": 98,
+                                        "r": 3,
+                                        "fill": "#e8d5ad",
+                                        "stroke": "none"
+                                    }
+                                }
+                            ],
+                            "props": {
+                                "transform": "translate(297 305) rotate(-48)"
+                            },
+                            "when": {
+                                "phone": true
+                            }
+                        }
+                    ],
+                    "motion": "right_arm",
+                    "pivot": [289, 232]
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M127 52 Q104 104 117 151 Q136 196 193 202 Q244 197 266 154 L263 74 Q222 27 127 52",
+                                "fill": "#d49a77"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 114,
+                                "cy": 130,
+                                "rx": 13,
+                                "ry": 20,
+                                "fill": "#d49a77"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 266,
+                                "cy": 130,
+                                "rx": 12,
+                                "ry": 20,
+                                "fill": "#d49a77"
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M114 99 Q87 72 117 49 Q107 16 145 20 Q158 -2 184 18 Q211 -2 234 23 Q274 19 277 55 L269 102 L248 77 L245 52 Q193 72 137 53 L132 97Z",
+                                "fill": "#303644"
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M133 169 Q190 205 248 169 Q219 214 183 211 Q147 203 133 169",
+                                "fill": "#303644"
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M143 98L171 98 M210 98L238 98",
+                                "fill": "none",
+                                "strokeWidth": 7
+                            },
+                            "when": {
+                                "emotion": ["neutral"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M143 103L171 93 M210 93L238 103",
+                                "fill": "none",
+                                "strokeWidth": 7
+                            },
+                            "when": {
+                                "emotion": ["concerned"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M143 92L171 104 M210 104L238 92",
+                                "fill": "none",
+                                "strokeWidth": 7
+                            },
+                            "when": {
+                                "emotion": ["annoyed"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M143 94L171 102 M210 102L238 94",
+                                "fill": "none",
+                                "strokeWidth": 7
+                            },
+                            "when": {
+                                "emotion": ["surprised"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M143 98L171 98 M210 98L238 98",
+                                "fill": "none",
+                                "strokeWidth": 7
+                            },
+                            "when": {
+                                "emotion": ["confident"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M143 98L171 98 M210 98L238 98",
+                                "fill": "none",
+                                "strokeWidth": 7
+                            },
+                            "when": {
+                                "emotion": ["pleased"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M142 121H170 M213 121H240",
+                                "fill": "none"
+                            },
+                            "when": {
+                                "blink": true
+                            }
+                        },
+                        {
+                            "type": "group",
+                            "children": [
+                                {
+                                    "type": "ellipse",
+                                    "props": {
+                                        "cx": 157,
+                                        "cy": 122,
+                                        "rx": 14,
+                                        "ry": 14,
+                                        "fill": "#fff7e9"
+                                    }
+                                },
+                                {
+                                    "type": "ellipse",
+                                    "props": {
+                                        "cx": 225,
+                                        "cy": 122,
+                                        "rx": 14,
+                                        "ry": 14,
+                                        "fill": "#fff7e9"
+                                    }
+                                },
+                                {
+                                    "type": "circle",
+                                    "props": {
+                                        "cx": 161,
+                                        "cy": 124,
+                                        "r": 5,
+                                        "fill": "#282e3a",
+                                        "stroke": "none"
+                                    }
+                                },
+                                {
+                                    "type": "circle",
+                                    "props": {
+                                        "cx": 221,
+                                        "cy": 124,
+                                        "r": 5,
+                                        "fill": "#282e3a",
+                                        "stroke": "none"
+                                    }
+                                }
+                            ],
+                            "when": {
+                                "blink": false,
+                                "emotion": ["neutral", "concerned", "annoyed", "confident", "pleased"]
+                            }
+                        },
+                        {
+                            "type": "group",
+                            "children": [
+                                {
+                                    "type": "ellipse",
+                                    "props": {
+                                        "cx": 157,
+                                        "cy": 122,
+                                        "rx": 14,
+                                        "ry": 19,
+                                        "fill": "#fff7e9"
+                                    }
+                                },
+                                {
+                                    "type": "ellipse",
+                                    "props": {
+                                        "cx": 225,
+                                        "cy": 122,
+                                        "rx": 14,
+                                        "ry": 19,
+                                        "fill": "#fff7e9"
+                                    }
+                                },
+                                {
+                                    "type": "circle",
+                                    "props": {
+                                        "cx": 161,
+                                        "cy": 124,
+                                        "r": 5,
+                                        "fill": "#282e3a",
+                                        "stroke": "none"
+                                    }
+                                },
+                                {
+                                    "type": "circle",
+                                    "props": {
+                                        "cx": 221,
+                                        "cy": 124,
+                                        "r": 5,
+                                        "fill": "#282e3a",
+                                        "stroke": "none"
+                                    }
+                                }
+                            ],
+                            "when": {
+                                "blink": false,
+                                "emotion": ["surprised"]
+                            }
+                        },
+                        {
+                            "type": "group",
+                            "children": [
+                                {
+                                    "type": "rect",
+                                    "props": {
+                                        "x": 135,
+                                        "y": 103,
+                                        "width": 45,
+                                        "height": 34,
+                                        "rx": 10,
+                                        "fill": "none"
+                                    }
+                                },
+                                {
+                                    "type": "rect",
+                                    "props": {
+                                        "x": 201,
+                                        "y": 103,
+                                        "width": 45,
+                                        "height": 34,
+                                        "rx": 10,
+                                        "fill": "none"
+                                    }
+                                },
+                                {
+                                    "type": "path",
+                                    "props": {
+                                        "d": "M180 115H201",
+                                        "fill": "none"
+                                    }
+                                }
+                            ],
+                            "props": {
+                                "fill": "none",
+                                "strokeWidth": 4
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M190 123L182 144L196 147",
+                                "fill": "none",
+                                "strokeWidth": 4
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M177 168Q191 171 208 167",
+                                "fill": "none",
+                                "strokeWidth": 5
+                            },
+                            "when": {
+                                "mouth": [0],
+                                "emotion": ["neutral"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M174 172Q192 161 211 170",
+                                "fill": "none",
+                                "strokeWidth": 5
+                            },
+                            "when": {
+                                "mouth": [0],
+                                "emotion": ["concerned"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M174 172Q192 161 211 170",
+                                "fill": "none",
+                                "strokeWidth": 5
+                            },
+                            "when": {
+                                "mouth": [0],
+                                "emotion": ["annoyed"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M177 168Q191 171 208 167",
+                                "fill": "none",
+                                "strokeWidth": 5
+                            },
+                            "when": {
+                                "mouth": [0],
+                                "emotion": ["surprised"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M171 163Q192 182 214 161",
+                                "fill": "none",
+                                "strokeWidth": 5
+                            },
+                            "when": {
+                                "mouth": [0],
+                                "emotion": ["confident"]
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M171 163Q192 182 214 161",
+                                "fill": "none",
+                                "strokeWidth": 5
+                            },
+                            "when": {
+                                "mouth": [0],
+                                "emotion": ["pleased"]
+                            }
+                        },
+                        {
+                            "type": "group",
+                            "children": [
+                                {
+                                    "type": "ellipse",
+                                    "props": {
+                                        "cx": 193,
+                                        "cy": 171,
+                                        "rx": 20,
+                                        "ry": 9,
+                                        "fill": "#673b46",
+                                        "strokeWidth": 4
+                                    }
+                                },
+                                {
+                                    "type": "path",
+                                    "props": {
+                                        "d": "M182 167H204",
+                                        "fill": "none",
+                                        "stroke": "#fff5df",
+                                        "strokeWidth": 5
+                                    }
+                                }
+                            ],
+                            "when": {
+                                "mouth": [1]
+                            }
+                        },
+                        {
+                            "type": "group",
+                            "children": [
+                                {
+                                    "type": "ellipse",
+                                    "props": {
+                                        "cx": 193,
+                                        "cy": 171,
+                                        "rx": 25,
+                                        "ry": 20,
+                                        "fill": "#673b46",
+                                        "strokeWidth": 4
+                                    }
+                                },
+                                {
+                                    "type": "path",
+                                    "props": {
+                                        "d": "M178 164H208",
+                                        "fill": "none",
+                                        "stroke": "#fff5df",
+                                        "strokeWidth": 5
+                                    }
+                                }
+                            ],
+                            "when": {
+                                "mouth": [2]
+                            }
+                        },
+                        {
+                            "type": "group",
+                            "children": [
+                                {
+                                    "type": "ellipse",
+                                    "props": {
+                                        "cx": 193,
+                                        "cy": 171,
+                                        "rx": 13,
+                                        "ry": 17,
+                                        "fill": "#673b46",
+                                        "strokeWidth": 4
+                                    }
+                                },
+                                {
+                                    "type": "path",
+                                    "props": {
+                                        "d": "M182 167H204",
+                                        "fill": "none",
+                                        "stroke": "#fff5df",
+                                        "strokeWidth": 5
+                                    }
+                                }
+                            ],
+                            "when": {
+                                "mouth": [3]
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 143,
+                                "cy": 148,
+                                "rx": 13,
+                                "ry": 6,
+                                "fill": "#d97c6d",
+                                "opacity": 0.5,
+                                "stroke": "none"
+                            }
+                        }
+                    ],
+                    "motion": "head",
+                    "pivot": [191, 170]
+                }
+            ],
+            "props": {
+                "stroke": "#282e3a",
+                "strokeWidth": 6,
+                "strokeLinejoin": "round",
+                "strokeLinecap": "round"
+            }
+        }
+    ]
+}

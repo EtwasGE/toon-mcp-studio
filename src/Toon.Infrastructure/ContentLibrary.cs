@@ -231,6 +231,7 @@ public sealed partial class ContentLibrary
 
     private static void ResetDraft(JsonNode item)
     {
+        item["render_supported"] = false;
         item["state"] = "draft";
         item["preparation"] = null;
         item["preparation_job_id"] = null;
@@ -534,6 +535,9 @@ public sealed partial class ContentLibrary
             {
                 _ = assets.Resolve(m["asset"]!);
             }
+            var package = J.Read(packagePath);
+            VerifyCharacterTest(item, package, db, tx);
+            item["render_supported"] = package.Bool("render_supported");
             using var versions = Store.Command(
                 db,
                 tx,

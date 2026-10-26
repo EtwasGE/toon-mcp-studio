@@ -40,7 +40,7 @@ public static class Validation
         }
     }
 
-    public static void Semantic(JsonNode p)
+    public static void Semantic(JsonNode p, JsonNode? resolvedRigs = null)
     {
         J.Require(
             p["style"]!.Str("style_id") == "warm_editorial_2d" && p["style"]!.Str("version") == "1.0.0",
@@ -59,7 +59,8 @@ public static class Validation
         foreach (var c in p.Items("characters"))
         {
             J.Require(
-                Characters.Contains(c.Str("character_id")) && c.Str("version") == "1.0.0",
+                resolvedRigs?[c.Str("character_id")] != null
+                    || Characters.Contains(c.Str("character_id")) && c.Str("version") == "1.0.0",
                 "ASSET_VERSION_MISMATCH",
                 "Unknown rig",
                 "/characters"
