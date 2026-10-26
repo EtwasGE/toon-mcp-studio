@@ -41,6 +41,7 @@ public sealed class PropLibrary
                 version = "1.0.0",
                 display_name = p.Name,
                 attachments = new[] { "left_hand", "right_hand" },
+                views = p.Id == "tablet" ? new[] { "screen", "back" } : null,
                 actions = p.Actions.Select(action => new
                 {
                     action,

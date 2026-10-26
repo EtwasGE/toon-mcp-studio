@@ -11,6 +11,7 @@ public static class Props
     public static readonly PropDefinition[] Definitions =
     [
         new("phone", "Телефон", ["tap", "notification", "error"]),
+        new("tablet", "Планшет с надкусанной картошкой", ["tap"]),
         new("cigarette", "Дымящая сигарета", ["puff"]),
         new("beer_mug", "Кружка пива", ["sip", "place"]),
         new("beer_can", "Пивная банка", ["open", "sip"]),
@@ -41,6 +42,11 @@ public static class Props
         {
             Resolve(instance.Str("prop_id"), instance.Str("version"));
             J.Require(
+                instance["view"] == null || instance.Str("prop_id") == "tablet",
+                "VALIDATION_ERROR",
+                "Only a tablet supports screen/back views"
+            );
+            J.Require(
                 scene.Items("cast").Any(c => c.Str("character_id") == instance.Str("character_id")),
                 "VALIDATION_ERROR",
                 "Prop owner is not in scene cast"
@@ -54,6 +60,7 @@ public static class Props
         var instance = scene.Items("props").FirstOrDefault(p => p.Str("instance_id") == action.Str("instance_id"));
         J.Require(instance != null, "VALIDATION_ERROR", "Prop action references missing instance");
         var definition = Resolve(instance!.Str("prop_id"), instance.Str("version"));
+        J.Require(instance["view"]?.ToString() != "back", "UNSUPPORTED_ACTION", "Tablet screen is facing away");
         J.Require(
             definition.Actions.Contains(action.Str("prop_action")),
             "UNSUPPORTED_ACTION",

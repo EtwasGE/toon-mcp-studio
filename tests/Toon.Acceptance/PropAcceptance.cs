@@ -27,7 +27,7 @@ internal static class PropAcceptance
                 studio.Props.Bind(definition.Id, action, reference, 0);
             }
         }
-        Check(studio.Catalog("props").AsArray().Count == 5, "five props in catalog");
+        Check(studio.Catalog("props").AsArray().Count == 6, "six props in catalog");
         var project = J.Read(Path.Combine(config.Root, "examples/offline-dialogue/project.json"));
         project["captions"]!["enabled"] = false;
         var scenes = new JsonArray();
@@ -88,9 +88,19 @@ internal static class PropAcceptance
         Check(project["scenes"]![0]!["events"]![0]!["sound"] == null, "caller document unchanged");
         var audio = new Dictionary<string, AudioInfo>();
         var timeline = Compiler.Compile(pinned, "props-test", 1, audio);
-        Check(timeline.Items("sounds").Count() == 5, "one sound per action");
+        Check(timeline.Items("sounds").Count() == 6, "one sound per action");
         Check(timeline["sounds"]![0]!["start_sample"]!.GetValue<long>() == 18 * 1600L, "exact contact sample");
         Check(timeline["scenes"]![0]!["props"]!.AsArray().Count == 1, "prop instances survive compilation");
+        var back = pinned.DeepClone();
+        var tabletScene = back.Items("scenes").Single(s => s.Str("scene_id") == "tablet");
+        tabletScene["props"]![0]!["view"] = "back";
+        Error(() => studio.Create(back), "UNSUPPORTED_ACTION");
+        tabletScene["events"] = new JsonArray();
+        var backSaved = studio.Create(back);
+        Check(backSaved.Int("revision") == 1, "tablet back allowed without screen interaction");
+        var badView = pinned.DeepClone();
+        badView["scenes"]![0]!["props"]![0]!["view"] = "back";
+        Error(() => studio.Create(badView), "VALIDATION_ERROR");
         var first = pinned["scenes"]![0]!;
         var duplicate = pinned.DeepClone();
         duplicate["scenes"]![0]!["props"]!.AsArray().Add(first["props"]![0]!.DeepClone());

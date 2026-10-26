@@ -364,12 +364,14 @@
                 "hand"
             ],
             "properties": {
+                "view": { "enum": ["screen", "back"], "default": "screen" },
                 "instance_id": {
                     "$ref": "#/$defs/id"
                 },
                 "prop_id": {
                     "enum": [
                         "phone",
+                        "tablet",
                         "cigarette",
                         "beer_mug",
                         "beer_can",

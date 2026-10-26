@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Cue, PropInstance } from './types';
+import { Tablet } from './Tablet';
 
 export type HeldProp = PropInstance & { cue?: Cue; opened?: boolean };
 
@@ -7,14 +8,19 @@ export function PropShape({
     id,
     frame,
     active = false,
-    opened = false
+    opened = false,
+    view = 'screen'
 }: {
     id: PropInstance['prop_id'];
     frame: number;
     active?: boolean;
     opened?: boolean;
+    view?: 'screen' | 'back';
 }) {
     const outline = { stroke: '#2c2628', strokeWidth: 3, strokeLinejoin: 'round' as const };
+    if (id === 'tablet') {
+        return <Tablet view={view} pulse={active} />;
+    }
     if (id === 'phone') {
         return (
             <g {...outline}>
@@ -104,11 +110,12 @@ export function HeldPropLayer({
     const action = cue?.action.prop_action;
     const drinking = action === 'sip' || action === 'puff';
     const left = item.hand === 'left';
-    const restX = left ? 65 : 315;
+    const tablet = item.prop_id === 'tablet';
+    const restX = tablet ? (left ? 125 : 255) : left ? 65 : 315;
     const targetX = action === 'puff' ? 170 : 220;
     const lift = action === 'puff' ? 130 : item.prop_id === 'bottle' ? 65 : 85;
     const x = restX + (drinking ? (targetX - restX) * amount : 0);
-    const y = 345 - (drinking ? lift : action === 'place' ? -195 : 12) * amount;
+    const y = (tablet ? 400 : 345) - (drinking ? lift : action === 'place' ? -195 : 12) * amount;
     const elbowX = left ? 35 : 345;
     const arm = `M${shoulder[0]} ${shoulder[1]} Q${elbowX} 320 ${elbowX} 375`;
     if (part === 'arm') {
@@ -138,14 +145,25 @@ export function HeldPropLayer({
             <path d={`M${elbowX} 375 L${x} ${y}`} fill="none" stroke="#25171a" strokeWidth={38} strokeLinecap="round" />
             <path d={`M${elbowX} 375 L${x} ${y}`} fill="none" stroke="#fac28e" strokeWidth={30} strokeLinecap="round" />
             <g transform={`translate(${x} ${y}) rotate(${action === 'sip' ? -8 * amount : 0})`}>
-                <PropShape id={item.prop_id} frame={frame} active={active && frame >= contact} opened={item.opened} />
+                <PropShape
+                    id={item.prop_id}
+                    frame={frame}
+                    active={active && frame >= contact && (!tablet || frame < contact + 6)}
+                    opened={item.opened}
+                    view={item.view}
+                />
                 <path d="M-17 -2 Q-3 -9 6 1 L4 12 Q-10 17 -17 8 Z" fill="#fac28e" stroke="#2c2628" strokeWidth={2.5} />
                 {action === 'tap' && active && (
                     <path
-                        d={`M32 8 L${amount > 0.95 ? 10 : 25} -7`}
+                        d={
+                            tablet
+                                ? `M4 8 Q38 -2 ${35 - 17 * amount} ${-12 - 20 * amount}`
+                                : `M32 8 L${amount > 0.95 ? 10 : 25} -7`
+                        }
                         stroke="#fac28e"
                         strokeWidth={8}
                         strokeLinecap="round"
+                        fill="none"
                     />
                 )}
             </g>

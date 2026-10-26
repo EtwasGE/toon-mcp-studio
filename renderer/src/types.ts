@@ -39,7 +39,8 @@ export type Scene = {
 };
 export type PropInstance = {
     instance_id: string;
-    prop_id: 'phone' | 'cigarette' | 'beer_mug' | 'beer_can' | 'bottle';
+    prop_id: 'phone' | 'tablet' | 'cigarette' | 'beer_mug' | 'beer_can' | 'bottle';
+    view?: 'screen' | 'back';
     version: '1.0.0';
     character_id: string;
     hand: 'left' | 'right';
