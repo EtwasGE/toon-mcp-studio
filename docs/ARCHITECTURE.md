@@ -22,10 +22,15 @@ PNG-контрольные кадры берутся до H.264 на грани�
 
 ## Форматы
 
-Библиотека контента использует миграцию SQLite v2, content-addressed JSON и тип задания `library_prepare` в общей очереди worker. Ревизии, версии и состояния описаны в [CONTENT-LIBRARY.md](CONTENT-LIBRARY.md). DraftProject 1.0.0 не изменён: source packages не выдаются за поддерживаемые рендерером риги. Секреты и voice aliases из окружения в библиотеку не копируются.
+Библиотека контента использует миграцию SQLite v2, content-addressed JSON и тип задания `library_prepare` в общей очереди worker. Ревизии, версии и состояния описаны в [CONTENT-LIBRARY.md](CONTENT-LIBRARY.md). DraftProject 1.0.0 получил необязательное поле `characters[].voice_profile`; существующие проекты совместимы. Source packages не выдаются за поддерживаемые рендерером риги. Секреты и voice aliases из окружения в библиотеку не копируются.
 
 Входные схемы: `contracts/project.schema.json`, `contracts/audio-alignment.schema.json`. Derived contracts: `contracts/timeline.schema.json`, `contracts/job.schema.json`, `contracts/artifact.schema.json`. Содержимое production sidecar проверяется поверх схемы: непрерывные индексы, transcript, display spans, реальные пределы PCM и монотонность. Illustrative `example_only:true` запрещён. Схема не заменяет семантическую проверку.
 
 Добавление стиля требует доверенных компонентов, нового versioned manifest, DIRECTING и QA. Динамическая загрузка пользовательского кода не поддерживается. Изменяйте renderer version при несовместимой геометрии/таймлайне и повторяйте визуальные проверки.
 
 Декорации используют `environment.schema.json` и `environment-recipe.schema.json`. `EnvironmentStage` сортирует слои и персонажей по глубине; позиции, масштаб, линия пола и камеры берутся из данных. Worker заменяет роли исходников масками над immutable assets. Snapshot и timeline сохраняют определения по ключу `id@version`; экспорт включает исходные изображения. `start_environment_test` создаёт обычное render-задание с двумя контрольными героями. Публикация renderable-декорации требует проверенный MP4 для того же package hash и явное review. Подробности: [ENVIRONMENTS.md](ENVIRONMENTS.md).
+
+
+Голосовые профили используют миграцию SQLite v3: `voice_profiles` и `character_voices` с неизменяемыми ревизиями и проверкой SHA-256. `voice_clone` и `voice_preview` выполняются в общей очереди worker. Бюджет клонирования и состояние отправки резервируются транзакционно в `provider_requests` до HTTP. Неопределённый исход не повторяется; восстановление требует точной метки операции в метаданных провайдера. Старые проекты сохраняют выбранную ревизию, но текущее отклонение профиля или отзыв согласия блокирует дальнейший рендер. Подробности: [VOICES.md](VOICES.md).
+
+Ключ берётся централизованно из окружения или общего .NET User Secrets. Offline acceptance отключает User Secrets; явный `--live-tts` — отдельный платный opt-in с ограниченным бюджетом. Диагностика не возвращает ключ, ошибки чтения secrets.json не включают содержимое файла.

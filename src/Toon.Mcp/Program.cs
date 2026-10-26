@@ -79,6 +79,109 @@ await builder.Build().RunAsync();
 
 public sealed class ToonTools(Studio studio)
 {
+    [McpServerTool(UseStructuredContent = true, Name = "start_voice_clone", Destructive = false, Idempotent = true)]
+    [Description(
+        "Queue one ElevenLabs Instant Voice Clone in the persistent worker. Uploads the original sample only with submission rights/consents, completed technical preparation, explicit sample listening review, allow_cloud_upload=true and max_clone_requests=1. Server also requires TOON_ALLOW_VOICE_CLONING=1, TOON_MAX_VOICE_CLONES and ELEVENLABS_API_KEY. Never automatically retry uncertain outcomes. No TTS is generated here."
+    )]
+    public Task<CallToolResult> CloneVoice(
+        string item_id,
+        int expected_revision,
+        bool allow_cloud_upload,
+        int max_clone_requests,
+        bool sample_reviewed,
+        string review_note,
+        string idempotency_key
+    ) =>
+        Call(() =>
+            studio.Voices.StartClone(
+                item_id,
+                expected_revision,
+                allow_cloud_upload,
+                max_clone_requests,
+                sample_reviewed,
+                review_note,
+                idempotency_key
+            )
+        );
+
+    [McpServerTool(UseStructuredContent = true, Name = "get_voice_profile", ReadOnly = true)]
+    [Description(
+        "Read latest or immutable voice profile revision. States distinguish provider verification, pending listening review, approved and rejected. Provider IDs are not proof of similarity."
+    )]
+    public Task<CallToolResult> VoiceProfile(string profile_id, int? revision = null) =>
+        Call(() => studio.Voices.Profile(profile_id, revision));
+
+    [McpServerTool(UseStructuredContent = true, Name = "list_voice_profiles", ReadOnly = true)]
+    public Task<CallToolResult> VoiceProfiles() => Call(() => studio.Voices.Profiles());
+
+    [McpServerTool(UseStructuredContent = true, Name = "refresh_voice_verification", Destructive = false)]
+    [Description(
+        "Read ElevenLabs verification status for this voice. Uses a metadata GET, never bypasses verification or creates another clone. Missing verification fields keep the profile blocked."
+    )]
+    public Task<CallToolResult> RefreshVoice(string profile_id, int expected_revision, CancellationToken ct) =>
+        Call(() => studio.Voices.Refresh(profile_id, expected_revision, ct));
+
+    [McpServerTool(UseStructuredContent = true, Name = "reconcile_voice_clone", Destructive = false)]
+    [Description(
+        "Recover a provider voice ID after a failed/cancelled clone job. Performs metadata GET and requires an exact Toon operation label match; never repeats the clone POST. Supply the ID found in the operator's ElevenLabs account."
+    )]
+    public Task<CallToolResult> ReconcileVoice(
+        string job_id,
+        string provider_voice_id,
+        string note,
+        CancellationToken ct
+    ) => Call(() => studio.Voices.Reconcile(job_id, provider_voice_id, note, ct));
+
+    [McpServerTool(UseStructuredContent = true, Name = "start_voice_preview", Destructive = false, Idempotent = true)]
+    [Description(
+        "Generate a short WAV for listening review in the persistent worker. Requires a verified provider voice and explicit allow_new_tts/character limit for uncached speech. Does not assert similarity; listen and compare with original before review_voice_profile."
+    )]
+    public Task<CallToolResult> PreviewVoice(
+        string profile_id,
+        int expected_revision,
+        string text,
+        string idempotency_key,
+        bool allow_new_tts = false,
+        int max_new_tts_characters = 0
+    ) =>
+        Call(() =>
+            studio.Voices.StartPreview(
+                profile_id,
+                expected_revision,
+                text,
+                allow_new_tts,
+                max_new_tts_characters,
+                idempotency_key
+            )
+        );
+
+    [McpServerTool(UseStructuredContent = true, Name = "review_voice_profile", Destructive = false)]
+    [Description(
+        "Record the operator's listening decision as a new immutable profile revision. Approval requires a verified preview of the current revision. Rejecting disables use, including old project references. Does not delete the cloud voice."
+    )]
+    public Task<CallToolResult> ReviewVoice(
+        string profile_id,
+        int expected_revision,
+        bool approved,
+        string review_note
+    ) => Call(() => studio.Voices.Review(profile_id, expected_revision, approved, review_note));
+
+    [McpServerTool(UseStructuredContent = true, Name = "get_character_voice", ReadOnly = true)]
+    public Task<CallToolResult> CharacterVoice(string character_id, string version) =>
+        Call(() => studio.Voices.Binding(character_id, version) ?? J.Node(new { bound = false }));
+
+    [McpServerTool(UseStructuredContent = true, Name = "bind_character_voice", Destructive = false)]
+    [Description(
+        "Bind an approved voice profile revision to a published character version, using expected_binding_revision=0 for first binding. New projects with audio.voice_alias=character pin this default as characters[].voice_profile; existing project revisions remain unchanged. Explicit legacy aliases still override it."
+    )]
+    public Task<CallToolResult> BindVoice(
+        string character_id,
+        string version,
+        int expected_binding_revision,
+        string profile_id,
+        int profile_revision
+    ) => Call(() => studio.Voices.Bind(character_id, version, expected_binding_revision, profile_id, profile_revision));
+
     [McpServerTool(UseStructuredContent = true, Name = "get_environment_recipe_template", ReadOnly = true)]
     [Description(
         "Get example layer masks, character slots, depth ordering, anchors and camera presets. Coordinates match the example workshop only; annotate real supplied sketches before preparation."

@@ -1,6 +1,6 @@
-param([switch]$Quick,[switch]$Library,[switch]$Characters,[switch]$Environments)
+param([switch]$Quick,[switch]$Library,[switch]$Characters,[switch]$Environments,[switch]$Voices)
 $ErrorActionPreference = 'Stop'
-if (([int]$Quick.IsPresent + [int]$Library.IsPresent + [int]$Characters.IsPresent + [int]$Environments.IsPresent) -gt 1) { throw 'Choose one of -Quick, -Library, -Characters, -Environments' }
+if (([int]$Quick.IsPresent + [int]$Library.IsPresent + [int]$Characters.IsPresent + [int]$Environments.IsPresent + [int]$Voices.IsPresent) -gt 1) { throw 'Choose one of -Quick, -Library, -Characters, -Environments, -Voices' }
 Set-Location (Split-Path $PSScriptRoot -Parent)
 dotnet build Toon.slnx --no-restore
 if ($LASTEXITCODE) { throw 'Build failed' }
@@ -13,7 +13,8 @@ try {
         New-Item -ItemType Junction -Path $link -Target (Join-Path $PWD 'contracts') | Out-Null
         $madeLink = $true
     }
-    if ($Environments) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --environments }
+    if ($Voices) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --voices }
+    elseif ($Environments) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --environments }
     elseif ($Characters) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --characters }
     elseif ($Library) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --library }
     elseif ($Quick) { dotnet tests/Toon.Acceptance/bin/Debug/net10.0/Toon.Acceptance.dll --quick }

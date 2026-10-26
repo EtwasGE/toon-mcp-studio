@@ -56,7 +56,16 @@
                 "required": ["character_id", "version"],
                 "properties": {
                     "character_id": { "$ref": "#/$defs/id" },
-                    "version": { "$ref": "#/$defs/version" }
+                    "version": { "$ref": "#/$defs/version" },
+                    "voice_profile": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["profile_id", "revision"],
+                        "properties": {
+                            "profile_id": { "type": "string", "pattern": "^voice_[a-f0-9]{32}$" },
+                            "revision": { "type": "integer", "minimum": 1 }
+                        }
+                    }
                 }
             }
         },

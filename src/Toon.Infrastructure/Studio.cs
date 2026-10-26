@@ -10,14 +10,16 @@ public sealed partial class Studio
     public Assets Assets { get; }
     public Speech Speech { get; }
     public ContentLibrary Library { get; }
+    public VoiceService Voices { get; }
 
-    public Studio(Config config)
+    public Studio(Config config, HttpClient? voiceClient = null)
     {
         Config = config;
         Store = new Store(config);
         Assets = new Assets(config, Store);
-        Speech = new Speech(config, Store);
+        Speech = new Speech(config, Store, voiceClient);
         Library = new ContentLibrary(config, Store, Assets);
+        Voices = new VoiceService(this, voiceClient);
     }
 
     public void CheckDraft(JsonNode project, JsonNode? resolvedRigs = null, JsonNode? resolvedEnvironments = null)
@@ -32,6 +34,7 @@ public sealed partial class Studio
 
     public JsonNode Create(JsonNode project)
     {
+        project = Voices.Pin(project);
         CheckDraft(project);
         var result = Store.SaveProject(project);
         result["readiness"] = Validate(result.Str("project_id"), result.Int("revision"));
@@ -41,6 +44,7 @@ public sealed partial class Studio
 
     public JsonNode Update(string id, int expected, JsonNode project)
     {
+        project = Voices.Pin(project);
         J.Require(expected > 0, "VALIDATION_ERROR", "expected_revision must be positive");
         CheckDraft(project);
         var result = Store.SaveProject(project, id, expected);
@@ -164,7 +168,15 @@ public sealed partial class Studio
                 {
                     try
                     {
-                        var voice = Speech.ResolveVoice(u);
+                        var voice =
+                            u["audio"]!.Str("voice_alias") == "character"
+                                ? Voices.Resolve(
+                                    p.Items("characters")
+                                        .Single(c => c.Str("character_id") == u.Str("speaker_character_id"))[
+                                        "voice_profile"
+                                    ]!
+                                )
+                                : Speech.ResolveVoice(u);
                         voices[u.Str("utterance_id")] = voice;
                         var key = Speech.CacheKey(u.Str("text"), voice);
                         if (!Speech.Cached(key) && keys.Add(key))
@@ -349,7 +361,7 @@ public sealed partial class Studio
         if (characters > 0)
         {
             J.Require(
-                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ELEVENLABS_API_KEY")),
+                !string.IsNullOrWhiteSpace(Secrets.ElevenLabsApiKey()),
                 "VOICE_NOT_CONFIGURED",
                 "ElevenLabs key is absent"
             );
@@ -454,9 +466,7 @@ public sealed partial class Studio
                     )
                 ),
                 configured_voice_aliases = Config.Voices.AsObject().Select(x => x.Key).ToArray(),
-                elevenlabs_key_present = !string.IsNullOrWhiteSpace(
-                    Environment.GetEnvironmentVariable("ELEVENLABS_API_KEY")
-                ),
+                elevenlabs_key_present = !string.IsNullOrWhiteSpace(Secrets.ElevenLabsApiKey()),
                 tts_character_limit = Config.TtsLimit,
                 data_root = Config.Data,
                 import_roots = Config.ImportRoots,

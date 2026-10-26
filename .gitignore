@@ -17,6 +17,7 @@ renderer/dist/
 **/.idea/
 *.user
 *.suo
+secrets.json
 
 # Локальные результаты проверок
 **/TestResults/

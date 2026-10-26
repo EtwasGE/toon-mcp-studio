@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <UserSecretsId>toon-mcp-studio</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Toon.Infrastructure/Toon.Infrastructure.csproj" />

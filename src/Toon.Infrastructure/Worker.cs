@@ -88,6 +88,13 @@ public sealed class Worker(Studio studio)
         });
         try
         {
+            if (job["job_kind"]?.ToString() is "voice_clone" or "voice_preview")
+            {
+                Stage(job.Str("job_kind"));
+                await studio.Voices.Execute(job, cancelled.Token);
+                return;
+            }
+
             if (job["job_kind"]?.ToString() == "library_prepare")
             {
                 Stage("prepare_materials");
@@ -218,6 +225,7 @@ public sealed class Worker(Studio studio)
                 }
                 else
                 {
+                    studio.Voices.CheckSnapshotVoice(snapshot["voices"]![u.Str("utterance_id")]!);
                     audio[u.Str("utterance_id")] = await studio.Speech.Get(
                         u,
                         snapshot["voices"]![u.Str("utterance_id")]!,

@@ -104,7 +104,7 @@ public sealed class Speech(Config config, Store store, HttpClient? client = null
                 "Retry-After has not elapsed"
             );
         }
-        var secret = Environment.GetEnvironmentVariable("ELEVENLABS_API_KEY");
+        var secret = Secrets.ElevenLabsApiKey();
         J.Require(!string.IsNullOrWhiteSpace(secret), "VOICE_NOT_CONFIGURED", "ELEVENLABS_API_KEY is not configured");
         var count = text.EnumerateRunes().Count();
         var journal = J.Node(

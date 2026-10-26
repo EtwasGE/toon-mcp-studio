@@ -402,6 +402,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Data.Sqlite": "[10.0.13, )",
+          "Microsoft.Extensions.Configuration.UserSecrets": "[10.0.1, )",
           "Toon.Core": "[1.0.0, )"
         }
       }

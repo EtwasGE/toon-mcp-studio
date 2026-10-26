@@ -24,7 +24,7 @@
         "revision": { "type": "integer", "minimum": 1 },
         "quality": { "enum": ["preview", "final"] },
         "state": { "enum": ["queued", "running", "cancelling", "succeeded", "failed", "cancelled"] },
-        "stage": { "enum": [null, "preflight", "speech", "timing", "render", "encode", "verify"] },
+        "stage": { "enum": [null, "preflight", "speech", "timing", "render", "encode", "verify", "voice_clone", "voice_preview"] },
         "progress": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
         "attempt": { "type": "integer", "minimum": 0 },
         "snapshot_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
@@ -34,7 +34,17 @@
     },
     "allOf": [
         {
-            "if": { "properties": { "state": { "const": "succeeded" } } },
+            "if": {
+                "allOf": [
+                    { "properties": { "state": { "const": "succeeded" } } },
+                    {
+                        "not": {
+                            "required": ["job_kind"],
+                            "properties": { "job_kind": { "enum": ["voice_clone", "voice_preview"] } }
+                        }
+                    }
+                ]
+            },
             "then": { "properties": { "artifacts": { "minItems": 7 } } }
         }
     ]

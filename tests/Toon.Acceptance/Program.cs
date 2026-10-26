@@ -9,15 +9,42 @@ using Toon.Infrastructure;
 var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
 Environment.SetEnvironmentVariable("TOON_APP_ROOT", root);
 var testRoot = Path.Combine(root, ".data", "acceptance-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
+if (args.FirstOrDefault() == "--live-tts")
+{
+    testRoot = Environment.GetEnvironmentVariable("TOON_DATA_ROOT") ?? testRoot;
+}
 Environment.SetEnvironmentVariable("TOON_DATA_ROOT", testRoot);
 Environment.SetEnvironmentVariable("TOON_IMPORT_ROOTS", Path.Combine(root, "examples"));
 Environment.SetEnvironmentVariable("TOON_LEASE_SECONDS", "10");
+if (args.FirstOrDefault() == "--live-tts")
+{
+    if (args.Length != 2 || !int.TryParse(args[1], out var liveLimit) || liveLimit is < 1 or > 1000)
+        throw new ArgumentException(
+            "Explicit paid mode: --live-tts MAX_CHARACTERS (1–1000), only after operator authorization"
+        );
+
+    await LiveSpeechAcceptance.Run(new Config(), liveLimit);
+    return;
+}
+Environment.SetEnvironmentVariable("TOON_USE_USER_SECRETS", "0");
+
+if (args.Contains("--secrets"))
+{
+    SecretsAcceptance.Run(testRoot);
+    return;
+}
 
 // No paid HTTP client is called by this harness. Offline fixtures and injected transports only.
 var config = new Config();
 var studio = new Studio(config);
 var results = new JsonArray();
 var errors = 0;
+if (args.Contains("--voices"))
+{
+    await VoiceAcceptance.Run(config);
+    return;
+}
+
 if (args.Contains("--environments"))
 {
     await EnvironmentAcceptance.Run(config);

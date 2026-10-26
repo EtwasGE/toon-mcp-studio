@@ -189,6 +189,14 @@ public sealed partial class ContentLibrary
             }
         }
 
+        JsonNode? voiceAnalysis = null;
+        if (
+            kind == "voice"
+            && source.Items("materials").FirstOrDefault(m => m.Str("role") == "sample") is JsonNode sample
+        )
+        {
+            voiceAnalysis = await VoiceSamples.Analyze(config, assets, sample["asset"]!, ct);
+        }
         var rig = kind == "character" ? PrepareCharacter(source, errors, warnings) : null;
         var environment = kind == "environment" ? PrepareEnvironment(source, errors, warnings) : null;
         var renderSupported = (rig != null || environment != null) && errors.Count == 0;
@@ -218,6 +226,7 @@ public sealed partial class ContentLibrary
                 render_supported = renderSupported,
                 rig,
                 environment,
+                voice_analysis = voiceAnalysis,
                 recipe_sha256 = (source["character_recipe"] ?? source["environment_recipe"]) is JsonNode recipe
                     ? J.Hash(J.Canonical(recipe))
                     : null,

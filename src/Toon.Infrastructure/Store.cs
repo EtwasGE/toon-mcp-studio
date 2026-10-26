@@ -187,6 +187,7 @@ public sealed class Store
             new
             {
                 job_id = "job_" + Guid.NewGuid().ToString("N"),
+                job_kind = request["job_kind"]?.ToString() ?? "render",
                 project_id = request.Str("project_id"),
                 revision = request.Int("revision"),
                 quality = request.Str("quality"),
