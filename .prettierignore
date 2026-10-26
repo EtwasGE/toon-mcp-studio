@@ -1,0 +1,12 @@
+.cache/
+.data/
+.git/
+.remotion/
+.tools/
+.vs/
+**/bin/
+**/obj/
+**/node_modules/
+**/package-lock.json
+**/packages.lock.json
+docs/spec/

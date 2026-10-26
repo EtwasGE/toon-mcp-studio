@@ -1,309 +1,327 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:toon-mcp:schema:draft-project:1.0.0",
-  "title": "Toon MCP DraftProject 1.0.0",
-  "description": "Authoring input. Audio-derived timings and frame ranges belong to the compiled timeline, never to this draft.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schema_version", "kind", "title", "locale", "video", "target_duration_seconds", "max_final_duration_seconds", "seed", "style", "characters", "captions", "scenes"],
-  "properties": {
-    "schema_version": { "const": "1.0.0" },
-    "kind": { "const": "draft_project" },
-    "title": { "type": "string", "minLength": 1, "maxLength": 160 },
-    "locale": { "const": "ru-RU" },
-    "video": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["width", "height", "fps"],
-      "properties": {
-        "width": { "const": 1080 },
-        "height": { "const": 1920 },
-        "fps": { "const": 30 }
-      }
-    },
-    "target_duration_seconds": { "type": "integer", "minimum": 20, "maximum": 45 },
-    "max_final_duration_seconds": { "const": 60 },
-    "seed": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
-    "style": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["style_id", "version"],
-      "properties": {
-        "style_id": { "$ref": "#/$defs/id" },
-        "version": { "$ref": "#/$defs/version" }
-      }
-    },
-    "characters": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 2,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["character_id", "version"],
-        "properties": {
-          "character_id": { "$ref": "#/$defs/id" },
-          "version": { "$ref": "#/$defs/version" }
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:toon-mcp:schema:draft-project:1.0.0",
+    "title": "Toon MCP DraftProject 1.0.0",
+    "description": "Authoring input. Audio-derived timings and frame ranges belong to the compiled timeline, never to this draft.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "schema_version",
+        "kind",
+        "title",
+        "locale",
+        "video",
+        "target_duration_seconds",
+        "max_final_duration_seconds",
+        "seed",
+        "style",
+        "characters",
+        "captions",
+        "scenes"
+    ],
+    "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "kind": { "const": "draft_project" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "locale": { "const": "ru-RU" },
+        "video": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["width", "height", "fps"],
+            "properties": {
+                "width": { "const": 1080 },
+                "height": { "const": 1920 },
+                "fps": { "const": 30 }
+            }
+        },
+        "target_duration_seconds": { "type": "integer", "minimum": 20, "maximum": 45 },
+        "max_final_duration_seconds": { "const": 60 },
+        "seed": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+        "style": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["style_id", "version"],
+            "properties": {
+                "style_id": { "$ref": "#/$defs/id" },
+                "version": { "$ref": "#/$defs/version" }
+            }
+        },
+        "characters": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["character_id", "version"],
+                "properties": {
+                    "character_id": { "$ref": "#/$defs/id" },
+                    "version": { "$ref": "#/$defs/version" }
+                }
+            }
+        },
+        "captions": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["enabled", "mode", "preset_id"],
+            "properties": {
+                "enabled": { "type": "boolean" },
+                "mode": { "enum": ["auto", "word", "utterance"] },
+                "preset_id": { "$ref": "#/$defs/id" }
+            }
+        },
+        "music": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["asset", "gain_db", "duck_under_dialogue"],
+            "properties": {
+                "asset": { "$ref": "#/$defs/assetRef" },
+                "gain_db": { "type": "number", "minimum": -48, "maximum": 0 },
+                "duck_under_dialogue": { "const": true }
+            }
+        },
+        "scenes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 12,
+            "items": { "$ref": "#/$defs/scene" }
         }
-      }
     },
-    "captions": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["enabled", "mode", "preset_id"],
-      "properties": {
-        "enabled": { "type": "boolean" },
-        "mode": { "enum": ["auto", "word", "utterance"] },
-        "preset_id": { "$ref": "#/$defs/id" }
-      }
-    },
-    "music": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["asset", "gain_db", "duck_under_dialogue"],
-      "properties": {
-        "asset": { "$ref": "#/$defs/assetRef" },
-        "gain_db": { "type": "number", "minimum": -48, "maximum": 0 },
-        "duck_under_dialogue": { "const": true }
-      }
-    },
-    "scenes": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 12,
-      "items": { "$ref": "#/$defs/scene" }
+    "$defs": {
+        "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "version": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 32,
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "assetRef": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["asset_id", "version"],
+            "properties": {
+                "asset_id": { "$ref": "#/$defs/id" },
+                "version": { "$ref": "#/$defs/version" }
+            }
+        },
+        "camera": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["shot"],
+            "properties": {
+                "shot": { "enum": ["wide", "two_shot", "close_up", "screen"] },
+                "subject_character_id": { "$ref": "#/$defs/id" }
+            },
+            "allOf": [
+                {
+                    "if": { "properties": { "shot": { "const": "close_up" } }, "required": ["shot"] },
+                    "then": { "required": ["subject_character_id"] },
+                    "else": { "properties": { "subject_character_id": false } }
+                }
+            ]
+        },
+        "castMember": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["character_id", "placement", "pose_id", "emotion_id"],
+            "properties": {
+                "character_id": { "$ref": "#/$defs/id" },
+                "placement": { "enum": ["left", "center", "right"] },
+                "pose_id": { "$ref": "#/$defs/id" },
+                "emotion_id": { "$ref": "#/$defs/id" }
+            }
+        },
+        "audioSource": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["mode", "voice_alias", "delivery"],
+                    "properties": {
+                        "mode": { "const": "tts" },
+                        "voice_alias": { "$ref": "#/$defs/id" },
+                        "delivery": { "enum": ["neutral", "concerned", "pleased", "surprised"] }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["mode", "asset"],
+                    "properties": {
+                        "mode": { "const": "recording" },
+                        "asset": { "$ref": "#/$defs/assetRef" }
+                    }
+                }
+            ]
+        },
+        "utterance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["utterance_id", "speaker_character_id", "text", "audio", "pause_after_ms"],
+            "properties": {
+                "utterance_id": { "$ref": "#/$defs/id" },
+                "speaker_character_id": { "$ref": "#/$defs/id" },
+                "text": { "type": "string", "minLength": 1, "maxLength": 500 },
+                "audio": { "$ref": "#/$defs/audioSource" },
+                "pause_after_ms": { "type": "integer", "minimum": 0, "maximum": 1500 }
+            }
+        },
+        "anchor": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["kind"],
+                    "properties": {
+                        "kind": { "enum": ["scene_start", "scene_end"] },
+                        "offset_ms": { "type": "integer", "minimum": -1000, "maximum": 1000, "default": 0 }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["kind", "utterance_id"],
+                    "properties": {
+                        "kind": { "enum": ["utterance_start", "utterance_end"] },
+                        "utterance_id": { "$ref": "#/$defs/id" },
+                        "offset_ms": { "type": "integer", "minimum": -1000, "maximum": 1000, "default": 0 }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["kind", "utterance_id", "normalized_word_index"],
+                    "properties": {
+                        "kind": { "enum": ["word_start", "word_end"] },
+                        "utterance_id": { "$ref": "#/$defs/id" },
+                        "normalized_word_index": { "type": "integer", "minimum": 0, "maximum": 499 },
+                        "offset_ms": { "type": "integer", "minimum": -1000, "maximum": 1000, "default": 0 }
+                    }
+                }
+            ]
+        },
+        "eventAction": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["kind", "character_id", "gesture_id"],
+                    "properties": {
+                        "kind": { "const": "gesture" },
+                        "character_id": { "$ref": "#/$defs/id" },
+                        "gesture_id": { "$ref": "#/$defs/id" }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["kind", "character_id", "emotion_id"],
+                    "properties": {
+                        "kind": { "const": "emotion" },
+                        "character_id": { "$ref": "#/$defs/id" },
+                        "emotion_id": { "$ref": "#/$defs/id" }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["kind", "camera", "transition_ms"],
+                    "properties": {
+                        "kind": { "const": "camera" },
+                        "camera": { "$ref": "#/$defs/camera" },
+                        "transition_ms": { "type": "integer", "minimum": 0, "maximum": 1000 }
+                    }
+                }
+            ]
+        },
+        "event": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["event_id", "at", "action"],
+            "properties": {
+                "event_id": { "$ref": "#/$defs/id" },
+                "at": { "$ref": "#/$defs/anchor" },
+                "action": { "$ref": "#/$defs/eventAction" }
+            }
+        },
+        "overlayContent": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["kind", "text", "placement", "preset_id"],
+                    "properties": {
+                        "kind": { "const": "text" },
+                        "text": { "type": "string", "minLength": 1, "maxLength": 200 },
+                        "placement": { "enum": ["top", "center", "lower"] },
+                        "preset_id": { "$ref": "#/$defs/id" }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["kind", "asset", "placement", "fit", "render_mode"],
+                    "properties": {
+                        "kind": { "const": "image" },
+                        "asset": { "$ref": "#/$defs/assetRef" },
+                        "placement": { "enum": ["full_frame", "centered_phone", "inset"] },
+                        "fit": { "const": "contain" },
+                        "render_mode": { "const": "exact" }
+                    }
+                }
+            ]
+        },
+        "overlay": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["overlay_id", "start", "end", "content"],
+            "properties": {
+                "overlay_id": { "$ref": "#/$defs/id" },
+                "start": { "$ref": "#/$defs/anchor" },
+                "end": { "$ref": "#/$defs/anchor" },
+                "content": { "$ref": "#/$defs/overlayContent" }
+            }
+        },
+        "scene": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["scene_id", "kind", "background", "camera", "cast", "events", "overlays"],
+            "properties": {
+                "scene_id": { "$ref": "#/$defs/id" },
+                "kind": { "enum": ["dialogue", "hold"] },
+                "background": { "$ref": "#/$defs/assetRef" },
+                "camera": { "$ref": "#/$defs/camera" },
+                "cast": { "type": "array", "minItems": 0, "maxItems": 2, "items": { "$ref": "#/$defs/castMember" } },
+                "utterances": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 12,
+                    "items": { "$ref": "#/$defs/utterance" }
+                },
+                "lead_in_ms": { "type": "integer", "minimum": 0, "maximum": 2000 },
+                "tail_ms": { "type": "integer", "minimum": 0, "maximum": 2000 },
+                "hold_ms": { "type": "integer", "minimum": 500, "maximum": 6000 },
+                "events": { "type": "array", "minItems": 0, "maxItems": 24, "items": { "$ref": "#/$defs/event" } },
+                "overlays": { "type": "array", "minItems": 0, "maxItems": 6, "items": { "$ref": "#/$defs/overlay" } }
+            },
+            "allOf": [
+                {
+                    "if": { "properties": { "kind": { "const": "dialogue" } }, "required": ["kind"] },
+                    "then": {
+                        "required": ["utterances", "lead_in_ms", "tail_ms"],
+                        "properties": { "hold_ms": false }
+                    },
+                    "else": {
+                        "required": ["hold_ms"],
+                        "properties": { "utterances": false, "lead_in_ms": false, "tail_ms": false }
+                    }
+                }
+            ]
+        }
     }
-  },
-  "$defs": {
-    "id": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 64,
-      "pattern": "^[a-z][a-z0-9_-]*$"
-    },
-    "version": {
-      "type": "string",
-      "minLength": 5,
-      "maxLength": 32,
-      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
-    },
-    "assetRef": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["asset_id", "version"],
-      "properties": {
-        "asset_id": { "$ref": "#/$defs/id" },
-        "version": { "$ref": "#/$defs/version" }
-      }
-    },
-    "camera": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["shot"],
-      "properties": {
-        "shot": { "enum": ["wide", "two_shot", "close_up", "screen"] },
-        "subject_character_id": { "$ref": "#/$defs/id" }
-      },
-      "allOf": [
-        {
-          "if": { "properties": { "shot": { "const": "close_up" } }, "required": ["shot"] },
-          "then": { "required": ["subject_character_id"] },
-          "else": { "properties": { "subject_character_id": false } }
-        }
-      ]
-    },
-    "castMember": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["character_id", "placement", "pose_id", "emotion_id"],
-      "properties": {
-        "character_id": { "$ref": "#/$defs/id" },
-        "placement": { "enum": ["left", "center", "right"] },
-        "pose_id": { "$ref": "#/$defs/id" },
-        "emotion_id": { "$ref": "#/$defs/id" }
-      }
-    },
-    "audioSource": {
-      "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["mode", "voice_alias", "delivery"],
-          "properties": {
-            "mode": { "const": "tts" },
-            "voice_alias": { "$ref": "#/$defs/id" },
-            "delivery": { "enum": ["neutral", "concerned", "pleased", "surprised"] }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["mode", "asset"],
-          "properties": {
-            "mode": { "const": "recording" },
-            "asset": { "$ref": "#/$defs/assetRef" }
-          }
-        }
-      ]
-    },
-    "utterance": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["utterance_id", "speaker_character_id", "text", "audio", "pause_after_ms"],
-      "properties": {
-        "utterance_id": { "$ref": "#/$defs/id" },
-        "speaker_character_id": { "$ref": "#/$defs/id" },
-        "text": { "type": "string", "minLength": 1, "maxLength": 500 },
-        "audio": { "$ref": "#/$defs/audioSource" },
-        "pause_after_ms": { "type": "integer", "minimum": 0, "maximum": 1500 }
-      }
-    },
-    "anchor": {
-      "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind"],
-          "properties": {
-            "kind": { "enum": ["scene_start", "scene_end"] },
-            "offset_ms": { "type": "integer", "minimum": -1000, "maximum": 1000, "default": 0 }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "utterance_id"],
-          "properties": {
-            "kind": { "enum": ["utterance_start", "utterance_end"] },
-            "utterance_id": { "$ref": "#/$defs/id" },
-            "offset_ms": { "type": "integer", "minimum": -1000, "maximum": 1000, "default": 0 }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "utterance_id", "normalized_word_index"],
-          "properties": {
-            "kind": { "enum": ["word_start", "word_end"] },
-            "utterance_id": { "$ref": "#/$defs/id" },
-            "normalized_word_index": { "type": "integer", "minimum": 0, "maximum": 499 },
-            "offset_ms": { "type": "integer", "minimum": -1000, "maximum": 1000, "default": 0 }
-          }
-        }
-      ]
-    },
-    "eventAction": {
-      "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "character_id", "gesture_id"],
-          "properties": {
-            "kind": { "const": "gesture" },
-            "character_id": { "$ref": "#/$defs/id" },
-            "gesture_id": { "$ref": "#/$defs/id" }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "character_id", "emotion_id"],
-          "properties": {
-            "kind": { "const": "emotion" },
-            "character_id": { "$ref": "#/$defs/id" },
-            "emotion_id": { "$ref": "#/$defs/id" }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "camera", "transition_ms"],
-          "properties": {
-            "kind": { "const": "camera" },
-            "camera": { "$ref": "#/$defs/camera" },
-            "transition_ms": { "type": "integer", "minimum": 0, "maximum": 1000 }
-          }
-        }
-      ]
-    },
-    "event": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["event_id", "at", "action"],
-      "properties": {
-        "event_id": { "$ref": "#/$defs/id" },
-        "at": { "$ref": "#/$defs/anchor" },
-        "action": { "$ref": "#/$defs/eventAction" }
-      }
-    },
-    "overlayContent": {
-      "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "text", "placement", "preset_id"],
-          "properties": {
-            "kind": { "const": "text" },
-            "text": { "type": "string", "minLength": 1, "maxLength": 200 },
-            "placement": { "enum": ["top", "center", "lower"] },
-            "preset_id": { "$ref": "#/$defs/id" }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "asset", "placement", "fit", "render_mode"],
-          "properties": {
-            "kind": { "const": "image" },
-            "asset": { "$ref": "#/$defs/assetRef" },
-            "placement": { "enum": ["full_frame", "centered_phone", "inset"] },
-            "fit": { "const": "contain" },
-            "render_mode": { "const": "exact" }
-          }
-        }
-      ]
-    },
-    "overlay": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["overlay_id", "start", "end", "content"],
-      "properties": {
-        "overlay_id": { "$ref": "#/$defs/id" },
-        "start": { "$ref": "#/$defs/anchor" },
-        "end": { "$ref": "#/$defs/anchor" },
-        "content": { "$ref": "#/$defs/overlayContent" }
-      }
-    },
-    "scene": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["scene_id", "kind", "background", "camera", "cast", "events", "overlays"],
-      "properties": {
-        "scene_id": { "$ref": "#/$defs/id" },
-        "kind": { "enum": ["dialogue", "hold"] },
-        "background": { "$ref": "#/$defs/assetRef" },
-        "camera": { "$ref": "#/$defs/camera" },
-        "cast": { "type": "array", "minItems": 0, "maxItems": 2, "items": { "$ref": "#/$defs/castMember" } },
-        "utterances": { "type": "array", "minItems": 1, "maxItems": 12, "items": { "$ref": "#/$defs/utterance" } },
-        "lead_in_ms": { "type": "integer", "minimum": 0, "maximum": 2000 },
-        "tail_ms": { "type": "integer", "minimum": 0, "maximum": 2000 },
-        "hold_ms": { "type": "integer", "minimum": 500, "maximum": 6000 },
-        "events": { "type": "array", "minItems": 0, "maxItems": 24, "items": { "$ref": "#/$defs/event" } },
-        "overlays": { "type": "array", "minItems": 0, "maxItems": 6, "items": { "$ref": "#/$defs/overlay" } }
-      },
-      "allOf": [
-        {
-          "if": { "properties": { "kind": { "const": "dialogue" } }, "required": ["kind"] },
-          "then": {
-            "required": ["utterances", "lead_in_ms", "tail_ms"],
-            "properties": { "hold_ms": false }
-          },
-          "else": {
-            "required": ["hold_ms"],
-            "properties": { "utterances": false, "lead_in_ms": false, "tail_ms": false }
-          }
-        }
-      ]
-    }
-  }
 }

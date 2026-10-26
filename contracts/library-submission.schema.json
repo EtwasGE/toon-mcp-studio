@@ -1,0 +1,87 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://toon.local/contracts/library-submission.schema.json",
+    "title": "Library submission 1.0.0",
+    "type": "object",
+    "required": ["schema_version", "kind", "display_name", "description", "rights_confirmed", "details"],
+    "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "kind": { "enum": ["character", "environment", "voice"] },
+        "display_name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "description": { "type": "string", "maxLength": 4000 },
+        "rights_confirmed": { "type": "boolean" },
+        "details": { "type": "object" }
+    },
+    "additionalProperties": false,
+    "allOf": [
+        {
+            "if": { "properties": { "kind": { "const": "character" } } },
+            "then": { "properties": { "details": { "$ref": "#/$defs/character" } } }
+        },
+        {
+            "if": { "properties": { "kind": { "const": "environment" } } },
+            "then": { "properties": { "details": { "$ref": "#/$defs/environment" } } }
+        },
+        {
+            "if": { "properties": { "kind": { "const": "voice" } } },
+            "then": { "properties": { "details": { "$ref": "#/$defs/voice" } } }
+        }
+    ],
+    "$defs": {
+        "text": { "type": "string", "maxLength": 4000 },
+        "palette": {
+            "type": "array",
+            "maxItems": 16,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+        },
+        "character": {
+            "type": "object",
+            "required": ["appearance", "personality", "palette", "pose"],
+            "properties": {
+                "appearance": { "$ref": "#/$defs/text" },
+                "personality": { "$ref": "#/$defs/text" },
+                "palette": { "$ref": "#/$defs/palette" },
+                "pose": { "enum": ["seated", "standing"] }
+            },
+            "additionalProperties": false
+        },
+        "environment": {
+            "type": "object",
+            "required": ["setting", "lighting", "palette", "character_slots", "occlusion_notes"],
+            "properties": {
+                "setting": { "$ref": "#/$defs/text" },
+                "lighting": { "$ref": "#/$defs/text" },
+                "palette": { "$ref": "#/$defs/palette" },
+                "character_slots": {
+                    "type": "array",
+                    "maxItems": 3,
+                    "uniqueItems": true,
+                    "items": { "enum": ["left", "center", "right"] }
+                },
+                "occlusion_notes": { "$ref": "#/$defs/text" }
+            },
+            "additionalProperties": false
+        },
+        "voice": {
+            "type": "object",
+            "required": [
+                "speaker_name",
+                "locale",
+                "delivery_notes",
+                "pronunciation_notes",
+                "cloning_consent",
+                "cloud_upload_consent"
+            ],
+            "properties": {
+                "speaker_name": { "type": "string", "maxLength": 120 },
+                "locale": { "type": "string", "pattern": "^[a-z]{2}(-[A-Z]{2})?$" },
+                "delivery_notes": { "$ref": "#/$defs/text" },
+                "pronunciation_notes": { "$ref": "#/$defs/text" },
+                "cloning_consent": { "type": "boolean" },
+                "cloud_upload_consent": { "type": "boolean" }
+            },
+            "additionalProperties": false
+        }
+    }
+}

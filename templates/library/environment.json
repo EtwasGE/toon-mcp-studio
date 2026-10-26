@@ -1,0 +1,14 @@
+{
+    "schema_version": "1.0.0",
+    "kind": "environment",
+    "display_name": "Название декорации",
+    "description": "Описание декорации",
+    "rights_confirmed": false,
+    "details": {
+        "setting": "Место действия",
+        "lighting": "Освещение",
+        "palette": ["#E8F1ED"],
+        "character_slots": ["left", "right"],
+        "occlusion_notes": "Укажите пол, стол и объекты перед персонажами"
+    }
+}

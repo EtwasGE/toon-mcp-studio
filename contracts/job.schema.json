@@ -1,6 +1,41 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"urn:toon-mcp:schema:job:1.0.0","type":"object",
-  "required":["job_id","project_id","revision","quality","state","stage","progress","created_at","attempt","request","snapshot_hash","artifacts","provider_usage_confirmed","provider_usage_unknown"],
-  "properties":{"job_id":{"type":"string","pattern":"^job_[a-f0-9]{32}$"},"project_id":{"type":"string"},"revision":{"type":"integer","minimum":1},"quality":{"enum":["preview","final"]},"state":{"enum":["queued","running","cancelling","succeeded","failed","cancelled"]},"stage":{"enum":[null,"preflight","speech","timing","render","encode","verify"]},"progress":{"type":["number","null"],"minimum":0,"maximum":1},"attempt":{"type":"integer","minimum":0},"snapshot_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"artifacts":{"type":"array"},"provider_usage_confirmed":{"type":"array"},"provider_usage_unknown":{"type":"array"}},
-  "allOf":[{"if":{"properties":{"state":{"const":"succeeded"}}},"then":{"properties":{"artifacts":{"minItems":7}}}}]
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:toon-mcp:schema:job:1.0.0",
+    "type": "object",
+    "required": [
+        "job_id",
+        "project_id",
+        "revision",
+        "quality",
+        "state",
+        "stage",
+        "progress",
+        "created_at",
+        "attempt",
+        "request",
+        "snapshot_hash",
+        "artifacts",
+        "provider_usage_confirmed",
+        "provider_usage_unknown"
+    ],
+    "properties": {
+        "job_id": { "type": "string", "pattern": "^job_[a-f0-9]{32}$" },
+        "project_id": { "type": "string" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "quality": { "enum": ["preview", "final"] },
+        "state": { "enum": ["queued", "running", "cancelling", "succeeded", "failed", "cancelled"] },
+        "stage": { "enum": [null, "preflight", "speech", "timing", "render", "encode", "verify"] },
+        "progress": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "attempt": { "type": "integer", "minimum": 0 },
+        "snapshot_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "artifacts": { "type": "array" },
+        "provider_usage_confirmed": { "type": "array" },
+        "provider_usage_unknown": { "type": "array" }
+    },
+    "allOf": [
+        {
+            "if": { "properties": { "state": { "const": "succeeded" } } },
+            "then": { "properties": { "artifacts": { "minItems": 7 } } }
+        }
+    ]
 }

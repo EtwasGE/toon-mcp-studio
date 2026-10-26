@@ -1,0 +1,15 @@
+{
+    "schema_version": "1.0.0",
+    "kind": "voice",
+    "display_name": "Голос Васи Пупкина",
+    "description": "Описание образца голоса",
+    "rights_confirmed": false,
+    "details": {
+        "speaker_name": "Имя говорящего",
+        "locale": "ru-RU",
+        "delivery_notes": "Манера речи",
+        "pronunciation_notes": "Произношение имён и сложных слов",
+        "cloning_consent": false,
+        "cloud_upload_consent": false
+    }
+}

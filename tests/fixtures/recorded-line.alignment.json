@@ -1,22 +1,22 @@
 {
-  "schema_version": "1.0.0",
-  "kind": "word_alignment",
-  "example_only": true,
-  "locale": "ru-RU",
-  "normalizer_version": "1.0.0",
-  "transcript_text": "Я подписался на уведомления в Новостройкине.",
-  "duration_ms": 3100,
-  "normalized_words": [
-    { "index": 0, "text": "Я", "start_ms": 120, "end_ms": 280 },
-    { "index": 1, "text": "подписался", "start_ms": 300, "end_ms": 900 },
-    { "index": 2, "text": "на", "start_ms": 930, "end_ms": 1080 },
-    { "index": 3, "text": "уведомления", "start_ms": 1100, "end_ms": 1840 },
-    { "index": 4, "text": "в", "start_ms": 1870, "end_ms": 1950 },
-    { "index": 5, "text": "Новостройкине", "start_ms": 1980, "end_ms": 2940 }
-  ],
-  "display_spans": [
-    { "text": "Я подписался ", "start_word_index": 0, "end_word_index_exclusive": 2 },
-    { "text": "на уведомления ", "start_word_index": 2, "end_word_index_exclusive": 4 },
-    { "text": "в Новостройкине.", "start_word_index": 4, "end_word_index_exclusive": 6 }
-  ]
+    "schema_version": "1.0.0",
+    "kind": "word_alignment",
+    "example_only": true,
+    "locale": "ru-RU",
+    "normalizer_version": "1.0.0",
+    "transcript_text": "Я подписался на уведомления в Новостройкине.",
+    "duration_ms": 3100,
+    "normalized_words": [
+        { "index": 0, "text": "Я", "start_ms": 120, "end_ms": 280 },
+        { "index": 1, "text": "подписался", "start_ms": 300, "end_ms": 900 },
+        { "index": 2, "text": "на", "start_ms": 930, "end_ms": 1080 },
+        { "index": 3, "text": "уведомления", "start_ms": 1100, "end_ms": 1840 },
+        { "index": 4, "text": "в", "start_ms": 1870, "end_ms": 1950 },
+        { "index": 5, "text": "Новостройкине", "start_ms": 1980, "end_ms": 2940 }
+    ],
+    "display_spans": [
+        { "text": "Я подписался ", "start_word_index": 0, "end_word_index_exclusive": 2 },
+        { "text": "на уведомления ", "start_word_index": 2, "end_word_index_exclusive": 4 },
+        { "text": "в Новостройкине.", "start_word_index": 4, "end_word_index_exclusive": 6 }
+    ]
 }

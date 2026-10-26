@@ -1,0 +1,13 @@
+{
+    "schema_version": "1.0.0",
+    "kind": "character",
+    "display_name": "Вася Пупкин",
+    "description": "Описание персонажа",
+    "rights_confirmed": false,
+    "details": {
+        "appearance": "Внешность, одежда, пропорции и отличительные черты",
+        "personality": "Характер и манера поведения",
+        "palette": ["#347E85"],
+        "pose": "seated"
+    }
+}

@@ -1,414 +1,414 @@
 {
-  "schema_version": "1.0.0",
-  "kind": "draft_project",
-  "title": "Планы на вечер — автономная речевая демонстрация",
-  "locale": "ru-RU",
-  "video": {
-    "width": 1080,
-    "height": 1920,
-    "fps": 30
-  },
-  "target_duration_seconds": 28,
-  "max_final_duration_seconds": 60,
-  "seed": 42026,
-  "style": {
-    "style_id": "warm_editorial_2d",
-    "version": "1.0.0"
-  },
-  "characters": [
-    {
-      "character_id": "buyer",
-      "version": "1.0.0"
+    "schema_version": "1.0.0",
+    "kind": "draft_project",
+    "title": "Планы на вечер — автономная речевая демонстрация",
+    "locale": "ru-RU",
+    "video": {
+        "width": 1080,
+        "height": 1920,
+        "fps": 30
     },
-    {
-      "character_id": "advisor",
-      "version": "1.0.0"
-    }
-  ],
-  "captions": {
-    "enabled": true,
-    "mode": "auto",
-    "preset_id": "high_contrast_ru"
-  },
-  "scenes": [
-    {
-      "scene_id": "restaurant",
-      "kind": "dialogue",
-      "background": {
-        "asset_id": "restaurant_evening",
+    "target_duration_seconds": 28,
+    "max_final_duration_seconds": 60,
+    "seed": 42026,
+    "style": {
+        "style_id": "warm_editorial_2d",
         "version": "1.0.0"
-      },
-      "camera": {
-        "shot": "two_shot"
-      },
-      "cast": [
+    },
+    "characters": [
         {
-          "character_id": "buyer",
-          "placement": "left",
-          "pose_id": "seated",
-          "emotion_id": "concerned"
-        },
-        {
-          "character_id": "advisor",
-          "placement": "right",
-          "pose_id": "seated",
-          "emotion_id": "confident"
-        }
-      ],
-      "utterances": [
-        {
-          "utterance_id": "problem",
-          "speaker_character_id": "buyer",
-          "text": "Опять весь вечер проверял сайты.",
-          "audio": {
-            "mode": "recording",
-            "asset": {
-              "asset_id": "problem",
-              "version": "1.0.0"
-            }
-          },
-          "pause_after_ms": 300
-        },
-        {
-          "utterance_id": "idea",
-          "speaker_character_id": "advisor",
-          "text": "Давай оставим время для жизни.",
-          "audio": {
-            "mode": "recording",
-            "asset": {
-              "asset_id": "idea",
-              "version": "1.0.0"
-            }
-          },
-          "pause_after_ms": 300
-        }
-      ],
-      "lead_in_ms": 200,
-      "tail_ms": 300,
-      "events": [
-        {
-          "event_id": "problem_shrug",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "problem"
-          },
-          "action": {
-            "kind": "gesture",
             "character_id": "buyer",
-            "gesture_id": "shrug"
-          }
+            "version": "1.0.0"
         },
         {
-          "event_id": "problem_close",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "problem"
-          },
-          "action": {
-            "kind": "camera",
-            "camera": {
-              "shot": "close_up",
-              "subject_character_id": "buyer"
-            },
-            "transition_ms": 200
-          }
-        },
-        {
-          "event_id": "idea_close",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "idea"
-          },
-          "action": {
-            "kind": "camera",
-            "camera": {
-              "shot": "close_up",
-              "subject_character_id": "advisor"
-            },
-            "transition_ms": 200
-          }
-        },
-        {
-          "event_id": "idea_nod",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "idea"
-          },
-          "action": {
-            "kind": "gesture",
             "character_id": "advisor",
-            "gesture_id": "nod"
-          }
+            "version": "1.0.0"
         }
-      ],
-      "overlays": [
-        {
-          "overlay_id": "hook",
-          "start": {
-            "kind": "scene_start"
-          },
-          "end": {
-            "kind": "scene_end"
-          },
-          "content": {
-            "kind": "text",
-            "text": "Вечер — для своих планов",
-            "placement": "top",
-            "preset_id": "hook"
-          }
-        }
-      ]
+    ],
+    "captions": {
+        "enabled": true,
+        "mode": "auto",
+        "preset_id": "high_contrast_ru"
     },
-    {
-      "scene_id": "phone_insert",
-      "kind": "dialogue",
-      "background": {
-        "asset_id": "neutral_dark",
-        "version": "1.0.0"
-      },
-      "camera": {
-        "shot": "screen"
-      },
-      "cast": [],
-      "utterances": [
+    "scenes": [
         {
-          "utterance_id": "phone",
-          "speaker_character_id": "advisor",
-          "text": "Смотри: это учебный экран.",
-          "audio": {
-            "mode": "recording",
-            "asset": {
-              "asset_id": "phone",
-              "version": "1.0.0"
-            }
-          },
-          "pause_after_ms": 300
-        }
-      ],
-      "lead_in_ms": 200,
-      "tail_ms": 300,
-      "events": [],
-      "overlays": [
-        {
-          "overlay_id": "fixture_screen",
-          "start": {
-            "kind": "scene_start"
-          },
-          "end": {
-            "kind": "scene_end"
-          },
-          "content": {
-            "kind": "image",
-            "asset": {
-              "asset_id": "demo_screen",
-              "version": "1.0.0"
+            "scene_id": "restaurant",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "restaurant_evening",
+                "version": "1.0.0"
             },
-            "placement": "centered_phone",
-            "fit": "contain",
-            "render_mode": "exact"
-          }
-        }
-      ]
-    },
-    {
-      "scene_id": "reaction",
-      "kind": "dialogue",
-      "background": {
-        "asset_id": "restaurant_evening",
-        "version": "1.0.0"
-      },
-      "camera": {
-        "shot": "two_shot"
-      },
-      "cast": [
-        {
-          "character_id": "buyer",
-          "placement": "left",
-          "pose_id": "seated",
-          "emotion_id": "concerned"
-        },
-        {
-          "character_id": "advisor",
-          "placement": "right",
-          "pose_id": "seated",
-          "emotion_id": "confident"
-        }
-      ],
-      "utterances": [
-        {
-          "utterance_id": "reaction",
-          "speaker_character_id": "buyer",
-          "text": "Теперь всё видно на одном экране.",
-          "audio": {
-            "mode": "recording",
-            "asset": {
-              "asset_id": "reaction",
-              "version": "1.0.0"
-            }
-          },
-          "pause_after_ms": 300
-        }
-      ],
-      "lead_in_ms": 200,
-      "tail_ms": 300,
-      "events": [
-        {
-          "event_id": "reaction_raise_hand",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "reaction"
-          },
-          "action": {
-            "kind": "gesture",
-            "character_id": "buyer",
-            "gesture_id": "raise_hand"
-          }
-        },
-        {
-          "event_id": "reaction_show_phone",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "reaction"
-          },
-          "action": {
-            "kind": "gesture",
-            "character_id": "advisor",
-            "gesture_id": "show_phone"
-          }
-        }
-      ],
-      "overlays": []
-    },
-    {
-      "scene_id": "office",
-      "kind": "dialogue",
-      "background": {
-        "asset_id": "home_office",
-        "version": "1.0.0"
-      },
-      "camera": {
-        "shot": "two_shot"
-      },
-      "cast": [
-        {
-          "character_id": "buyer",
-          "placement": "left",
-          "pose_id": "seated",
-          "emotion_id": "concerned"
-        },
-        {
-          "character_id": "advisor",
-          "placement": "right",
-          "pose_id": "seated",
-          "emotion_id": "confident"
-        }
-      ],
-      "utterances": [
-        {
-          "utterance_id": "home",
-          "speaker_character_id": "buyer",
-          "text": "А дома можно спокойно выпить чай.",
-          "audio": {
-            "mode": "recording",
-            "asset": {
-              "asset_id": "home",
-              "version": "1.0.0"
-            }
-          },
-          "pause_after_ms": 300
-        },
-        {
-          "utterance_id": "answer",
-          "speaker_character_id": "advisor",
-          "text": "И вернуться к своим планам.",
-          "audio": {
-            "mode": "recording",
-            "asset": {
-              "asset_id": "answer",
-              "version": "1.0.0"
-            }
-          },
-          "pause_after_ms": 300
-        }
-      ],
-      "lead_in_ms": 200,
-      "tail_ms": 300,
-      "events": [
-        {
-          "event_id": "home_close",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "home"
-          },
-          "action": {
-            "kind": "camera",
             "camera": {
-              "shot": "close_up",
-              "subject_character_id": "buyer"
+                "shot": "two_shot"
             },
-            "transition_ms": 200
-          }
+            "cast": [
+                {
+                    "character_id": "buyer",
+                    "placement": "left",
+                    "pose_id": "seated",
+                    "emotion_id": "concerned"
+                },
+                {
+                    "character_id": "advisor",
+                    "placement": "right",
+                    "pose_id": "seated",
+                    "emotion_id": "confident"
+                }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "problem",
+                    "speaker_character_id": "buyer",
+                    "text": "Опять весь вечер проверял сайты.",
+                    "audio": {
+                        "mode": "recording",
+                        "asset": {
+                            "asset_id": "problem",
+                            "version": "1.0.0"
+                        }
+                    },
+                    "pause_after_ms": 300
+                },
+                {
+                    "utterance_id": "idea",
+                    "speaker_character_id": "advisor",
+                    "text": "Давай оставим время для жизни.",
+                    "audio": {
+                        "mode": "recording",
+                        "asset": {
+                            "asset_id": "idea",
+                            "version": "1.0.0"
+                        }
+                    },
+                    "pause_after_ms": 300
+                }
+            ],
+            "lead_in_ms": 200,
+            "tail_ms": 300,
+            "events": [
+                {
+                    "event_id": "problem_shrug",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "problem"
+                    },
+                    "action": {
+                        "kind": "gesture",
+                        "character_id": "buyer",
+                        "gesture_id": "shrug"
+                    }
+                },
+                {
+                    "event_id": "problem_close",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "problem"
+                    },
+                    "action": {
+                        "kind": "camera",
+                        "camera": {
+                            "shot": "close_up",
+                            "subject_character_id": "buyer"
+                        },
+                        "transition_ms": 200
+                    }
+                },
+                {
+                    "event_id": "idea_close",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "idea"
+                    },
+                    "action": {
+                        "kind": "camera",
+                        "camera": {
+                            "shot": "close_up",
+                            "subject_character_id": "advisor"
+                        },
+                        "transition_ms": 200
+                    }
+                },
+                {
+                    "event_id": "idea_nod",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "idea"
+                    },
+                    "action": {
+                        "kind": "gesture",
+                        "character_id": "advisor",
+                        "gesture_id": "nod"
+                    }
+                }
+            ],
+            "overlays": [
+                {
+                    "overlay_id": "hook",
+                    "start": {
+                        "kind": "scene_start"
+                    },
+                    "end": {
+                        "kind": "scene_end"
+                    },
+                    "content": {
+                        "kind": "text",
+                        "text": "Вечер — для своих планов",
+                        "placement": "top",
+                        "preset_id": "hook"
+                    }
+                }
+            ]
         },
         {
-          "event_id": "answer_close",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "answer"
-          },
-          "action": {
-            "kind": "camera",
+            "scene_id": "phone_insert",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "neutral_dark",
+                "version": "1.0.0"
+            },
             "camera": {
-              "shot": "close_up",
-              "subject_character_id": "advisor"
+                "shot": "screen"
             },
-            "transition_ms": 200
-          }
+            "cast": [],
+            "utterances": [
+                {
+                    "utterance_id": "phone",
+                    "speaker_character_id": "advisor",
+                    "text": "Смотри: это учебный экран.",
+                    "audio": {
+                        "mode": "recording",
+                        "asset": {
+                            "asset_id": "phone",
+                            "version": "1.0.0"
+                        }
+                    },
+                    "pause_after_ms": 300
+                }
+            ],
+            "lead_in_ms": 200,
+            "tail_ms": 300,
+            "events": [],
+            "overlays": [
+                {
+                    "overlay_id": "fixture_screen",
+                    "start": {
+                        "kind": "scene_start"
+                    },
+                    "end": {
+                        "kind": "scene_end"
+                    },
+                    "content": {
+                        "kind": "image",
+                        "asset": {
+                            "asset_id": "demo_screen",
+                            "version": "1.0.0"
+                        },
+                        "placement": "centered_phone",
+                        "fit": "contain",
+                        "render_mode": "exact"
+                    }
+                }
+            ]
         },
         {
-          "event_id": "answer_nod",
-          "at": {
-            "kind": "utterance_start",
-            "utterance_id": "answer"
-          },
-          "action": {
-            "kind": "gesture",
-            "character_id": "advisor",
-            "gesture_id": "nod"
-          }
-        }
-      ],
-      "overlays": []
-    },
-    {
-      "scene_id": "cta",
-      "kind": "hold",
-      "background": {
-        "asset_id": "neutral_dark",
-        "version": "1.0.0"
-      },
-      "camera": {
-        "shot": "wide"
-      },
-      "cast": [],
-      "hold_ms": 3000,
-      "events": [],
-      "overlays": [
+            "scene_id": "reaction",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "restaurant_evening",
+                "version": "1.0.0"
+            },
+            "camera": {
+                "shot": "two_shot"
+            },
+            "cast": [
+                {
+                    "character_id": "buyer",
+                    "placement": "left",
+                    "pose_id": "seated",
+                    "emotion_id": "concerned"
+                },
+                {
+                    "character_id": "advisor",
+                    "placement": "right",
+                    "pose_id": "seated",
+                    "emotion_id": "confident"
+                }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "reaction",
+                    "speaker_character_id": "buyer",
+                    "text": "Теперь всё видно на одном экране.",
+                    "audio": {
+                        "mode": "recording",
+                        "asset": {
+                            "asset_id": "reaction",
+                            "version": "1.0.0"
+                        }
+                    },
+                    "pause_after_ms": 300
+                }
+            ],
+            "lead_in_ms": 200,
+            "tail_ms": 300,
+            "events": [
+                {
+                    "event_id": "reaction_raise_hand",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "reaction"
+                    },
+                    "action": {
+                        "kind": "gesture",
+                        "character_id": "buyer",
+                        "gesture_id": "raise_hand"
+                    }
+                },
+                {
+                    "event_id": "reaction_show_phone",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "reaction"
+                    },
+                    "action": {
+                        "kind": "gesture",
+                        "character_id": "advisor",
+                        "gesture_id": "show_phone"
+                    }
+                }
+            ],
+            "overlays": []
+        },
         {
-          "overlay_id": "cta_text",
-          "start": {
-            "kind": "scene_start"
-          },
-          "end": {
-            "kind": "scene_end"
-          },
-          "content": {
-            "kind": "text",
-            "text": "Больше времени\nдля своих планов.\n\nTOON · OFFLINE DEMO",
-            "placement": "center",
-            "preset_id": "cta"
-          }
+            "scene_id": "office",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "home_office",
+                "version": "1.0.0"
+            },
+            "camera": {
+                "shot": "two_shot"
+            },
+            "cast": [
+                {
+                    "character_id": "buyer",
+                    "placement": "left",
+                    "pose_id": "seated",
+                    "emotion_id": "concerned"
+                },
+                {
+                    "character_id": "advisor",
+                    "placement": "right",
+                    "pose_id": "seated",
+                    "emotion_id": "confident"
+                }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "home",
+                    "speaker_character_id": "buyer",
+                    "text": "А дома можно спокойно выпить чай.",
+                    "audio": {
+                        "mode": "recording",
+                        "asset": {
+                            "asset_id": "home",
+                            "version": "1.0.0"
+                        }
+                    },
+                    "pause_after_ms": 300
+                },
+                {
+                    "utterance_id": "answer",
+                    "speaker_character_id": "advisor",
+                    "text": "И вернуться к своим планам.",
+                    "audio": {
+                        "mode": "recording",
+                        "asset": {
+                            "asset_id": "answer",
+                            "version": "1.0.0"
+                        }
+                    },
+                    "pause_after_ms": 300
+                }
+            ],
+            "lead_in_ms": 200,
+            "tail_ms": 300,
+            "events": [
+                {
+                    "event_id": "home_close",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "home"
+                    },
+                    "action": {
+                        "kind": "camera",
+                        "camera": {
+                            "shot": "close_up",
+                            "subject_character_id": "buyer"
+                        },
+                        "transition_ms": 200
+                    }
+                },
+                {
+                    "event_id": "answer_close",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "answer"
+                    },
+                    "action": {
+                        "kind": "camera",
+                        "camera": {
+                            "shot": "close_up",
+                            "subject_character_id": "advisor"
+                        },
+                        "transition_ms": 200
+                    }
+                },
+                {
+                    "event_id": "answer_nod",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "answer"
+                    },
+                    "action": {
+                        "kind": "gesture",
+                        "character_id": "advisor",
+                        "gesture_id": "nod"
+                    }
+                }
+            ],
+            "overlays": []
+        },
+        {
+            "scene_id": "cta",
+            "kind": "hold",
+            "background": {
+                "asset_id": "neutral_dark",
+                "version": "1.0.0"
+            },
+            "camera": {
+                "shot": "wide"
+            },
+            "cast": [],
+            "hold_ms": 3000,
+            "events": [],
+            "overlays": [
+                {
+                    "overlay_id": "cta_text",
+                    "start": {
+                        "kind": "scene_start"
+                    },
+                    "end": {
+                        "kind": "scene_end"
+                    },
+                    "content": {
+                        "kind": "text",
+                        "text": "Больше времени\nдля своих планов.\n\nTOON · OFFLINE DEMO",
+                        "placement": "center",
+                        "preset_id": "cta"
+                    }
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

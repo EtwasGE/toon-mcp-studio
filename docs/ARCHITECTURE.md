@@ -22,6 +22,8 @@ PNG-контрольные кадры берутся до H.264 на грани�
 
 ## Форматы
 
+Библиотека контента использует миграцию SQLite v2, content-addressed JSON и тип задания `library_prepare` в общей очереди worker. Ревизии, версии и состояния описаны в [CONTENT-LIBRARY.md](CONTENT-LIBRARY.md). DraftProject 1.0.0 не изменён: source packages не выдаются за поддерживаемые рендерером риги. Секреты и voice aliases из окружения в библиотеку не копируются.
+
 Входные схемы: `contracts/project.schema.json`, `contracts/audio-alignment.schema.json`. Derived contracts: `contracts/timeline.schema.json`, `contracts/job.schema.json`, `contracts/artifact.schema.json`. Содержимое production sidecar проверяется поверх схемы: непрерывные индексы, transcript, display spans, реальные пределы PCM и монотонность. Illustrative `example_only:true` запрещён. Схема не заменяет семантическую проверку.
 
 Добавление стиля требует доверенных компонентов, нового versioned manifest, DIRECTING и QA. Динамическая загрузка пользовательского кода не поддерживается. Изменяйте renderer version при несовместимой геометрии/таймлайне и повторяйте визуальные проверки.

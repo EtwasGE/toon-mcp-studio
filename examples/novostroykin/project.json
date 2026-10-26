@@ -1,169 +1,183 @@
 {
-  "schema_version": "1.0.0",
-  "kind": "draft_project",
-  "title": "Новостройкин — новый корпус без ежедневных проверок",
-  "locale": "ru-RU",
-  "video": { "width": 1080, "height": 1920, "fps": 30 },
-  "target_duration_seconds": 36,
-  "max_final_duration_seconds": 60,
-  "seed": 42026,
-  "style": { "style_id": "warm_editorial_2d", "version": "1.0.0" },
-  "characters": [
-    { "character_id": "buyer", "version": "1.0.0" },
-    { "character_id": "advisor", "version": "1.0.0" }
-  ],
-  "captions": { "enabled": true, "mode": "auto", "preset_id": "high_contrast_ru" },
-  "scenes": [
-    {
-      "scene_id": "restaurant_problem",
-      "kind": "dialogue",
-      "background": { "asset_id": "restaurant_evening", "version": "1.0.0" },
-      "camera": { "shot": "two_shot" },
-      "cast": [
-        { "character_id": "buyer", "placement": "left", "pose_id": "seated", "emotion_id": "concerned" },
-        { "character_id": "advisor", "placement": "right", "pose_id": "seated", "emotion_id": "neutral" }
-      ],
-      "utterances": [
+    "schema_version": "1.0.0",
+    "kind": "draft_project",
+    "title": "Новостройкин — новый корпус без ежедневных проверок",
+    "locale": "ru-RU",
+    "video": { "width": 1080, "height": 1920, "fps": 30 },
+    "target_duration_seconds": 36,
+    "max_final_duration_seconds": 60,
+    "seed": 42026,
+    "style": { "style_id": "warm_editorial_2d", "version": "1.0.0" },
+    "characters": [
+        { "character_id": "buyer", "version": "1.0.0" },
+        { "character_id": "advisor", "version": "1.0.0" }
+    ],
+    "captions": { "enabled": true, "mode": "auto", "preset_id": "high_contrast_ru" },
+    "scenes": [
         {
-          "utterance_id": "buyer_problem",
-          "speaker_character_id": "buyer",
-          "text": "Снова пропустил новый корпус. Не успеваю каждый день проверять застройщиков.",
-          "audio": { "mode": "tts", "voice_alias": "unbound_buyer_ru", "delivery": "concerned" },
-          "pause_after_ms": 250
+            "scene_id": "restaurant_problem",
+            "kind": "dialogue",
+            "background": { "asset_id": "restaurant_evening", "version": "1.0.0" },
+            "camera": { "shot": "two_shot" },
+            "cast": [
+                { "character_id": "buyer", "placement": "left", "pose_id": "seated", "emotion_id": "concerned" },
+                { "character_id": "advisor", "placement": "right", "pose_id": "seated", "emotion_id": "neutral" }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "buyer_problem",
+                    "speaker_character_id": "buyer",
+                    "text": "Снова пропустил новый корпус. Не успеваю каждый день проверять застройщиков.",
+                    "audio": { "mode": "tts", "voice_alias": "unbound_buyer_ru", "delivery": "concerned" },
+                    "pause_after_ms": 250
+                },
+                {
+                    "utterance_id": "advisor_intro",
+                    "speaker_character_id": "advisor",
+                    "text": "Я подписался на уведомления в Новостройкине.",
+                    "audio": { "mode": "tts", "voice_alias": "unbound_advisor_ru", "delivery": "neutral" },
+                    "pause_after_ms": 100
+                }
+            ],
+            "lead_in_ms": 150,
+            "tail_ms": 150,
+            "events": [
+                {
+                    "event_id": "buyer_shrug",
+                    "at": { "kind": "utterance_start", "utterance_id": "buyer_problem" },
+                    "action": { "kind": "gesture", "character_id": "buyer", "gesture_id": "shrug" }
+                },
+                {
+                    "event_id": "advisor_phone",
+                    "at": { "kind": "word_start", "utterance_id": "advisor_intro", "normalized_word_index": 2 },
+                    "action": { "kind": "gesture", "character_id": "advisor", "gesture_id": "show_phone" }
+                }
+            ],
+            "overlays": [
+                {
+                    "overlay_id": "opening_hook",
+                    "start": { "kind": "scene_start" },
+                    "end": { "kind": "utterance_end", "utterance_id": "buyer_problem" },
+                    "content": {
+                        "kind": "text",
+                        "text": "Снова пропустил новый корпус?",
+                        "placement": "top",
+                        "preset_id": "hook"
+                    }
+                }
+            ]
         },
         {
-          "utterance_id": "advisor_intro",
-          "speaker_character_id": "advisor",
-          "text": "Я подписался на уведомления в Новостройкине.",
-          "audio": { "mode": "tts", "voice_alias": "unbound_advisor_ru", "delivery": "neutral" },
-          "pause_after_ms": 100
-        }
-      ],
-      "lead_in_ms": 150,
-      "tail_ms": 150,
-      "events": [
-        {
-          "event_id": "buyer_shrug",
-          "at": { "kind": "utterance_start", "utterance_id": "buyer_problem" },
-          "action": { "kind": "gesture", "character_id": "buyer", "gesture_id": "shrug" }
+            "scene_id": "bot_setup",
+            "kind": "dialogue",
+            "background": { "asset_id": "neutral_dark", "version": "1.0.0" },
+            "camera": { "shot": "screen" },
+            "cast": [],
+            "utterances": [
+                {
+                    "utterance_id": "advisor_setup",
+                    "speaker_character_id": "advisor",
+                    "text": "Выбираешь событие «Новый корпус», застройщика и проект.",
+                    "audio": { "mode": "tts", "voice_alias": "unbound_advisor_ru", "delivery": "neutral" },
+                    "pause_after_ms": 150
+                }
+            ],
+            "lead_in_ms": 100,
+            "tail_ms": 300,
+            "events": [],
+            "overlays": [
+                {
+                    "overlay_id": "exact_bot_screenshot",
+                    "start": { "kind": "scene_start" },
+                    "end": { "kind": "scene_end" },
+                    "content": {
+                        "kind": "image",
+                        "asset": { "asset_id": "screenshot_novostroykin_new_building", "version": "1.0.0" },
+                        "placement": "centered_phone",
+                        "fit": "contain",
+                        "render_mode": "exact"
+                    }
+                }
+            ]
         },
         {
-          "event_id": "advisor_phone",
-          "at": { "kind": "word_start", "utterance_id": "advisor_intro", "normalized_word_index": 2 },
-          "action": { "kind": "gesture", "character_id": "advisor", "gesture_id": "show_phone" }
-        }
-      ],
-      "overlays": [
-        {
-          "overlay_id": "opening_hook",
-          "start": { "kind": "scene_start" },
-          "end": { "kind": "utterance_end", "utterance_id": "buyer_problem" },
-          "content": { "kind": "text", "text": "Снова пропустил новый корпус?", "placement": "top", "preset_id": "hook" }
-        }
-      ]
-    },
-    {
-      "scene_id": "bot_setup",
-      "kind": "dialogue",
-      "background": { "asset_id": "neutral_dark", "version": "1.0.0" },
-      "camera": { "shot": "screen" },
-      "cast": [],
-      "utterances": [
-        {
-          "utterance_id": "advisor_setup",
-          "speaker_character_id": "advisor",
-          "text": "Выбираешь событие «Новый корпус», застройщика и проект.",
-          "audio": { "mode": "tts", "voice_alias": "unbound_advisor_ru", "delivery": "neutral" },
-          "pause_after_ms": 150
-        }
-      ],
-      "lead_in_ms": 100,
-      "tail_ms": 300,
-      "events": [],
-      "overlays": [
-        {
-          "overlay_id": "exact_bot_screenshot",
-          "start": { "kind": "scene_start" },
-          "end": { "kind": "scene_end" },
-          "content": {
-            "kind": "image",
-            "asset": { "asset_id": "screenshot_novostroykin_new_building", "version": "1.0.0" },
-            "placement": "centered_phone",
-            "fit": "contain",
-            "render_mode": "exact"
-          }
-        }
-      ]
-    },
-    {
-      "scene_id": "restaurant_result",
-      "kind": "dialogue",
-      "background": { "asset_id": "restaurant_evening", "version": "1.0.0" },
-      "camera": { "shot": "two_shot" },
-      "cast": [
-        { "character_id": "buyer", "placement": "left", "pose_id": "seated", "emotion_id": "surprised" },
-        { "character_id": "advisor", "placement": "right", "pose_id": "seated", "emotion_id": "pleased" }
-      ],
-      "utterances": [
-        {
-          "utterance_id": "advisor_notification",
-          "speaker_character_id": "advisor",
-          "text": "Когда появляется новый корпус, бот присылает уведомление.",
-          "audio": { "mode": "tts", "voice_alias": "unbound_advisor_ru", "delivery": "neutral" },
-          "pause_after_ms": 200
+            "scene_id": "restaurant_result",
+            "kind": "dialogue",
+            "background": { "asset_id": "restaurant_evening", "version": "1.0.0" },
+            "camera": { "shot": "two_shot" },
+            "cast": [
+                { "character_id": "buyer", "placement": "left", "pose_id": "seated", "emotion_id": "surprised" },
+                { "character_id": "advisor", "placement": "right", "pose_id": "seated", "emotion_id": "pleased" }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "advisor_notification",
+                    "speaker_character_id": "advisor",
+                    "text": "Когда появляется новый корпус, бот присылает уведомление.",
+                    "audio": { "mode": "tts", "voice_alias": "unbound_advisor_ru", "delivery": "neutral" },
+                    "pause_after_ms": 200
+                },
+                {
+                    "utterance_id": "buyer_question",
+                    "speaker_character_id": "buyer",
+                    "text": "То есть можно перестать обновлять сайты каждый день?",
+                    "audio": { "mode": "tts", "voice_alias": "unbound_buyer_ru", "delivery": "surprised" },
+                    "pause_after_ms": 250
+                },
+                {
+                    "utterance_id": "advisor_answer",
+                    "speaker_character_id": "advisor",
+                    "text": "Да. Настроил подписку — и следишь за нужными событиями.",
+                    "audio": { "mode": "tts", "voice_alias": "unbound_advisor_ru", "delivery": "pleased" },
+                    "pause_after_ms": 100
+                }
+            ],
+            "lead_in_ms": 100,
+            "tail_ms": 200,
+            "events": [
+                {
+                    "event_id": "buyer_close_up",
+                    "at": { "kind": "utterance_start", "utterance_id": "buyer_question" },
+                    "action": {
+                        "kind": "camera",
+                        "camera": { "shot": "close_up", "subject_character_id": "buyer" },
+                        "transition_ms": 180
+                    }
+                },
+                {
+                    "event_id": "return_two_shot",
+                    "at": { "kind": "utterance_start", "utterance_id": "advisor_answer" },
+                    "action": { "kind": "camera", "camera": { "shot": "two_shot" }, "transition_ms": 180 }
+                },
+                {
+                    "event_id": "buyer_pleased",
+                    "at": { "kind": "utterance_end", "utterance_id": "advisor_answer" },
+                    "action": { "kind": "emotion", "character_id": "buyer", "emotion_id": "pleased" }
+                }
+            ],
+            "overlays": []
         },
         {
-          "utterance_id": "buyer_question",
-          "speaker_character_id": "buyer",
-          "text": "То есть можно перестать обновлять сайты каждый день?",
-          "audio": { "mode": "tts", "voice_alias": "unbound_buyer_ru", "delivery": "surprised" },
-          "pause_after_ms": 250
-        },
-        {
-          "utterance_id": "advisor_answer",
-          "speaker_character_id": "advisor",
-          "text": "Да. Настроил подписку — и следишь за нужными событиями.",
-          "audio": { "mode": "tts", "voice_alias": "unbound_advisor_ru", "delivery": "pleased" },
-          "pause_after_ms": 100
+            "scene_id": "cta",
+            "kind": "hold",
+            "background": { "asset_id": "neutral_dark", "version": "1.0.0" },
+            "camera": { "shot": "wide" },
+            "cast": [],
+            "hold_ms": 3000,
+            "events": [],
+            "overlays": [
+                {
+                    "overlay_id": "cta_text",
+                    "start": { "kind": "scene_start" },
+                    "end": { "kind": "scene_end" },
+                    "content": {
+                        "kind": "text",
+                        "text": "Новостройкин\n@novostroykin_bot\nНастрой уведомления в Telegram",
+                        "placement": "center",
+                        "preset_id": "cta"
+                    }
+                }
+            ]
         }
-      ],
-      "lead_in_ms": 100,
-      "tail_ms": 200,
-      "events": [
-        {
-          "event_id": "buyer_close_up",
-          "at": { "kind": "utterance_start", "utterance_id": "buyer_question" },
-          "action": { "kind": "camera", "camera": { "shot": "close_up", "subject_character_id": "buyer" }, "transition_ms": 180 }
-        },
-        {
-          "event_id": "return_two_shot",
-          "at": { "kind": "utterance_start", "utterance_id": "advisor_answer" },
-          "action": { "kind": "camera", "camera": { "shot": "two_shot" }, "transition_ms": 180 }
-        },
-        {
-          "event_id": "buyer_pleased",
-          "at": { "kind": "utterance_end", "utterance_id": "advisor_answer" },
-          "action": { "kind": "emotion", "character_id": "buyer", "emotion_id": "pleased" }
-        }
-      ],
-      "overlays": []
-    },
-    {
-      "scene_id": "cta",
-      "kind": "hold",
-      "background": { "asset_id": "neutral_dark", "version": "1.0.0" },
-      "camera": { "shot": "wide" },
-      "cast": [],
-      "hold_ms": 3000,
-      "events": [],
-      "overlays": [
-        {
-          "overlay_id": "cta_text",
-          "start": { "kind": "scene_start" },
-          "end": { "kind": "scene_end" },
-          "content": { "kind": "text", "text": "Новостройкин\n@novostroykin_bot\nНастрой уведомления в Telegram", "placement": "center", "preset_id": "cta" }
-        }
-      ]
-    }
-  ]
+    ]
 }

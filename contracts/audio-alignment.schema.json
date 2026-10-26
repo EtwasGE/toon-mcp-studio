@@ -1,51 +1,66 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:toon-mcp:schema:word-alignment:1.0.0",
-  "title": "Toon MCP WordAlignment 1.0.0",
-  "description": "Word timing sidecar bound to an immutable audio asset during registration. Example-only documents cannot be used as production alignment.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schema_version", "kind", "example_only", "locale", "normalizer_version", "transcript_text", "duration_ms", "normalized_words"],
-  "properties": {
-    "schema_version": { "const": "1.0.0" },
-    "kind": { "const": "word_alignment" },
-    "example_only": { "type": "boolean" },
-    "source": { "enum": ["manually_verified", "provider_alignment"] },
-    "locale": { "const": "ru-RU" },
-    "normalizer_version": { "const": "1.0.0" },
-    "transcript_text": { "type": "string", "minLength": 1, "maxLength": 3000 },
-    "duration_ms": { "type": "number", "exclusiveMinimum": 0, "maximum": 60000 },
-    "normalized_words": {
-      "type": "array", "minItems": 1, "maxItems": 500,
-      "items": {
-        "type": "object", "additionalProperties": false,
-        "required": ["index", "text", "start_ms", "end_ms"],
-        "properties": {
-          "index": { "type": "integer", "minimum": 0, "maximum": 499 },
-          "text": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^\\S+$" },
-          "start_ms": { "type": "number", "minimum": 0, "maximum": 60000 },
-          "end_ms": { "type": "number", "exclusiveMinimum": 0, "maximum": 60000 }
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:toon-mcp:schema:word-alignment:1.0.0",
+    "title": "Toon MCP WordAlignment 1.0.0",
+    "description": "Word timing sidecar bound to an immutable audio asset during registration. Example-only documents cannot be used as production alignment.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "schema_version",
+        "kind",
+        "example_only",
+        "locale",
+        "normalizer_version",
+        "transcript_text",
+        "duration_ms",
+        "normalized_words"
+    ],
+    "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "kind": { "const": "word_alignment" },
+        "example_only": { "type": "boolean" },
+        "source": { "enum": ["manually_verified", "provider_alignment"] },
+        "locale": { "const": "ru-RU" },
+        "normalizer_version": { "const": "1.0.0" },
+        "transcript_text": { "type": "string", "minLength": 1, "maxLength": 3000 },
+        "duration_ms": { "type": "number", "exclusiveMinimum": 0, "maximum": 60000 },
+        "normalized_words": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["index", "text", "start_ms", "end_ms"],
+                "properties": {
+                    "index": { "type": "integer", "minimum": 0, "maximum": 499 },
+                    "text": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^\\S+$" },
+                    "start_ms": { "type": "number", "minimum": 0, "maximum": 60000 },
+                    "end_ms": { "type": "number", "exclusiveMinimum": 0, "maximum": 60000 }
+                }
+            }
+        },
+        "display_spans": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["text", "start_word_index", "end_word_index_exclusive"],
+                "properties": {
+                    "text": { "type": "string", "minLength": 1, "maxLength": 1000 },
+                    "start_word_index": { "type": "integer", "minimum": 0, "maximum": 499 },
+                    "end_word_index_exclusive": { "type": "integer", "minimum": 1, "maximum": 500 }
+                }
+            }
         }
-      }
     },
-    "display_spans": {
-      "type": "array", "minItems": 1, "maxItems": 500,
-      "items": {
-        "type": "object", "additionalProperties": false,
-        "required": ["text", "start_word_index", "end_word_index_exclusive"],
-        "properties": {
-          "text": { "type": "string", "minLength": 1, "maxLength": 1000 },
-          "start_word_index": { "type": "integer", "minimum": 0, "maximum": 499 },
-          "end_word_index_exclusive": { "type": "integer", "minimum": 1, "maximum": 500 }
+    "allOf": [
+        {
+            "if": { "properties": { "example_only": { "const": false } }, "required": ["example_only"] },
+            "then": { "required": ["source"] },
+            "else": { "properties": { "source": false } }
         }
-      }
-    }
-  },
-  "allOf": [
-    {
-      "if": { "properties": { "example_only": { "const": false } }, "required": ["example_only"] },
-      "then": { "required": ["source"] },
-      "else": { "properties": { "source": false } }
-    }
-  ]
+    ]
 }

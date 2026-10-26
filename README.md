@@ -26,6 +26,7 @@ dotnet src/Toon.Cli/bin/Debug/net10.0/Toon.Cli.dll status JOB_ID
 dotnet src/Toon.Cli/bin/Debug/net10.0/Toon.Cli.dll cancel JOB_ID
 ./scripts/acceptance.ps1        # включает реальные preview/final, отмену и crash recovery
 ./scripts/acceptance.ps1 -Quick # без видеорендера; HTTP только injected fixtures
+./scripts/acceptance.ps1 -Library # библиотека, отдельный worker, без видео/TTS
 ```
 
 Для Linux/WSL: .NET SDK 10.0.402, Node 22.20.0, системные библиотеки Chromium, затем `bash scripts/setup.sh`; команды `dotnet ...dll` те же. Речевые WAV для demo/acceptance нужно подготовить отдельно: генератор fixtures требует Windows и русский SAPI-голос. `TOON_IMPORT_ROOTS` разделяется `:` на POSIX и `;` на Windows. Linux/WSL не считается проверенным одним запуском на Windows. См. [приёмку](docs/ACCEPTANCE.md).
@@ -49,6 +50,8 @@ codex mcp get toon
 Вызовите `get_catalog(kind="styles")`, прочитайте guide resource, затем `register_asset`, `create_project`, `validate_project`, `start_render` и `get_job`/`get_artifacts`. У `start_render` обязательны `project_id`, `revision`, `quality=preview|final`, `idempotency_key`. Новый TTS выключен по умолчанию. Одинаковый нормализованный запрос с одним ключом возвращает один job; другой запрос с тем же ключом даёт `IDEMPOTENCY_CONFLICT`.
 
 ## Аудио и честные ограничения
+
+Библиотека контента: [шаблоны, импорт, ревизии и локальная публикация](docs/CONTENT-LIBRARY.md). Шаблоны для заполнения: [персонаж](templates/library/character.json), [декорация](templates/library/environment.json), [голос](templates/library/voice.json). Новые опубликованные пакеты пока содержат проверенные исходники (`render_supported:false`); универсальные риги, слоистые декорации и клонирование голосов относятся к следующим этапам.
 
 Проверенное локальное offline demo длится 27,7 с. Оно содержит настоящую синтезированную русскую речь, сохранённую в WAV, и после подготовки fixtures не обращается к сети. Это **synthetic speech fixtures**, созданные локальным Windows SAPI Microsoft Irina с двумя явно заданными pitch/rate presets. Это не записи актёров и не проверка двух ElevenLabs-голосов. Текст и происхождение находятся в `examples/offline-dialogue/lines.json` и `provenance.json`. WAV исключены из публичного Git: права на их распространение не подтверждены. После клонирования перед demo/acceptance выполните `scripts/prepare-fixtures.ps1` через Windows PowerShell с установленным русским SAPI-голосом. Длительность новой генерации определяется фактическим аудио. Не распространяйте установленное ПО голосов под лицензией проекта.
 
