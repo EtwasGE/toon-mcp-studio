@@ -40,6 +40,7 @@ public sealed partial class ContentLibrary
         foreach (var (id, revision) in revisions)
         {
             var item = Read(db, null, id, revision);
+            var rigGestures = Package(id, revision)["rig"]?["gestures"]?.AsObject().Select(entry => entry.Key) ?? [];
             result.Add(
                 J.Node(
                     new
@@ -49,7 +50,7 @@ public sealed partial class ContentLibrary
                         display_name = item["submission"]!.Str("display_name"),
                         pose_id = "seated",
                         emotions = Validation.Emotions,
-                        gestures = Validation.Gestures,
+                        gestures = Validation.Gestures.Concat(rigGestures).Distinct().ToArray(),
                     }
                 )
             );

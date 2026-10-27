@@ -9,6 +9,7 @@
     "scripts": {
         "typecheck": "tsc --noEmit",
         "test:arms": "node tests/arms.mjs",
+        "test:pug": "node tests/pug.mjs",
         "browser": "remotion browser ensure",
         "render": "node render.mjs"
     },

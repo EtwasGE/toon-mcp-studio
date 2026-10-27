@@ -1,7 +1,7 @@
 import type { Cue, PropInstance } from './types';
 
 export type Point = { x: number; y: number };
-export type HeldProp = PropInstance & { cue?: Cue; opened?: boolean };
+export type HeldProp = PropInstance & { cue?: Cue; opened?: boolean; stashFrame?: number };
 export type Hand = 'left' | 'right';
 export type Grip = 'relaxed' | 'pinch' | 'handle' | 'wrap' | 'support' | 'point';
 export const ALKASH_ID = 'content_ed869c2c29264425b7f870a8340935fb';

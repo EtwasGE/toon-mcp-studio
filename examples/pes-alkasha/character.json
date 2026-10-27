@@ -1,0 +1,12 @@
+{
+  "item_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+  "display_name": "Пес Алкаша",
+  "variant": "Наглый хитрец",
+  "version": "1.1.0",
+  "content_kind": "animated_character",
+  "render_supported": true,
+  "front": "front.png",
+  "three_quarter": "three-quarter.png",
+  "generation_tool": "image_gen",
+  "front_prompt": "Front view of approved variant 3; preserve apricot fur, dark muzzle, cheeky expression, fat seated proportions and worn red collar. No text."
+}

@@ -53,7 +53,8 @@ public sealed partial class Studio
         );
         var rig = package["rig"]!.DeepClone();
         CharacterRigs.Validate(rig, Config.Root);
-        var project = CharacterTestProject(id, audioAsset, transcript);
+        var seatedPug = rig["motion"]?["profile"]?.ToString() == "seated_pug";
+        var project = CharacterTestProject(id, audioAsset, transcript, seatedPug);
         var rigs = new JsonObject { [id] = rig };
         CheckDraft(project, rigs);
         var resolved = new JsonObject { [audioAsset.Str("asset_id") + "@" + audioAsset.Str("version")] = audio };
@@ -82,19 +83,33 @@ public sealed partial class Studio
                     package_sha256 = item["preparation"]!.Str("package_sha256"),
                     test_version = "1.0.0",
                     mouth_mode = "approximate/amplitude",
-                    checks = new[]
-                    {
-                        "wide",
-                        "close_up",
-                        "blink",
-                        "nod",
-                        "shake_head",
-                        "raise_hand",
-                        "shrug",
-                        "show_phone",
-                        "six_emotions",
-                        "recorded_speech",
-                    },
+                    checks = seatedPug
+                        ? new[]
+                        {
+                            "wide",
+                            "close_up",
+                            "blink",
+                            "look_left",
+                            "look_right",
+                            "open_mouth",
+                            "tongue_out",
+                            "move_paws",
+                            "hide_object",
+                            "recorded_speech",
+                        }
+                        : new[]
+                        {
+                            "wide",
+                            "close_up",
+                            "blink",
+                            "nod",
+                            "shake_head",
+                            "raise_hand",
+                            "shrug",
+                            "show_phone",
+                            "six_emotions",
+                            "recorded_speech",
+                        },
                     visual_review = "pending_operator",
                     listening_review = "pending_operator",
                 },
@@ -103,10 +118,12 @@ public sealed partial class Studio
         return PublicJob(Store.Enqueue(request, snapshot));
     }
 
-    private static JsonNode CharacterTestProject(string id, JsonNode audio, string transcript)
+    private static JsonNode CharacterTestProject(string id, JsonNode audio, string transcript, bool seatedPug = false)
     {
         var scenes = new JsonArray();
-        var gestures = new[] { "blink", "nod", "shake_head", "raise_hand", "shrug", "show_phone" };
+        var gestures = seatedPug
+            ? new[] { "look_left", "look_right", "open_mouth", "tongue_out", "move_paws", "hide_object" }
+            : new[] { "blink", "nod", "shake_head", "raise_hand", "shrug", "show_phone" };
         for (var sceneIndex = 0; sceneIndex < 3; sceneIndex++)
         {
             var events = new JsonArray();
@@ -162,7 +179,7 @@ public sealed partial class Studio
                         scene_id = "test_" + sceneIndex,
                         kind = "dialogue",
                         background = new { asset_id = "neutral_dark", version = "1.0.0" },
-                        camera = sceneIndex == 0
+                        camera = sceneIndex == 0 || seatedPug && sceneIndex == 2
                             ? J.Node(new { shot = "wide" })
                             : J.Node(new { shot = "close_up", subject_character_id = id }),
                         cast = new[]
@@ -193,6 +210,22 @@ public sealed partial class Studio
                     }
                 )
             );
+            if (seatedPug && sceneIndex == 2)
+            {
+                scenes[sceneIndex]!["props"] = J.Node(
+                    new[]
+                    {
+                        new
+                        {
+                            instance_id = "pug_test_phone",
+                            prop_id = "phone",
+                            version = "1.0.0",
+                            character_id = id,
+                            hand = "left",
+                        },
+                    }
+                );
+            }
         }
         return J.Node(
             new

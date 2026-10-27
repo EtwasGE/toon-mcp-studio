@@ -1,0 +1,496 @@
+{
+    "schema_version": "1.0.0",
+    "name": "Пес Алкаша — Наглый хитрец",
+    "canvas": {
+        "width": 380,
+        "height": 560
+    },
+    "poses": [
+        "seated"
+    ],
+    "emotions": [
+        "neutral",
+        "concerned",
+        "annoyed",
+        "surprised",
+        "confident",
+        "pleased"
+    ],
+    "gestures": {
+        "idle": 30,
+        "blink": 8,
+        "nod": 32,
+        "shake_head": 36,
+        "raise_hand": 54,
+        "shrug": 54,
+        "show_phone": 120,
+        "look_left": 90,
+        "look_right": 90,
+        "open_mouth": 90,
+        "tongue_out": 90,
+        "move_paws": 90,
+        "hide_object": 150
+    },
+    "motion": {
+        "profile": "seated_pug",
+        "blink_phase": 60,
+        "blink_period": 137,
+        "head_phase": 0,
+        "body_phase": 0,
+        "head_angles": {
+            "neutral": 0,
+            "concerned": -2,
+            "annoyed": 1,
+            "surprised": -2,
+            "confident": 0,
+            "pleased": 1
+        },
+        "left_arm": {
+            "raise_hand": -8,
+            "shrug": -3
+        },
+        "right_arm": {
+            "raise_hand": 8,
+            "shrug": 3
+        }
+    },
+    "layers": [
+        {
+            "type": "cutout",
+            "polygon": [
+                [
+                    35,
+                    100
+                ],
+                [
+                    660,
+                    100
+                ],
+                [
+                    660,
+                    585
+                ],
+                [
+                    35,
+                    585
+                ]
+            ],
+            "target": [
+                15,
+                235,
+                350,
+                310
+            ],
+            "asset": {
+                "asset_id": "pug_parts",
+                "version": "1.0.0"
+            },
+            "source_width": 1254,
+            "source_height": 1254,
+            "box": [
+                35,
+                100,
+                625,
+                485
+            ]
+        },
+        {
+            "type": "group",
+            "children": [
+                {
+                    "type": "cutout",
+                    "polygon": [
+                        [
+                            225,
+                            670
+                        ],
+                        [
+                            485,
+                            670
+                        ],
+                        [
+                            485,
+                            1180
+                        ],
+                        [
+                            225,
+                            1180
+                        ]
+                    ],
+                    "target": [
+                        96,
+                        317,
+                        81,
+                        231
+                    ],
+                    "asset": {
+                        "asset_id": "pug_parts",
+                        "version": "1.0.0"
+                    },
+                    "source_width": 1254,
+                    "source_height": 1254,
+                    "box": [
+                        225,
+                        670,
+                        260,
+                        510
+                    ]
+                }
+            ],
+            "motion": "left_arm",
+            "pivot": [
+                128,
+                335
+            ]
+        },
+        {
+            "type": "group",
+            "children": [
+                {
+                    "type": "cutout",
+                    "polygon": [
+                        [
+                            785,
+                            670
+                        ],
+                        [
+                            1045,
+                            670
+                        ],
+                        [
+                            1045,
+                            1180
+                        ],
+                        [
+                            785,
+                            1180
+                        ]
+                    ],
+                    "target": [
+                        211,
+                        317,
+                        81,
+                        231
+                    ],
+                    "asset": {
+                        "asset_id": "pug_parts",
+                        "version": "1.0.0"
+                    },
+                    "source_width": 1254,
+                    "source_height": 1254,
+                    "box": [
+                        785,
+                        670,
+                        260,
+                        510
+                    ]
+                }
+            ],
+            "motion": "right_arm",
+            "pivot": [
+                260,
+                335
+            ]
+        },
+        {
+            "type": "group",
+            "children": [
+                {
+                    "type": "cutout",
+                    "polygon": [
+                        [
+                            660,
+                            85
+                        ],
+                        [
+                            1220,
+                            85
+                        ],
+                        [
+                            1220,
+                            595
+                        ],
+                        [
+                            660,
+                            595
+                        ]
+                    ],
+                    "target": [
+                        45,
+                        32,
+                        300,
+                        273
+                    ],
+                    "asset": {
+                        "asset_id": "pug_parts",
+                        "version": "1.0.0"
+                    },
+                    "source_width": 1254,
+                    "source_height": 1254,
+                    "box": [
+                        660,
+                        85,
+                        560,
+                        510
+                    ]
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 159,
+                                "cy": 145,
+                                "rx": 9,
+                                "ry": 12,
+                                "fill": "#794322",
+                                "stroke": "#35231B",
+                                "strokeWidth": 2
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 159,
+                                "cy": 145,
+                                "rx": 4,
+                                "ry": 8,
+                                "fill": "#201A17"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 156,
+                                "cy": 141,
+                                "rx": 2,
+                                "ry": 3,
+                                "fill": "#FFF6E4"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 253,
+                                "cy": 128,
+                                "rx": 9,
+                                "ry": 12,
+                                "fill": "#794322",
+                                "stroke": "#35231B",
+                                "strokeWidth": 2
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 253,
+                                "cy": 128,
+                                "rx": 4,
+                                "ry": 8,
+                                "fill": "#201A17"
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 250,
+                                "cy": 124,
+                                "rx": 2,
+                                "ry": 3,
+                                "fill": "#FFF6E4"
+                            }
+                        }
+                    ],
+                    "channel": "gaze",
+                    "when": {
+                        "blink": false,
+                        "emotion": [
+                            "neutral",
+                            "concerned",
+                            "annoyed",
+                            "surprised",
+                            "confident",
+                            "pleased"
+                        ]
+                    }
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M131 140 Q153 128 182 136 Q175 157 151 160 Q135 160 131 140Z",
+                                "fill": "#BC824C",
+                                "stroke": "#473025",
+                                "strokeWidth": 2
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M234 123 Q252 112 274 122 Q274 141 255 142 Q242 141 234 123Z",
+                                "fill": "#BC824C",
+                                "stroke": "#473025",
+                                "strokeWidth": 2
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M135 149 Q157 153 178 141 M239 132 Q255 136 270 128",
+                                "fill": "none",
+                                "stroke": "#473025",
+                                "strokeWidth": 2.5,
+                                "strokeLinecap": "round"
+                            }
+                        }
+                    ],
+                    "when": {
+                        "blink": true
+                    }
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M150 189 Q182 212 213 190 Q248 174 278 174 Q270 232 220 237 Q177 239 150 189Z",
+                                "fill": "#2C1C1B",
+                                "stroke": "#4E3025",
+                                "strokeWidth": 2
+                            }
+                        },
+                        {
+                            "type": "ellipse",
+                            "props": {
+                                "cx": 218,
+                                "cy": 229,
+                                "rx": 25,
+                                "ry": 5,
+                                "fill": "#A8525C"
+                            }
+                        }
+                    ],
+                    "channel": "mouth_open",
+                    "pivot": [
+                        214,
+                        185
+                    ]
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M200 220 Q218 213 237 220 L236 251 Q232 270 217 270 Q201 267 200 250Z",
+                                "fill": "#E99299",
+                                "stroke": "#874F4E",
+                                "strokeWidth": 2
+                            }
+                        },
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M218 224 Q215 242 218 257",
+                                "fill": "none",
+                                "stroke": "#BD656E",
+                                "strokeWidth": 1.5,
+                                "strokeLinecap": "round"
+                            }
+                        }
+                    ],
+                    "channel": "tongue",
+                    "pivot": [
+                        217,
+                        219
+                    ]
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M158 191 Q178 203 193 198",
+                                "fill": "none",
+                                "stroke": "#503126",
+                                "strokeWidth": 1
+                            }
+                        }
+                    ],
+                    "when": {
+                        "mouth": [
+                            0
+                        ]
+                    }
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M158 191 Q178 203 193 198",
+                                "fill": "none",
+                                "stroke": "#38221D",
+                                "strokeWidth": 1.6
+                            }
+                        }
+                    ],
+                    "when": {
+                        "mouth": [
+                            1
+                        ]
+                    }
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M158 191 Q178 203 193 198",
+                                "fill": "none",
+                                "stroke": "#38221D",
+                                "strokeWidth": 1.6
+                            }
+                        }
+                    ],
+                    "when": {
+                        "mouth": [
+                            2
+                        ]
+                    }
+                },
+                {
+                    "type": "group",
+                    "children": [
+                        {
+                            "type": "path",
+                            "props": {
+                                "d": "M158 191 Q178 203 193 198",
+                                "fill": "none",
+                                "stroke": "#38221D",
+                                "strokeWidth": 1.6
+                            }
+                        }
+                    ],
+                    "when": {
+                        "mouth": [
+                            3
+                        ]
+                    }
+                }
+            ],
+            "motion": "head",
+            "pivot": [
+                195,
+                275
+            ]
+        }
+    ]
+}

@@ -10,19 +10,13 @@
         "captions": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-                "enabled"
-            ],
+            "required": ["enabled"],
             "properties": {
                 "enabled": {
                     "type": "boolean"
                 },
                 "mode": {
-                    "enum": [
-                        "auto",
-                        "utterance",
-                        "word"
-                    ]
+                    "enum": ["auto", "utterance", "word"]
                 }
             }
         },
@@ -43,10 +37,7 @@
             "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                    "character_id",
-                    "version"
-                ],
+                "required": ["character_id", "version"],
                 "properties": {
                     "character_id": {
                         "$ref": "#/$defs/id"
@@ -57,10 +48,7 @@
                     "voice_profile": {
                         "type": "object",
                         "additionalProperties": false,
-                        "required": [
-                            "profile_id",
-                            "revision"
-                        ],
+                        "required": ["profile_id", "revision"],
                         "properties": {
                             "profile_id": {
                                 "type": "string",
@@ -141,25 +129,22 @@
                                         "raise_hand",
                                         "shrug",
                                         "show_phone",
-                                        "tap_phone"
+                                        "tap_phone",
+                                        "look_left",
+                                        "look_right",
+                                        "open_mouth",
+                                        "tongue_out",
+                                        "move_paws",
+                                        "hide_object"
                                     ]
                                 },
                                 "emotion": {
-                                    "enum": [
-                                        "neutral",
-                                        "concerned",
-                                        "annoyed",
-                                        "surprised",
-                                        "confident",
-                                        "pleased"
-                                    ]
+                                    "enum": ["neutral", "concerned", "annoyed", "surprised", "confident", "pleased"]
                                 },
                                 "sound": {
                                     "type": "object",
                                     "additionalProperties": false,
-                                    "required": [
-                                        "asset"
-                                    ],
+                                    "required": ["asset"],
                                     "properties": {
                                         "asset": {
                                             "$ref": "#/$defs/assetRef"
@@ -184,32 +169,18 @@
                                 "prop_action": {
                                     "type": "object",
                                     "additionalProperties": false,
-                                    "required": [
-                                        "instance_id",
-                                        "action"
-                                    ],
+                                    "required": ["instance_id", "action"],
                                     "properties": {
                                         "instance_id": {
                                             "$ref": "#/$defs/id"
                                         },
                                         "action": {
-                                            "enum": [
-                                                "tap",
-                                                "notification",
-                                                "error",
-                                                "puff",
-                                                "sip",
-                                                "open",
-                                                "place"
-                                            ]
+                                            "enum": ["tap", "notification", "error", "puff", "sip", "open", "place"]
                                         }
                                     }
                                 }
                             },
-                            "required": [
-                                "speaker",
-                                "text"
-                            ]
+                            "required": ["speaker", "text"]
                         }
                     },
                     "props": {
@@ -220,19 +191,11 @@
                         }
                     }
                 },
-                "required": [
-                    "background",
-                    "characters",
-                    "lines"
-                ]
+                "required": ["background", "characters", "lines"]
             }
         }
     },
-    "required": [
-        "title",
-        "characters",
-        "scenes"
-    ],
+    "required": ["title", "characters", "scenes"],
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "urn:toon-mcp:schema:episode:1.0.0",
     "$defs": {
@@ -251,10 +214,7 @@
         "assetRef": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-                "asset_id",
-                "version"
-            ],
+            "required": ["asset_id", "version"],
             "properties": {
                 "asset_id": {
                     "$ref": "#/$defs/id"
@@ -267,17 +227,10 @@
         "camera": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-                "shot"
-            ],
+            "required": ["shot"],
             "properties": {
                 "shot": {
-                    "enum": [
-                        "wide",
-                        "two_shot",
-                        "close_up",
-                        "screen"
-                    ]
+                    "enum": ["wide", "two_shot", "close_up", "screen"]
                 },
                 "subject_character_id": {
                     "$ref": "#/$defs/id"
@@ -291,14 +244,10 @@
                                 "const": "close_up"
                             }
                         },
-                        "required": [
-                            "shot"
-                        ]
+                        "required": ["shot"]
                     },
                     "then": {
-                        "required": [
-                            "subject_character_id"
-                        ]
+                        "required": ["subject_character_id"]
                     },
                     "else": {
                         "properties": {
@@ -313,11 +262,7 @@
                 {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": [
-                        "mode",
-                        "voice_alias",
-                        "delivery"
-                    ],
+                    "required": ["mode", "voice_alias", "delivery"],
                     "properties": {
                         "mode": {
                             "const": "tts"
@@ -326,22 +271,14 @@
                             "$ref": "#/$defs/id"
                         },
                         "delivery": {
-                            "enum": [
-                                "neutral",
-                                "concerned",
-                                "pleased",
-                                "surprised"
-                            ]
+                            "enum": ["neutral", "concerned", "pleased", "surprised"]
                         }
                     }
                 },
                 {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": [
-                        "mode",
-                        "asset"
-                    ],
+                    "required": ["mode", "asset"],
                     "properties": {
                         "mode": {
                             "const": "recording"
@@ -356,27 +293,17 @@
         "propInstance": {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-                "instance_id",
-                "prop_id",
-                "version",
-                "character_id",
-                "hand"
-            ],
+            "required": ["instance_id", "prop_id", "version", "character_id", "hand"],
             "properties": {
-                "view": { "enum": ["screen", "back"], "default": "screen" },
+                "view": {
+                    "enum": ["screen", "back"],
+                    "default": "screen"
+                },
                 "instance_id": {
                     "$ref": "#/$defs/id"
                 },
                 "prop_id": {
-                    "enum": [
-                        "phone",
-                        "tablet",
-                        "cigarette",
-                        "beer_mug",
-                        "beer_can",
-                        "bottle"
-                    ]
+                    "enum": ["phone", "tablet", "cigarette", "beer_mug", "beer_can", "bottle"]
                 },
                 "version": {
                     "const": "1.0.0"
@@ -385,10 +312,7 @@
                     "$ref": "#/$defs/id"
                 },
                 "hand": {
-                    "enum": [
-                        "left",
-                        "right"
-                    ]
+                    "enum": ["left", "right"]
                 }
             }
         }

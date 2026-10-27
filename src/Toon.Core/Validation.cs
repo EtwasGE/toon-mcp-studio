@@ -182,6 +182,7 @@ public static class Validation
                     J.Require(
                         a.Str("kind") == "gesture"
                             ? Gestures.Contains(a.Str("gesture_id"))
+                                || resolvedRigs?[a.Str("character_id")]?["gestures"]?[a.Str("gesture_id")] != null
                             : Emotions.Contains(a.Str("emotion_id")),
                         "UNSUPPORTED_ACTION",
                         "Unsupported gesture or emotion",

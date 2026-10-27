@@ -110,6 +110,14 @@ export function Film({ timeline }: { timeline: Timeline }) {
                                         .filter((p) => p.character_id === c.character_id)
                                         .map((p) => ({
                                             ...p,
+                                            stashFrame:
+                                                p.hand === 'left'
+                                                    ? changes.find(
+                                                          (e) =>
+                                                              e.action.kind === 'gesture' &&
+                                                              e.action.gesture_id === 'hide_object'
+                                                      )?.frame
+                                                    : undefined,
                                             opened: scene.events.some(
                                                 (e) =>
                                                     e.action.kind === 'prop' &&

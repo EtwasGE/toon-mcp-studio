@@ -2,6 +2,8 @@ import React from 'react';
 import { registerRoot, Composition, Audio, staticFile, AbsoluteFill } from 'remotion';
 import { Film } from './Film';
 import type { Timeline } from './types';
+import { PugPreview } from './PugPreview';
+import type { CharacterRig } from './CharacterRig';
 function StudioFilm({ timeline, studio_audio }: { timeline: Timeline; studio_audio?: string }) {
     if (timeline.scenes.length === 0) {
         return (
@@ -18,14 +20,27 @@ function StudioFilm({ timeline, studio_audio }: { timeline: Timeline; studio_aud
     );
 }
 registerRoot(() => (
-    <Composition
-        id="Toon"
-        component={StudioFilm}
-        width={1080}
-        height={1920}
-        fps={30}
-        durationInFrames={30}
-        defaultProps={{ timeline: { total_frames: 30, seed: 1, scenes: [], utterances: [], captions: [], assets: {} } }}
-        calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.total_frames })}
-    />
+    <>
+        <Composition
+            id="PugMotionReview"
+            component={PugPreview}
+            width={960}
+            height={960}
+            fps={30}
+            durationInFrames={810}
+            defaultProps={{ rig: undefined as unknown as CharacterRig, assets: {} as Record<string, string> }}
+        />
+        <Composition
+            id="Toon"
+            component={StudioFilm}
+            width={1080}
+            height={1920}
+            fps={30}
+            durationInFrames={30}
+            defaultProps={{
+                timeline: { total_frames: 30, seed: 1, scenes: [], utterances: [], captions: [], assets: {} }
+            }}
+            calculateMetadata={({ props }) => ({ durationInFrames: props.timeline.total_frames })}
+        />
+    </>
 ));

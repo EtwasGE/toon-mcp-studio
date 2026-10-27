@@ -4,12 +4,15 @@ import buyer from '../../styles/warm_editorial_2d/characters/buyer.rig.json';
 import advisor from '../../styles/warm_editorial_2d/characters/advisor.rig.json';
 import { type HeldProp, poseArms, ALKASH_ID } from './ArmKinematics';
 import { ArmLayer, AttachmentLayer, FingerLayer } from './Arms';
+import { seatedPugPose } from './SeatedPugMotion';
+import { PropShape } from './Props';
 
 export type RigNode = {
     type: 'group' | 'path' | 'ellipse' | 'circle' | 'rect' | 'cutout';
     props?: Record<string, string | number>;
     children?: RigNode[];
     motion?: 'head' | 'left_arm' | 'right_arm';
+    channel?: 'gaze' | 'tongue' | 'mouth_open';
     pivot?: number[];
     when?: { emotion?: string[]; mouth?: number[]; blink?: boolean; phone?: boolean };
     asset?: { asset_id: string; version: string };
@@ -27,6 +30,7 @@ export type CharacterRig = {
     emotions: string[];
     gestures: Record<string, number>;
     motion: {
+        profile?: 'seated_pug';
         blink_phase: number;
         blink_period: number;
         head_phase: number;
@@ -82,7 +86,12 @@ export function Rig({
     const headAngle = (motion.head_angles[emotion] ?? 0) + Math.sin((frame + motion.head_phase) / 42) * 1.4 + nod;
     const phone = heldProps.length === 0 && (gesture === 'show_phone' || tapping) && hold > 0;
     const tap = tapping && age >= 12 && age <= 24 ? Math.sin(((age - 12) / 12) * Math.PI) : 0;
-    const useArms = id === ALKASH_ID || heldProps.length > 0;
+    const isPug = motion.profile === 'seated_pug';
+    const useArms = !isPug && (id === ALKASH_ID || heldProps.length > 0);
+    const stashedItem = heldProps.find((item) => item.hand === 'left');
+    const stashAge = stashedItem?.stashFrame === undefined ? undefined : frame - stashedItem.stashFrame;
+    const pug = seatedPugPose(frame, gesture, age, mouth, stashAge);
+    const stashClip = `${prefix}-haunch`;
     const items: HeldProp[] = [...heldProps];
     if (useArms && items.length === 0 && phone) {
         items.push({
@@ -140,6 +149,30 @@ export function Rig({
                     ? headAngle
                     : (motion[node.motion][tapping ? 'show_phone' : gesture] ?? 0) * hold;
             props.transform = `rotate(${angle} ${node.pivot![0]} ${node.pivot![1]})`;
+            if (isPug && (node.motion === 'left_arm' || node.motion === 'right_arm')) {
+                const left = node.motion === 'left_arm';
+                const pivot = node.pivot!;
+                const tip = left ? [150 + pug.leftX, 530 + pug.leftY] : [242, 530 + pug.rightY];
+                const restX = (left ? 150 : 242) - pivot[0];
+                const restY = 530 - pivot[1];
+                const dx = tip[0] - pivot[0];
+                const dy = tip[1] - pivot[1];
+                const rotation = ((Math.atan2(dy, dx) - Math.atan2(restY, restX)) * 180) / Math.PI;
+                const length = Math.hypot(dx, dy) / Math.hypot(restX, restY);
+                props.transform = `translate(${pivot[0]} ${pivot[1]}) rotate(${rotation}) scale(${length}) translate(${-pivot[0]} ${-pivot[1]})`;
+            }
+        }
+
+        if (isPug && node.channel) {
+            if (node.channel === 'gaze') {
+                props.transform = `translate(${pug.gazeX} 0)`;
+            } else {
+                const amount = node.channel === 'tongue' ? pug.tongue : pug.opening;
+                if (amount <= 0) return null;
+
+                const pivot = node.pivot!;
+                props.transform = `translate(${pivot[0]} ${pivot[1]}) scale(1 ${amount}) translate(${-pivot[0]} ${-pivot[1]})`;
+            }
         }
 
         if (node.type === 'cutout') {
@@ -210,7 +243,38 @@ export function Rig({
     return (
         <g transform={`translate(${shake},${bodyY})`}>
             {useArms && armList.map((arm) => <ArmLayer key={arm.hand} arm={arm} part="back" />)}
-            {rig.layers.map((node, index) => draw(node, String(index)))}
+            {isPug && (
+                <defs>
+                    <clipPath id={stashClip}>
+                        <path
+                            d="M-120 -50 H500 V600 H-120 Z M20 600 V500 Q18 450 55 427 Q100 413 125 460 Q145 500 130 540 V600 Z"
+                            clipRule="evenodd"
+                            fillRule="evenodd"
+                        />
+                    </clipPath>
+                </defs>
+            )}
+            {rig.layers.map((node, index) => {
+                if (!isPug || node.motion !== 'left_arm') return draw(node, String(index));
+
+                return (
+                    <g
+                        key={index}
+                        clipPath={
+                            stashAge !== undefined && stashAge >= 0 && stashAge < 135 ? `url(#${stashClip})` : undefined
+                        }
+                    >
+                        {stashedItem && pug.stash.objectOpacity > 0 && (
+                            <g
+                                transform={`translate(${150 + pug.stash.objectX} ${530 + pug.stash.objectY}) scale(0.65)`}
+                            >
+                                <PropShape id={stashedItem.prop_id} frame={frame} view={stashedItem.view} />
+                            </g>
+                        )}
+                        {draw(node, String(index))}
+                    </g>
+                );
+            })}
             {useArms && (
                 <>
                     {armList.map((arm) => (

@@ -28,18 +28,11 @@ public static class CharacterRigs
             "Rig exceeds 256 KiB"
         );
 
-        Validation.Schema(
-            rig,
-            Path.Combine(root, "contracts/character-rig.schema.json")
-        );
+        Validation.Schema(rig, Path.Combine(root, "contracts/character-rig.schema.json"));
 
         var nodes = Nodes(rig).ToArray();
 
-        J.Require(
-            nodes.Length <= 512,
-            "VALIDATION_ERROR",
-            "Rig exceeds 512 nodes"
-        );
+        J.Require(nodes.Length <= 512, "VALIDATION_ERROR", "Rig exceeds 512 nodes");
 
         foreach (var node in nodes)
         {
@@ -49,11 +42,7 @@ public static class CharacterRigs
                 depth++;
             }
 
-            J.Require(
-                depth <= 24,
-                "VALIDATION_ERROR",
-                "Rig nesting exceeds 8 groups"
-            );
+            J.Require(depth <= 24, "VALIDATION_ERROR", "Rig nesting exceeds 8 groups");
 
             J.Require(
                 node["children"] == null || node.Str("type") == "group",
@@ -67,6 +56,17 @@ public static class CharacterRigs
                     node.Str("type") == "group" && node["pivot"] != null,
                     "VALIDATION_ERROR",
                     "Motion requires a group with a pivot"
+                );
+            }
+
+            if (node["channel"] != null)
+            {
+                J.Require(
+                    rig["motion"]?["profile"]?.ToString() == "seated_pug"
+                        && node.Str("type") == "group"
+                        && (node.Str("channel") == "gaze" || node["pivot"] != null),
+                    "VALIDATION_ERROR",
+                    "Pug channels require the seated_pug profile, a group and a pivot for mouth/tongue"
                 );
             }
 
@@ -104,11 +104,7 @@ public static class CharacterRigs
 
             if (node.Str("type") == "path")
             {
-                J.Require(
-                    node["props"]?["d"] != null,
-                    "VALIDATION_ERROR",
-                    "Path requires geometry"
-                );
+                J.Require(node["props"]?["d"] != null, "VALIDATION_ERROR", "Path requires geometry");
             }
         }
     }
@@ -120,10 +116,7 @@ public static class CharacterRigs
 
         foreach (var motion in new[] { "head", "left_arm", "right_arm" })
         {
-            Missing(
-                nodes.Any(n => n["motion"]?.ToString() == motion),
-                "Missing articulated " + motion
-            );
+            Missing(nodes.Any(n => n["motion"]?.ToString() == motion), "Missing articulated " + motion);
         }
 
         foreach (var emotion in Validation.Emotions)
@@ -143,20 +136,21 @@ public static class CharacterRigs
             );
         }
 
-        Missing(
-            nodes.Any(n => n["when"]?["blink"]?.GetValue<bool>() == true),
-            "Missing closed eyes"
-        );
+        Missing(nodes.Any(n => n["when"]?["blink"]?.GetValue<bool>() == true), "Missing closed eyes");
 
-        Missing(
-            nodes.Any(n => n["when"]?["blink"]?.GetValue<bool>() == false),
-            "Missing open eyes"
-        );
+        Missing(nodes.Any(n => n["when"]?["blink"]?.GetValue<bool>() == false), "Missing open eyes");
 
-        Missing(
-            nodes.Any(n => n["when"]?["phone"]?.GetValue<bool>() == true),
-            "Missing phone grip/prop"
-        );
+        if (rig["motion"]?["profile"]?.ToString() != "seated_pug")
+        {
+            Missing(nodes.Any(n => n["when"]?["phone"]?.GetValue<bool>() == true), "Missing phone grip/prop");
+        }
+        else
+        {
+            foreach (var channel in new[] { "gaze", "mouth_open", "tongue" })
+            {
+                Missing(nodes.Any(n => n["channel"]?.ToString() == channel), "Missing pug channel " + channel);
+            }
+        }
 
         return result;
 
