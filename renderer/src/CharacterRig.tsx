@@ -2,7 +2,8 @@ import React, { useId } from 'react';
 import { Img, staticFile } from 'remotion';
 import buyer from '../../styles/warm_editorial_2d/characters/buyer.rig.json';
 import advisor from '../../styles/warm_editorial_2d/characters/advisor.rig.json';
-import { HeldPropLayer, type HeldProp } from './Props';
+import { type HeldProp, poseArms, ALKASH_ID } from './ArmKinematics';
+import { ArmLayer, AttachmentLayer, FingerLayer } from './Arms';
 
 export type RigNode = {
     type: 'group' | 'path' | 'ellipse' | 'circle' | 'rect' | 'cutout';
@@ -51,7 +52,8 @@ export function Rig({
     mouth,
     gesture,
     age,
-    heldProps = []
+    heldProps = [],
+    surfaceY
 }: {
     id: string;
     rig?: CharacterRig;
@@ -63,6 +65,7 @@ export function Rig({
     gesture: string;
     age: number;
     heldProps?: HeldProp[];
+    surfaceY?: number;
 }) {
     const prefix = useId().replace(/:/g, '');
     if (!rig) throw Error('ASSET_MISSING: character rig');
@@ -79,18 +82,40 @@ export function Rig({
     const headAngle = (motion.head_angles[emotion] ?? 0) + Math.sin((frame + motion.head_phase) / 42) * 1.4 + nod;
     const phone = heldProps.length === 0 && (gesture === 'show_phone' || tapping) && hold > 0;
     const tap = tapping && age >= 12 && age <= 24 ? Math.sin(((age - 12) / 12) * Math.PI) : 0;
+    const useArms = id === ALKASH_ID || heldProps.length > 0;
+    const items: HeldProp[] = [...heldProps];
+    if (useArms && items.length === 0 && phone) {
+        items.push({
+            instance_id: 'legacy_phone',
+            prop_id: 'phone',
+            version: '1.0.0',
+            character_id: id,
+            hand: 'left',
+            cue: tapping
+                ? {
+                      frame: frame - age,
+                      action: {
+                          kind: 'prop',
+                          prop_action: 'tap',
+                          contact_frame: frame - age + 18,
+                          end_frame_exclusive: frame - age + 60
+                      }
+                  }
+                : undefined
+        });
+    }
+    const bodyY = Math.sin((frame + motion.body_phase) / 39) * 2;
+    const posed = poseArms(
+        items,
+        frame,
+        headAngle,
+        gesture,
+        hold,
+        surfaceY === undefined ? undefined : surfaceY - bodyY
+    );
+    const armList = [posed.arms.left, posed.arms.right];
     function draw(node: RigNode, key: string): React.ReactNode {
-        const held = heldProps.find((p) => node.motion === `${p.hand}_arm`);
-        if (held)
-            return (
-                <HeldPropLayer
-                    key={key}
-                    item={held}
-                    frame={frame}
-                    shoulder={node.pivot ?? (held.hand === 'left' ? [110, 250] : [270, 250])}
-                    part="arm"
-                />
-            );
+        if (useArms && (node.motion === 'left_arm' || node.motion === 'right_arm')) return null;
 
         const w = node.when;
         if (
@@ -183,20 +208,22 @@ export function Rig({
         }
     }
     return (
-        <g transform={`translate(${shake},${Math.sin((frame + motion.body_phase) / 39) * 2})`}>
+        <g transform={`translate(${shake},${bodyY})`}>
+            {useArms && armList.map((arm) => <ArmLayer key={arm.hand} arm={arm} part="back" />)}
             {rig.layers.map((node, index) => draw(node, String(index)))}
-            {heldProps.map((item) => (
-                <HeldPropLayer
-                    key={item.instance_id}
-                    part="prop"
-                    item={item}
-                    frame={frame}
-                    shoulder={
-                        rig.layers.find((n) => n.motion === `${item.hand}_arm`)?.pivot ??
-                        (item.hand === 'left' ? [110, 250] : [270, 250])
-                    }
-                />
-            ))}
+            {useArms && (
+                <>
+                    {armList.map((arm) => (
+                        <ArmLayer key={arm.hand} arm={arm} part="front" />
+                    ))}
+                    {armList.map((arm) => (
+                        <AttachmentLayer key={arm.hand} arm={arm} frame={frame} />
+                    ))}
+                    {armList.map((arm) => (
+                        <FingerLayer key={arm.hand} arm={arm} />
+                    ))}
+                </>
+            )}
         </g>
     );
 }

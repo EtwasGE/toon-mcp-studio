@@ -61,6 +61,19 @@ public static class Props
         J.Require(instance != null, "VALIDATION_ERROR", "Prop action references missing instance");
         var definition = Resolve(instance!.Str("prop_id"), instance.Str("version"));
         J.Require(instance["view"]?.ToString() != "back", "UNSUPPORTED_ACTION", "Tablet screen is facing away");
+        if (action.Str("prop_action") is "tap" or "open")
+        {
+            J.Require(
+                !scene
+                    .Items("props")
+                    .Any(p =>
+                        p.Str("character_id") == instance.Str("character_id") && p.Str("hand") != instance.Str("hand")
+                    ),
+                "UNSUPPORTED_ACTION",
+                "This prop action requires a free second hand"
+            );
+        }
+
         J.Require(
             definition.Actions.Contains(action.Str("prop_action")),
             "UNSUPPORTED_ACTION",

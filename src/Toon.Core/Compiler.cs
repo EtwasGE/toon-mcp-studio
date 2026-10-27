@@ -205,6 +205,7 @@ public static class Compiler
                             new
                             {
                                 event_id = e.Str("event_id"),
+                                action_kind = a.Str("kind"),
                                 start_sample = soundFrame * 1600L,
                                 scene_end_sample = sample,
                                 asset = sound["asset"]!.DeepClone(),

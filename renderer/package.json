@@ -8,6 +8,7 @@
     },
     "scripts": {
         "typecheck": "tsc --noEmit",
+        "test:arms": "node tests/arms.mjs",
         "browser": "remotion browser ensure",
         "render": "node render.mjs"
     },

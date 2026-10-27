@@ -14,7 +14,7 @@ internal static class PropAcceptance
         var source = Path.Combine(config.Data, "prop-test.wav");
         await Processes.Run(
             config.Ffmpeg,
-            ["-v", "error", "-y", "-f", "lavfi", "-i", "sine=frequency=700:duration=0.5", source],
+            ["-v", "error", "-y", "-f", "lavfi", "-i", "sine=frequency=700:duration=0.5", "-af", "adelay=200", source],
             config.Root,
             CancellationToken.None
         );
@@ -102,6 +102,12 @@ internal static class PropAcceptance
         badView["scenes"]![0]!["props"]![0]!["view"] = "back";
         Error(() => studio.Create(badView), "VALIDATION_ERROR");
         var first = pinned["scenes"]![0]!;
+        var occupied = pinned.DeepClone();
+        var secondHand = first["props"]![0]!.DeepClone();
+        secondHand["instance_id"] = "other";
+        secondHand["hand"] = "left";
+        occupied["scenes"]![0]!["props"]!.AsArray().Add(secondHand);
+        Error(() => studio.Create(occupied), "UNSUPPORTED_ACTION");
         var duplicate = pinned.DeepClone();
         duplicate["scenes"]![0]!["props"]!.AsArray().Add(first["props"]![0]!.DeepClone());
         Error(() => studio.Create(duplicate), "VALIDATION_ERROR");
@@ -146,6 +152,11 @@ internal static class PropAcceptance
             prepareOnly: true
         );
         var pcm = Path.Combine(config.Data, "props.pcm");
+        var preparedTimeline = J.Read(Path.Combine(directory, "timeline.json"));
+        Check(
+            preparedTimeline["sounds"]![0]!.Int("onset_trim_samples") is >= 9400 and <= 9700,
+            "leading silence trimmed for contact"
+        );
         await Processes.Run(
             config.Ffmpeg,
             ["-v", "error", "-y", "-i", Path.Combine(directory, "mix.wav"), "-f", "s16le", pcm],
@@ -154,7 +165,7 @@ internal static class PropAcceptance
         );
         var bytes = await File.ReadAllBytesAsync(pcm);
         Check(bytes.Take(18 * 1600 * 2).All(b => b == 0), "PCM silent before contact");
-        Check(bytes.Skip(18 * 1600 * 2).Take(4800).Any(b => b != 0), "PCM audible at contact");
+        Check(bytes.Skip(18 * 1600 * 2).Take(480).Any(b => b != 0), "PCM audible within 5 ms of contact");
         Console.WriteLine("Prop acceptance completed: " + directory);
     }
 

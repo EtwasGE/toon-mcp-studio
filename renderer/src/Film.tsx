@@ -95,6 +95,11 @@ export function Film({ timeline }: { timeline: Timeline }) {
                                     id={c.character_id}
                                     rig={timeline.rigs?.[c.character_id]}
                                     assets={timeline.assets}
+                                    surfaceY={
+                                        environment.anchors.table
+                                            ? (environment.anchors.table[1] - slot.floor_y) / slot.scale + 560
+                                            : undefined
+                                    }
                                     frame={frame}
                                     seed={timeline.seed}
                                     emotion={emotion}

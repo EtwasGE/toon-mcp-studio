@@ -51,7 +51,18 @@ public sealed class Pipeline(Config config)
         foreach (var sound in timeline.Items("sounds"))
         {
             var source = resolve(sound["asset"]!);
-            var prepared = await media.Prepare(source, null, ct);
+            AudioInfo prepared;
+            if (sound["action_kind"]?.ToString() == "prop")
+            {
+                var contactAudio = await media.PreparePropSound(source, ct);
+                prepared = contactAudio.Audio;
+                sound["onset_trim_samples"] = contactAudio.TrimmedSamples;
+            }
+            else
+            {
+                prepared = await media.Prepare(source, null, ct);
+            }
+
             J.Require(
                 sound["start_sample"]!.GetValue<long>() + prepared.Samples
                     <= sound["scene_end_sample"]!.GetValue<long>(),

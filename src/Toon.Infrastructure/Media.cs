@@ -126,6 +126,52 @@ public sealed class Media(Config config)
         return new AudioInfo(wav, J.FileHash(wav), samples, alignment, envelope.ToArray());
     }
 
+    public async Task<(AudioInfo Audio, int TrimmedSamples)> PreparePropSound(string source, CancellationToken ct)
+    {
+        var prepared = await Prepare(source, null, ct);
+        var pcm = await File.ReadAllBytesAsync(Path.Combine(Path.GetDirectoryName(prepared.Path)!, "audio.pcm"), ct);
+        var peak = 0;
+        for (var i = 0; i < pcm.Length; i += 2)
+        {
+            peak = Math.Max(peak, Math.Abs((int)BitConverter.ToInt16(pcm, i)));
+        }
+
+        J.Require(peak >= 64, "SFX_TOO_QUIET", "Prop sound has no audible contact");
+        var threshold = Math.Max(64, peak * 0.02);
+        var onset = 0;
+        while (onset < pcm.Length / 2 && Math.Abs((int)BitConverter.ToInt16(pcm, onset * 2)) < threshold)
+        {
+            onset++;
+        }
+
+        // Keep a 2 ms lead-in to avoid cutting the transient. Never change the source asset.
+        var trim = Math.Max(0, onset - 96);
+        if (trim == 0)
+            return (prepared, 0);
+
+        var directory = Path.Combine(config.Data, "audio-cache", "prop-onset-v1-" + prepared.Hash);
+        Directory.CreateDirectory(directory);
+        var output = Path.Combine(directory, "audio.wav");
+        await Processes.Run(
+            config.Ffmpeg,
+            [
+                "-v",
+                "error",
+                "-y",
+                "-i",
+                prepared.Path,
+                "-af",
+                $"atrim=start_sample={trim},asetpts=PTS-STARTPTS",
+                "-c:a",
+                "pcm_s16le",
+                output,
+            ],
+            config.Root,
+            ct
+        );
+        return (await Prepare(output, null, ct), trim);
+    }
+
     public async Task Mix(
         JsonNode timeline,
         IReadOnlyDictionary<string, AudioInfo> audio,
@@ -169,7 +215,7 @@ public sealed class Media(Config config)
             var prepared = await Prepare(resolve(sound["asset"]!), null, ct);
             args.AddRange(["-i", prepared.Path]);
             filters.Add(
-                $"[{index}:a]volume={sound.Num("gain_db").ToString(CultureInfo.InvariantCulture)}dB,adelay={sound["start_sample"]}S:all=1[sfx{index}]"
+                $"[{index}:a]atrim=start_sample={sound.Int("onset_trim_samples")},asetpts=PTS-STARTPTS,volume={sound.Num("gain_db").ToString(CultureInfo.InvariantCulture)}dB,adelay={sound["start_sample"]}S:all=1[sfx{index}]"
             );
             effects.Add($"[sfx{index}]");
             index++;
