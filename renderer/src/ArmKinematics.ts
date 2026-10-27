@@ -139,13 +139,14 @@ export function poseArms(
     headAngle = 0,
     gesture = 'idle',
     gestureAmount = 0,
-    surfaceY = armProfile.surfaceY
+    surfaceY = armProfile.surfaceY,
+    handSway = 0
 ) {
     const mouth = add(armProfile.headPivot, rotate(sub(armProfile.mouth, armProfile.headPivot), headAngle));
     const arms = {} as Record<Hand, ArmPose>;
     for (const hand of ['left', 'right'] as const) {
         const item = items.find((p) => p.hand === hand);
-        let target = armProfile.rest[hand];
+        let target = add(armProfile.rest[hand], { x: 0, y: handSway });
         let prop: PlacedProp | undefined;
         let grip: Grip = 'relaxed';
         let angle = 0;
@@ -164,8 +165,8 @@ export function poseArms(
                     : 0;
             const rest =
                 item.prop_id === 'tablet'
-                    ? { x: hand === 'left' ? 125 : 255, y: 410 }
-                    : { x: hand === 'left' ? 125 : 255, y: 410 };
+                    ? { x: hand === 'left' ? 125 : 255, y: 410 + handSway }
+                    : { x: hand === 'left' ? 125 : 255, y: 410 + handSway };
             const gripOffset = rotate({ x: localGrip.x * flip, y: localGrip.y }, angle);
             let origin = sub(rest, gripOffset);
             if (action === 'sip' || action === 'puff') {

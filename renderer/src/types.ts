@@ -1,6 +1,7 @@
 export type Camera = { shot: 'wide' | 'two_shot' | 'close_up' | 'screen'; subject_character_id?: string };
 export type Cast = { character_id: string; placement: string; pose_id: string; emotion_id: string };
 export type Cue = {
+    event_id?: string;
     frame: number;
     action: {
         kind: string;
@@ -65,6 +66,7 @@ export type Timeline = {
         start_sample: number;
         end_sample_exclusive: number;
         envelope: number[];
+        alignment?: { normalized_words: { index: number; text: string; start_ms: number; end_ms: number }[] };
     }[];
     sounds?: {
         event_id: string;

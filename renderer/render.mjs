@@ -46,21 +46,30 @@ try {
             }
         });
     }
-    const frames = new Set([
-        0,
-        timeline.total_frames - 1,
-        ...timeline.scenes.map((s) => s.start_frame),
-        ...timeline.scenes.flatMap((s) =>
-            s.events.flatMap((e) => [
-                Math.max(0, e.frame - 1),
-                e.frame,
-                Math.min(s.end_frame_exclusive - 1, e.frame + 12),
-                ...(e.action.gesture_id === 'tap_phone' ? [Math.min(s.end_frame_exclusive - 1, e.frame + 18)] : []),
-                ...(e.action.kind === 'prop' ? [Math.min(s.end_frame_exclusive - 1, e.action.contact_frame)] : []),
-                Math.min(s.end_frame_exclusive - 1, e.frame + 54)
-            ])
-        )
-    ]);
+    const frames = new Set(
+        process.env.TOON_QA_FRAMES
+            ? process.env.TOON_QA_FRAMES.split(',').map(Number)
+            : [
+                  0,
+                  timeline.total_frames - 1,
+                  ...timeline.scenes.map((s) => s.start_frame),
+                  ...timeline.scenes.flatMap((s) =>
+                      s.events.flatMap((e) => [
+                          Math.max(0, e.frame - 1),
+                          e.frame,
+                          Math.min(s.end_frame_exclusive - 1, e.frame + 12),
+                          ...(e.action.gesture_id === 'tap_phone'
+                              ? [Math.min(s.end_frame_exclusive - 1, e.frame + 18)]
+                              : []),
+                          ...(e.action.kind === 'prop'
+                              ? [Math.min(s.end_frame_exclusive - 1, e.action.contact_frame)]
+                              : []),
+                          Math.min(s.end_frame_exclusive - 1, e.frame + 54)
+                      ])
+                  )
+              ]
+    );
+    frames.add(0);
     for (const frame of frames) {
         await renderStill({
             composition,

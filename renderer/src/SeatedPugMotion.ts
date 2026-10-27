@@ -20,29 +20,29 @@ function track(age: number, keys: number[][]) {
 }
 
 export function stashPose(age: number) {
-    // Reach, contact, pull under the haunch, release, return empty.
+    // Reach forward, contact, pull towards the belly, release, return empty.
     const x = track(age, [
         [0, 0],
-        [24, -130],
-        [38, -130],
-        [80, -60],
-        [100, -60],
+        [24, 25],
+        [38, 25],
+        [80, 5],
+        [100, 5],
         [135, 0]
     ]);
     const y = track(age, [
         [0, 0],
-        [24, -8],
-        [38, -8],
-        [80, 12],
-        [100, 12],
+        [24, 38],
+        [38, 38],
+        [80, -18],
+        [100, -18],
         [135, 0]
     ]);
     return {
         x,
         y,
         pawOpacity: 1,
-        objectX: age < 30 ? -130 : age < 90 ? x : -60,
-        objectY: age < 30 ? -8 : age < 90 ? y : 12,
+        objectX: age < 30 ? 25 : age < 90 ? x : 5,
+        objectY: age < 30 ? 38 : age < 90 ? y : -18,
         objectOpacity: age < 80 ? 1 : 0,
         attached: age >= 30 && age < 90,
         hidden: age >= 80

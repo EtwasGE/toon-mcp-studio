@@ -1,0 +1,580 @@
+{
+    "schema_version": "1.0.0",
+    "kind": "draft_project",
+    "title": "Алкаш сделал телеграмм бота — Новостройкин",
+    "locale": "ru-RU",
+    "video": {
+        "width": 1080,
+        "height": 1920,
+        "fps": 30
+    },
+    "target_duration_seconds": 45,
+    "max_final_duration_seconds": 60,
+    "seed": 271026,
+    "style": {
+        "style_id": "warm_editorial_2d",
+        "version": "1.0.0"
+    },
+    "characters": [
+        {
+            "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+            "version": "1.2.0",
+            "voice_profile": {
+                "profile_id": "voice_8282de93123c780e1aedb76c1d6a46c0",
+                "revision": 4
+            }
+        },
+        {
+            "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+            "version": "1.1.0"
+        }
+    ],
+    "captions": {
+        "enabled": false,
+        "mode": "auto",
+        "preset_id": "high_contrast_ru"
+    },
+    "scenes": [
+        {
+            "scene_id": "scene_1",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "content_aa7257bcf56d4de9b154acff7cf3d06d",
+                "version": "1.1.0"
+            },
+            "props": [
+                {
+                    "instance_id": "kartoha",
+                    "prop_id": "tablet",
+                    "version": "1.0.0",
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "hand": "left",
+                    "view": "back"
+                },
+                {
+                    "instance_id": "rozetka_phone",
+                    "prop_id": "phone",
+                    "version": "1.0.0",
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "hand": "left"
+                }
+            ],
+            "camera": {
+                "shot": "wide"
+            },
+            "cast": [
+                {
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "placement": "left",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                },
+                {
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "placement": "right",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "s1_u1",
+                    "speaker_character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "text": "Бля, я тут навайбкодил телеграмм-бота — Новостройкин! На Картохе, ёпта. Уматно!",
+                    "audio": {
+                        "mode": "tts",
+                        "voice_alias": "character",
+                        "delivery": "neutral",
+                        "audio_effects": {
+                            "environment_id": "small_room",
+                            "send_level": 0.25
+                        }
+                    },
+                    "pause_after_ms": 250
+                }
+            ],
+            "lead_in_ms": 150,
+            "tail_ms": 200,
+            "events": [
+                {
+                    "event_id": "s1_u1_emotion",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "s1_u1"
+                    },
+                    "action": {
+                        "kind": "emotion",
+                        "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                        "emotion_id": "confident"
+                    }
+                },
+                {
+                    "event_id": "show_kartoha",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "s1_u1"
+                    },
+                    "action": {
+                        "kind": "gesture",
+                        "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                        "gesture_id": "show_phone"
+                    }
+                }
+            ],
+            "overlays": []
+        },
+        {
+            "scene_id": "scene_2",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "content_aa7257bcf56d4de9b154acff7cf3d06d",
+                "version": "1.1.0"
+            },
+            "props": [
+                {
+                    "instance_id": "kartoha",
+                    "prop_id": "tablet",
+                    "version": "1.0.0",
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "hand": "left",
+                    "view": "screen"
+                },
+                {
+                    "instance_id": "rozetka_phone",
+                    "prop_id": "phone",
+                    "version": "1.0.0",
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "hand": "left"
+                }
+            ],
+            "camera": {
+                "shot": "screen"
+            },
+            "cast": [
+                {
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "placement": "left",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                },
+                {
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "placement": "right",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "s2_u1",
+                    "speaker_character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "text": "Новостройки Москвы и Питера. Хули самому всё искать?",
+                    "audio": {
+                        "mode": "tts",
+                        "voice_alias": "character",
+                        "delivery": "neutral",
+                        "audio_effects": {
+                            "environment_id": "small_room",
+                            "send_level": 0.25
+                        }
+                    },
+                    "pause_after_ms": 250
+                }
+            ],
+            "lead_in_ms": 150,
+            "tail_ms": 200,
+            "events": [
+                {
+                    "event_id": "s2_u1_emotion",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "s2_u1"
+                    },
+                    "action": {
+                        "kind": "emotion",
+                        "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                        "emotion_id": "confident"
+                    }
+                }
+            ],
+            "overlays": [
+                {
+                    "overlay_id": "start_screenshot",
+                    "start": {
+                        "kind": "scene_start"
+                    },
+                    "end": {
+                        "kind": "scene_end"
+                    },
+                    "content": {
+                        "kind": "image",
+                        "asset": {
+                            "asset_id": "asset_05cde3af7bdc476cc71a245d",
+                            "version": "1.0.0"
+                        },
+                        "placement": "full_frame",
+                        "fit": "contain",
+                        "render_mode": "exact"
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "scene_3",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "content_aa7257bcf56d4de9b154acff7cf3d06d",
+                "version": "1.1.0"
+            },
+            "props": [
+                {
+                    "instance_id": "kartoha",
+                    "prop_id": "tablet",
+                    "version": "1.0.0",
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "hand": "left",
+                    "view": "screen"
+                },
+                {
+                    "instance_id": "rozetka_phone",
+                    "prop_id": "phone",
+                    "version": "1.0.0",
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "hand": "left"
+                }
+            ],
+            "camera": {
+                "shot": "wide"
+            },
+            "cast": [
+                {
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "placement": "left",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                },
+                {
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "placement": "right",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "s3_u1",
+                    "speaker_character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "text": "Жмёшь «Старт» — и следишь: новые проекты, корпуса, квартиры по твоим параметрам, снятие с брони и изменение цены. Уматно, ёпта!",
+                    "audio": {
+                        "mode": "tts",
+                        "voice_alias": "character",
+                        "delivery": "neutral",
+                        "audio_effects": {
+                            "environment_id": "small_room",
+                            "send_level": 0.25
+                        }
+                    },
+                    "pause_after_ms": 250
+                }
+            ],
+            "lead_in_ms": 900,
+            "tail_ms": 200,
+            "events": [
+                {
+                    "event_id": "s3_u1_emotion",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "s3_u1"
+                    },
+                    "action": {
+                        "kind": "emotion",
+                        "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                        "emotion_id": "confident"
+                    }
+                },
+                {
+                    "event_id": "tap_start",
+                    "at": {
+                        "kind": "scene_start"
+                    },
+                    "action": {
+                        "kind": "prop",
+                        "instance_id": "kartoha",
+                        "prop_action": "tap"
+                    },
+                    "sound": {
+                        "asset": {
+                            "asset_id": "sfx_1b5fc49eae4ea0ed80f68a5f",
+                            "version": "1.0.0"
+                        },
+                        "gain_db": -12,
+                        "offset_ms": 0
+                    }
+                }
+            ],
+            "overlays": [
+                {
+                    "overlay_id": "main_menu",
+                    "start": {
+                        "kind": "scene_start",
+                        "offset_ms": 600
+                    },
+                    "end": {
+                        "kind": "scene_end"
+                    },
+                    "content": {
+                        "kind": "image",
+                        "asset": {
+                            "asset_id": "asset_7285f398759be3d3e368f5a0",
+                            "version": "1.0.0"
+                        },
+                        "placement": "full_frame",
+                        "fit": "contain",
+                        "render_mode": "exact"
+                    }
+                }
+            ]
+        },
+        {
+            "scene_id": "scene_4",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "content_aa7257bcf56d4de9b154acff7cf3d06d",
+                "version": "1.1.0"
+            },
+            "props": [
+                {
+                    "instance_id": "kartoha",
+                    "prop_id": "tablet",
+                    "version": "1.0.0",
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "hand": "left",
+                    "view": "screen"
+                },
+                {
+                    "instance_id": "rozetka_phone",
+                    "prop_id": "phone",
+                    "version": "1.0.0",
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "hand": "left"
+                }
+            ],
+            "camera": {
+                "shot": "wide"
+            },
+            "cast": [
+                {
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "placement": "left",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                },
+                {
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "placement": "right",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "s4_u1",
+                    "speaker_character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "text": "Только подписчиков, бля, двое. Я…",
+                    "audio": {
+                        "mode": "tts",
+                        "voice_alias": "character",
+                        "delivery": "neutral",
+                        "audio_effects": {
+                            "environment_id": "small_room",
+                            "send_level": 0.25
+                        }
+                    },
+                    "pause_after_ms": 500
+                },
+                {
+                    "utterance_id": "s5_u1",
+                    "speaker_character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "text": "и мой пёс Розетка.",
+                    "audio": {
+                        "mode": "tts",
+                        "voice_alias": "character",
+                        "delivery": "neutral",
+                        "audio_effects": {
+                            "environment_id": "small_room",
+                            "send_level": 0.25
+                        }
+                    },
+                    "pause_after_ms": 1500
+                },
+                {
+                    "utterance_id": "s6_u1",
+                    "speaker_character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "text": "Ты хоть не отписывайся, ёпта!",
+                    "audio": {
+                        "mode": "tts",
+                        "voice_alias": "character",
+                        "delivery": "neutral",
+                        "audio_effects": {
+                            "environment_id": "small_room",
+                            "send_level": 0.25
+                        }
+                    },
+                    "pause_after_ms": 250
+                }
+            ],
+            "lead_in_ms": 150,
+            "tail_ms": 2000,
+            "events": [
+                {
+                    "event_id": "s4_u1_emotion",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "s4_u1"
+                    },
+                    "action": {
+                        "kind": "emotion",
+                        "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                        "emotion_id": "annoyed"
+                    }
+                },
+                {
+                    "event_id": "pan_to_rozetka",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "s5_u1"
+                    },
+                    "action": {
+                        "kind": "camera",
+                        "camera": {
+                            "shot": "close_up",
+                            "subject_character_id": "content_3807e47b8d7248038d2ce244c4c0438e"
+                        },
+                        "transition_ms": 1000
+                    }
+                },
+                {
+                    "event_id": "rozetka_hide_phone",
+                    "at": {
+                        "kind": "utterance_end",
+                        "utterance_id": "s5_u1"
+                    },
+                    "action": {
+                        "kind": "gesture",
+                        "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                        "gesture_id": "hide_object"
+                    },
+                    "sound": {
+                        "asset": {
+                            "asset_id": "sfx_31daee1f5006a3036e62db53",
+                            "version": "1.0.0"
+                        },
+                        "gain_db": -10,
+                        "offset_ms": 1267
+                    }
+                }
+            ],
+            "overlays": []
+        },
+        {
+            "scene_id": "scene_7",
+            "kind": "dialogue",
+            "background": {
+                "asset_id": "content_aa7257bcf56d4de9b154acff7cf3d06d",
+                "version": "1.1.0"
+            },
+            "props": [
+                {
+                    "instance_id": "kartoha",
+                    "prop_id": "tablet",
+                    "version": "1.0.0",
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "hand": "left",
+                    "view": "screen"
+                }
+            ],
+            "camera": {
+                "shot": "close_up",
+                "subject_character_id": "content_3807e47b8d7248038d2ce244c4c0438e"
+            },
+            "cast": [
+                {
+                    "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "placement": "left",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                },
+                {
+                    "character_id": "content_3807e47b8d7248038d2ce244c4c0438e",
+                    "placement": "right",
+                    "pose_id": "seated",
+                    "emotion_id": "neutral"
+                }
+            ],
+            "utterances": [
+                {
+                    "utterance_id": "s7_u1",
+                    "speaker_character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                    "text": "Ставь Новостройкин — @novostroykin_bot! И покупай подписку за мильон рублев! Хули, надо стартап поднимать!",
+                    "audio": {
+                        "mode": "tts",
+                        "voice_alias": "character",
+                        "delivery": "neutral",
+                        "audio_effects": {
+                            "environment_id": "small_room",
+                            "send_level": 0.25
+                        }
+                    },
+                    "pause_after_ms": 250
+                }
+            ],
+            "lead_in_ms": 150,
+            "tail_ms": 200,
+            "events": [
+                {
+                    "event_id": "s7_u1_emotion",
+                    "at": {
+                        "kind": "utterance_start",
+                        "utterance_id": "s7_u1"
+                    },
+                    "action": {
+                        "kind": "emotion",
+                        "character_id": "content_ed869c2c29264425b7f870a8340935fb",
+                        "emotion_id": "confident"
+                    }
+                },
+                {
+                    "event_id": "return_to_alkash",
+                    "at": {
+                        "kind": "scene_start"
+                    },
+                    "action": {
+                        "kind": "camera",
+                        "camera": {
+                            "shot": "wide"
+                        },
+                        "transition_ms": 1000
+                    }
+                }
+            ],
+            "overlays": [
+                {
+                    "overlay_id": "bot_address",
+                    "start": {
+                        "kind": "utterance_start",
+                        "utterance_id": "s7_u1"
+                    },
+                    "end": {
+                        "kind": "scene_end"
+                    },
+                    "content": {
+                        "kind": "text",
+                        "text": "@novostroykin_bot",
+                        "placement": "lower",
+                        "preset_id": "cta"
+                    }
+                }
+            ]
+        }
+    ]
+}

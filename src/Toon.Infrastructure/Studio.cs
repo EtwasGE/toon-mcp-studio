@@ -181,6 +181,10 @@ public sealed partial class Studio
                                     ]!
                                 )
                                 : Speech.ResolveVoice(u);
+                        if (u["audio"]!["audio_effects"] is { } effects)
+                        {
+                            voice["audio_effects"] = effects.DeepClone();
+                        }
                         voices[u.Str("utterance_id")] = voice;
                         var key = Speech.CacheKey(u.Str("text"), voice);
                         if (!Speech.Cached(key) && keys.Add(key))

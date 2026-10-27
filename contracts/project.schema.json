@@ -154,7 +154,21 @@
                     "properties": {
                         "mode": { "const": "tts" },
                         "voice_alias": { "$ref": "#/$defs/id" },
-                        "delivery": { "enum": ["neutral", "concerned", "pleased", "surprised"] }
+                        "delivery": { "enum": ["neutral", "concerned", "pleased", "surprised"] },
+                        "audio_effects": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["environment_id", "send_level"],
+                            "properties": {
+                                "environment_id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-z][a-z0-9_-]*$"
+                                },
+                                "send_level": { "type": "number", "minimum": 0, "maximum": 1 }
+                            }
+                        }
                     }
                 },
                 {

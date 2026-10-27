@@ -3,6 +3,7 @@ import { AbsoluteFill, Img, delayRender, continueRender, cancelRender, staticFil
 import { Rig } from './CharacterRig';
 import { EnvironmentStage, builtinEnvironments, environmentCamera } from './Environment';
 import type { Timeline } from './types';
+import { ScreenDemo } from './ScreenDemo';
 import fontUrl from '@fontsource/noto-sans/files/noto-sans-cyrillic-700-normal.woff2';
 import latinUrl from '@fontsource/noto-sans/files/noto-sans-latin-700-normal.woff2';
 
@@ -148,23 +149,75 @@ export function Film({ timeline }: { timeline: Timeline }) {
                                 data-safe-text
                                 style={{
                                     position: 'absolute',
-                                    left: 80,
+                                    left: o.content.preset_id === 'cta' ? 130 : 80,
                                     top:
                                         o.content.placement === 'top'
                                             ? 200
                                             : o.content.placement === 'lower'
-                                              ? 1400
+                                              ? o.content.preset_id === 'cta'
+                                                  ? undefined
+                                                  : 1400
                                               : 600,
+                                    bottom:
+                                        o.content.placement === 'lower' && o.content.preset_id === 'cta'
+                                            ? 100
+                                            : undefined,
                                     width: 820,
                                     color: o.content.preset_id === 'hook' ? '#293747' : '#fff2ce',
                                     fontSize: o.content.preset_id === 'hook' ? 64 : 60,
                                     lineHeight: 1.2,
                                     whiteSpace: 'pre-line',
                                     textAlign: 'center',
-                                    padding: '20px 0'
+                                    padding: o.content.preset_id === 'cta' ? 0 : '20px 0'
                                 }}
                             >
-                                {o.content.text}
+                                {o.content.preset_id === 'cta' ? (
+                                    <svg
+                                        viewBox="100 25 660 200"
+                                        width={820}
+                                        height={248}
+                                        style={{
+                                            display: 'block',
+                                            opacity: Math.min(1, (frame - o.start_frame + 1) / 10),
+                                            transformOrigin: '88% 15%',
+                                            transform: `translateY(${Math.max(0, 1 - (frame - o.start_frame) / 16) ** 2 * -65}px) rotate(${Math.sin((frame - o.start_frame) / 7) * 5 * Math.max(0, 1 - (frame - o.start_frame) / 35) ** 2}deg)`
+                                        }}
+                                    >
+                                        <path
+                                            d="M130 64H670L720 135L670 206H130Q110 206 110 186V84Q110 64 130 64Z"
+                                            fill="#dfbd82"
+                                            stroke="#30271f"
+                                            strokeWidth={6}
+                                        />
+                                        <circle
+                                            cx={670}
+                                            cy={135}
+                                            r={12}
+                                            fill="#604938"
+                                            stroke="#30271f"
+                                            strokeWidth={4}
+                                        />
+                                        <path
+                                            d="M675 135Q766 63 744 39Q722 25 705 70"
+                                            fill="none"
+                                            stroke="#d9b67c"
+                                            strokeWidth={7}
+                                        />
+                                        <text
+                                            x={385}
+                                            y={152}
+                                            textAnchor="middle"
+                                            fontFamily="Toon, sans-serif"
+                                            fontWeight={700}
+                                            fontSize={47}
+                                            fill="#30271f"
+                                        >
+                                            {o.content.text}
+                                        </text>
+                                    </svg>
+                                ) : (
+                                    o.content.text
+                                )}
                             </div>
                         ) : (
                             <div
@@ -201,12 +254,21 @@ export function Film({ timeline }: { timeline: Timeline }) {
                                     boxShadow: '0 20px 0 #111a2233'
                                 }}
                             >
-                                <Img
-                                    src={staticFile(
-                                        timeline.assets[o.content.asset!.asset_id + '@' + o.content.asset!.version]
-                                    )}
-                                    style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
-                                />
+                                {o.content.placement === 'full_frame' ? (
+                                    <ScreenDemo overlay={o} scene={scene} timeline={timeline} frame={frame} />
+                                ) : (
+                                    <Img
+                                        src={staticFile(
+                                            timeline.assets[o.content.asset!.asset_id + '@' + o.content.asset!.version]
+                                        )}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'contain',
+                                            display: 'block'
+                                        }}
+                                    />
+                                )}
                             </div>
                         )
                     )}

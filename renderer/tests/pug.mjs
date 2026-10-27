@@ -14,6 +14,12 @@ assert.equal(stashPose(80).hidden, true);
 assert.equal(stashPose(300).objectOpacity, 0);
 assert.equal(stashPose(150).x, 0);
 assert.equal(stashPose(150).y, 0);
+assert.ok(stashPose(-1).objectX > 0 && stashPose(-1).objectY > 0, 'phone starts in front of the forepaw');
+assert.ok(
+    seatedPugPose(1100, 'tongue_out', 20, 0, 160).tongue > 0,
+    'explicit reaction sticks tongue out after returning paw'
+);
+assert.equal(seatedPugPose(1000, 'hide_object', 80, 0, 80).tongue, 0, 'tongue waits for paw movement');
 for (let frame = 31; frame < 80; frame++) {
     const pose = stashPose(frame);
     assert.equal(pose.objectX, pose.x, 'object must follow the paw after contact');

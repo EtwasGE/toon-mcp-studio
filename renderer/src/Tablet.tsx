@@ -41,22 +41,51 @@ export function Tablet({ view = 'screen', pulse = false }: { view?: 'screen' | '
                 <g>
                     <rect x={-52} y={-140} width={104} height={146} rx={7} fill="#18202b" />
                     <svg {...tabletScreen} viewBox="0 0 960 1280" overflow="hidden">
-                        <rect width={960} height={1280} fill="#e6eef3" />
-                        <circle cx={480} cy={480} r={165} fill="#2aabee" />
+                        <rect width={960} height={1280} fill="#eee1bd" />
+                        <text
+                            x={480}
+                            y={180}
+                            textAnchor="middle"
+                            fontFamily="Toon, sans-serif"
+                            fontWeight={700}
+                            fontSize={90}
+                            fill="#302922"
+                        >
+                            КАРТОХА OS
+                        </text>
                         <path
-                            d="M375 472 L589 389 Q611 380 604 409 L566 587 Q562 605 541 591 L480 545 L447 574 L451 524 L559 425 L422 510 Z"
-                            fill="#fff"
+                            d="M540 320C300 235 220 465 320 625C410 760 670 655 647 490C555 520 530 440 585 400C520 400 505 350 540 320Z"
+                            fill="#b58c53"
+                            stroke="#765731"
+                            strokeWidth={18}
+                        />
+                        <path
+                            d="M350 410l25 15m-45 85l25-5m100 100l15-25m20-140l20 15"
+                            fill="none"
+                            stroke="#765731"
+                            strokeWidth={18}
+                            strokeLinecap="round"
                         />
                         <text
                             x={480}
-                            y={750}
+                            y={870}
                             textAnchor="middle"
                             fontFamily="Toon, sans-serif"
-                            fontSize={59}
-                            fill="#243647"
+                            fontSize={92}
+                            fontWeight={700}
+                            fill="#302922"
                         >
-                            @novostroykin_bot
+                            БОТ ЗАПУЩЕН
                         </text>
+                        <circle cx={480} cy={1050} r={94} fill="#4c7958" />
+                        <path
+                            d="M430 1050l35 35 65-75"
+                            fill="none"
+                            stroke="#fff5d9"
+                            strokeWidth={22}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
                     </svg>
                     <circle cx={0} cy={-136} r={1.4} fill="#66778b" />
                     <path d="M-12 1 h24" stroke="#a0adbb" strokeWidth={1.5} strokeLinecap="round" />

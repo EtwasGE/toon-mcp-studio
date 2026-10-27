@@ -171,6 +171,11 @@ public sealed class Speech(Config config, Store store, HttpClient? client = null
             payload["text"] = text;
             payload["voice_settings"] = voice["voice_settings"]!.DeepClone();
         }
+
+        if (voice["audio_effects"] is { } effects)
+        {
+            payload["audio_effects"] = effects.DeepClone();
+        }
         request.Content = JsonContent.Create(payload);
         HttpResponseMessage response;
         try
